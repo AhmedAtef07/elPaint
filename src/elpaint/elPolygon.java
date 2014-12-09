@@ -1,8 +1,6 @@
 package elpaint;
 
 import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
 
 /**
  *
@@ -24,6 +22,12 @@ public class elPolygon extends elShape {
                 new Point(x[index],y[index]) : new Point(-1,-1);
     }
     
+    /**
+     * 
+     * @param p
+     * @param index 
+     * do nothing in case of accessing out of bound element
+     */
     public void setPoint(Point p, int index) {
         if(index >= 0 && index < x.length) {
             x[index] = p.x;
@@ -31,21 +35,21 @@ public class elPolygon extends elShape {
         }
     }
     
-    private void initialize(ArrayList<Point> p) {
-        x = new int[p.size()];
-        y = new int[p.size()];
-        for(int i = 0 ; i < p.size() ; i ++ ) {
-            x[i] = p.get(i).x;
-            y[i] = p.get(i).y;
+    private void initialize(Point[] p) {
+        x = new int[p.length];
+        y = new int[p.length];
+        for(int i = 0 ; i < p.length ; i ++ ) {
+            x[i] = p[i].x;
+            y[i] = p[i].y;
         }
     }
     
-    public elPolygon(ArrayList<Point> p) {
+    public elPolygon(Point... p) {
         initialize(p);
     }
 
-    public elPolygon(ArrayList<Point> p, Color FillColor, 
-            Color BorderColor, Stroke LineType) {
+    public elPolygon(Color FillColor, 
+            Color BorderColor, Stroke LineType, Point... p) {
         super(FillColor, BorderColor, LineType);
         initialize(p);
     }
