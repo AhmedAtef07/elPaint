@@ -16,7 +16,9 @@ public abstract class elShape  {
      Stroke LineType;
      Color  FillColor;
      Color  BorderColor;
-    public elShape() {
+    
+     
+     public elShape() {
 
         this.IsSelected = false;
         this.LineType = new BasicStroke(2);
