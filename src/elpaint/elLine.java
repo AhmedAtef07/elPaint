@@ -33,7 +33,8 @@ public class  elLine extends elShape {
         this.p2 = p2;
     }
 
-    public elLine(Point p1, Point p2, Color FillColor, Color BorderColor, Stroke LineType) {
+    public elLine(Point p1, Point p2, Color FillColor, 
+            Color BorderColor, Stroke LineType) {
         super(FillColor, BorderColor, LineType);
         this.p1 = p1;
         this.p2 = p2;
