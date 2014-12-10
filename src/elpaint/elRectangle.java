@@ -111,17 +111,17 @@ public class elRectangle extends elShape {
         this.y2 = y2;
     }
 
-    @Override
+
     public boolean hasStroke() {
         return true ;
     }
 
-    @Override
+
     public boolean hasFillColor() {
         return true ;
     }
 
-    @Override
+
     public boolean hasBorderColor() {
         return true ;
     }
