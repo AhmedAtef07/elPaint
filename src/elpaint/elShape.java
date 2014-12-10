@@ -13,13 +13,17 @@ public abstract class elShape   {
  
  private boolean IsSelected;
 
-     Stroke LineType;
-     Color  FillColor;
-     Color  BorderColor;
+    Stroke LineType;
+    Color  FillColor;
+    Color  BorderColor;
     
-     
-     public elShape() {
+    protected int x;
+    protected int y;
+    protected int width;
+    protected int height;
 
+    
+     public elShape() {
         this.IsSelected = false;
         this.LineType = new BasicStroke(2);
         this.FillColor = Color.WHITE;
@@ -77,7 +81,40 @@ public abstract class elShape   {
     public void setIsSelected(boolean IsSelected) {
         this.IsSelected = IsSelected;
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
     
     
+    public abstract elShape getCopy();
  
 }

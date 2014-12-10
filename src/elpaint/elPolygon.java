@@ -58,5 +58,10 @@ public class elPolygon extends elShape {
     public Shape getFloat() {
         return new Polygon(x, y, x.length);
     }
-    
+
+    @Override
+    public elShape getCopy() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }   
+  
 }

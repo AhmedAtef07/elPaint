@@ -44,4 +44,9 @@ public class  elLine extends elShape {
     public Shape getFloat() {
         return new Line2D.Float(p1, p2);
     }
+    
+     @Override
+    public elShape getCopy() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }   
 }
