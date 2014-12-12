@@ -32,7 +32,7 @@ public class Stage implements Triggable {
     private int startX, startY;
     private elShape holdedShape;
     private boolean multiSelectionActivated;
-    private boolean isMoving;
+    private boolean isMoving, isDragging;
     
     private LinkedList<elShape> elShapes;
     private ArrayList<elShape> clonedShapes;
@@ -49,7 +49,7 @@ public class Stage implements Triggable {
         elShapes = layer.getElShapes();
         
         multiSelectionActivated = false;
-        
+        isDragging = false;
         currentMode = Mode.DRAWING;
         currentShapeType = ShapeType.RECTANGLE;
         
@@ -66,8 +66,7 @@ public class Stage implements Triggable {
     }
 
     void resetEditingFactors() {        
-        // can't use -1 here, because the object might have these value in the 
-        // beginning.
+
         startX = -1;
         startY = -1;
         cloneShapesList();
@@ -81,7 +80,6 @@ public class Stage implements Triggable {
         
         for (int i = elShapes.size() - 1; i != -1; --i) {
             if (elShapes.get(i).getFloat().contains(p)) {
-//                System.out.println("AHMED" + elShapes.get(i) + "");
                 // Toggle selcetion.
                 if (elShapes.get(i).getIsSelected()) {
                     elShapes.get(i).setIsSelected(false);
@@ -97,13 +95,9 @@ public class Stage implements Triggable {
      * Add shapes which are totally in selection region.
      */
     public void setSelectedShapes() {
-         
-        // Make it work with multiselect later.
-        
         if (!multiSelectionActivated) {
             unselectAll();
-        }
-        
+        }        
         for (int i = elShapes.size() - 1; i != -1; --i) {
             if (holdedShape.getFloat().contains(
                     elShapes.get(i).getFloat().getBounds2D())) {
@@ -246,6 +240,7 @@ public class Stage implements Triggable {
     
     @Override
     public void mouseDragged(MouseEvent e) {
+        isDragging = true;
         Point point = e.getPoint();
         int x = point.x - ui.getComponents()[0].getX();
         int y = point.y - ui.getComponents()[0].getY();
@@ -265,6 +260,8 @@ public class Stage implements Triggable {
                 break;
             case EDITING:  
                  
+                // startX != -1 means you are curruntly drawing the selection 
+                // region.
                 if (startX  == -1) {
                     startX = x;
                     startY = y;
@@ -311,8 +308,7 @@ public class Stage implements Triggable {
         switch (currentMode) {
             case DRAWING:
                 break;
-            case EDITING:
-                
+            case EDITING:                
                 break;
         }
         
@@ -342,22 +338,26 @@ public class Stage implements Triggable {
     public void mouseReleased(MouseEvent e) {
         switch (currentMode) {
             case DRAWING:
-                resetDrawingFactors(); 
-                cloneShapesList();
-                System.out.println(holdedShape.toString());
-                layer.addShape(holdedShape);
-                layer.setHoldedShape(null);
-                layer.repaint();
+                if (isDragging) {
+                    resetDrawingFactors(); 
+                    cloneShapesList();
+                    layer.addShape(holdedShape);
+                    layer.setHoldedShape(null);
+                    layer.repaint();
+                }
                 break;
             case EDITING: 
-                if (!isMoving) {
-                    setSelectedShapes();
-                    layer.setHoldedShape(null);
+                if (isDragging) {
+                    if (!isMoving) {
+                        setSelectedShapes();
+                        layer.setHoldedShape(null);
+                    }
+                    layer.repaint();
+                    resetEditingFactors();
                 }
-                layer.repaint();
-                resetEditingFactors();
                 break;
         } 
+        isDragging = false;
     }
 
     @Override
