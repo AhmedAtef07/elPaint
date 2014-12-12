@@ -2,6 +2,7 @@ package elpaint;
 
 import java.awt.Point;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 /**
  *
@@ -23,7 +24,7 @@ public class UserInterface extends JFrame {
         addMouseMotionListener(stageInputHandler);
         addKeyListener(stageInputHandler);
         
-        layer = new Layer(new Point(0, 0), 0, 0);
+        layer = new Layer(new Point(0, 0), 70, 70);
         add(layer);
         
         setVisible(true);

@@ -5,7 +5,9 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList; 
+import java.util.LinkedList;
 
 /**
  *
@@ -29,8 +31,10 @@ public class Stage implements Triggable {
     
     private int startX, startY;
     private elShape holdedShape;
-    private boolean ctrlActived;
+    private boolean multiSelectionActivated;
+    private boolean isMoving;
     
+    private LinkedList<elShape> elShapes;
     private ArrayList<elShape> clonedShapes;
     private ArrayList<elShape> copiedShapes;
     
@@ -40,8 +44,11 @@ public class Stage implements Triggable {
     public Stage() {
         ui = new UserInterface(this);
         layer = ui.getLayer();
+        // Only need to be initialized once, as it will always keep the 
+        // reference.
+        elShapes = layer.getElShapes();
         
-        ctrlActived = false;
+        multiSelectionActivated = false;
         
         currentMode = Mode.DRAWING;
         currentShapeType = ShapeType.RECTANGLE;
@@ -67,13 +74,14 @@ public class Stage implements Triggable {
     }
              
     public void setSelectedShapes(Point p) {
-        ArrayList<elShape> elShapes = layer.getElShapes();
-        if (!ctrlActived) {
+         
+        if (!multiSelectionActivated) {
             unselectAll();
         }
         
         for (int i = elShapes.size() - 1; i != -1; --i) {
             if (elShapes.get(i).getFloat().contains(p)) {
+//                System.out.println("AHMED" + elShapes.get(i) + "");
                 // Toggle selcetion.
                 if (elShapes.get(i).getIsSelected()) {
                     elShapes.get(i).setIsSelected(false);
@@ -81,6 +89,30 @@ public class Stage implements Triggable {
                      elShapes.get(i).setIsSelected(true);
                 }            
                 break;
+            } 
+        }
+    }
+    
+    /**
+     * Add shapes which are totally in selection region.
+     */
+    public void setSelectedShapes() {
+         
+        // Make it work with multiselect later.
+        
+        if (!multiSelectionActivated) {
+            unselectAll();
+        }
+        
+        for (int i = elShapes.size() - 1; i != -1; --i) {
+            if (holdedShape.getFloat().contains(
+                    elShapes.get(i).getFloat().getBounds2D())) {
+                // Toggle selcetion.
+                if (elShapes.get(i).getIsSelected()) {
+                    elShapes.get(i).setIsSelected(false);
+                } else {
+                     elShapes.get(i).setIsSelected(true);
+                }      
             } 
         }
     }
@@ -112,7 +144,7 @@ public class Stage implements Triggable {
     }
     
     void setCursorOnAll(Cursor cursor) {
-        ArrayList<elShape> elShapes = layer.getElShapes();
+         
         for (elShape elshape: elShapes) {
             // add curosr in model.
         }
@@ -120,7 +152,7 @@ public class Stage implements Triggable {
     }
     
     void unselectAll() {
-        ArrayList<elShape> elShapes = layer.getElShapes();
+         
         for (elShape elshape: elShapes) {
             elshape.setIsSelected(false);            
         }
@@ -128,7 +160,7 @@ public class Stage implements Triggable {
     }
     
     void selectAll() {
-        ArrayList<elShape> elShapes = layer.getElShapes();
+         
         for (elShape elshape: elShapes) {
             elshape.setIsSelected(true);            
         }
@@ -147,18 +179,22 @@ public class Stage implements Triggable {
     }
     
     
-    private void deleteSelectedShapes() {        
-        ArrayList<elShape> elShapes = layer.getElShapes();
-        ArrayList<elShape> newShapes = new ArrayList<>();
+    private void deleteSelectedShapes() {              
+        LinkedList<elShape> newShapes = new LinkedList<>();
         for (elShape elshape: elShapes) {
             if (!elshape.getIsSelected()) {
                 newShapes.add(elshape);
             }
         }
-        layer.setElShapes(newShapes);
+        setNewShapesReference(newShapes);
         layer.repaint();
+        cloneShapesList();
     }
     
+    void setNewShapesReference(LinkedList<elShape> newShapesListRef) {
+        layer.setElShapes(newShapesListRef);
+        elShapes = layer.getElShapes();
+    }
     private void copySelecetedShapes() {
         ArrayList<elShape> newCopiedShapes = new ArrayList<>();
         for (elShape elshape: layer.getElShapes()) {
@@ -180,11 +216,29 @@ public class Stage implements Triggable {
             layer.addShape(shape);
         }
         layer.repaint();
-        cloneShapesList();
         copySelecetedShapes();
+        cloneShapesList();
     }
     
-    
+    private void duplicateSelectedShapes() {
+        ArrayList<elShape> newCopiedShapes = new ArrayList<>();
+        for (elShape elshape: layer.getElShapes()) {
+            if (elshape.getIsSelected()) {
+                newCopiedShapes.add(elshape.getCopy());
+            }
+        }
+        if (!newCopiedShapes.isEmpty()) {
+            unselectAll();
+            for (elShape shape : newCopiedShapes) {
+                shape.setX(shape.getX() + 37);
+                shape.setY(shape.getY() + 17);
+                shape.setIsSelected(true);
+                layer.addShape(shape);
+            }
+            layer.repaint();
+            cloneShapesList();
+        }        
+    }
     
     
     
@@ -209,23 +263,45 @@ public class Stage implements Triggable {
         
                 drawHoldedShape(minX, minY, width, height); 
                 break;
-            case EDITING:      
-                ArrayList<elShape> elShapes = layer.getElShapes();
-                // Move shapes.
-                for (int i = 0; i < elShapes.size(); i++) {
-                    elShape elshape = elShapes.get(i);
-                    elShape clonedShape = clonedShapes.get(i);
-                    if (elshape.getIsSelected()) {
-//                        elRectangle rect = (elRectangle)elshape;
-                        if (startX  == -1) {
-                            startX = x;
-                            startY = y;
-                        }                         
-                        elshape.setX(clonedShape.getX() - (startX - x));
-                        elshape.setY(clonedShape.getY() - (startY - y));
-                    }        
+            case EDITING:  
+                 
+                if (startX  == -1) {
+                    startX = x;
+                    startY = y;
+                    isMoving = false;
+                    for (elShape shape: elShapes) {
+                        // A selected objectd and started dragging over it.
+                        if (shape.getIsSelected() &&
+                                shape.getFloat().contains(new Point(x, y))) {
+                            isMoving = true;
+                            break;
+                        }                   
+                    }
+                }  
+              
+                if (isMoving) {                    
+                    // Move shapes.
+                    for (int i = 0; i < elShapes.size(); i++) {
+                        elShape elshape = elShapes.get(i);
+                        elShape clonedShape = clonedShapes.get(i);
+                        if (elshape.getIsSelected()) {
+    //                        elRectangle rect = (elRectangle)elshape;
+                        
+                            elshape.setX(clonedShape.getX() - (startX - x));
+                            elshape.setY(clonedShape.getY() - (startY - y));
+                        }        
+                    }
+                    layer.repaint();
+                } else {
+                    minX = Math.min(x, startX);
+                    minY = Math.min(y,startY);
+                    width = Math.abs(minX - Math.max(startX, x));
+                    height = Math.abs(minY - Math.max(startY, y));
+        
+                    drawHoldedShape(minX, minY, width, height); 
                 }
-                layer.repaint();
+                break;
+            default:
                 break;
         }        
     }
@@ -267,13 +343,19 @@ public class Stage implements Triggable {
         switch (currentMode) {
             case DRAWING:
                 resetDrawingFactors(); 
+                cloneShapesList();
                 System.out.println(holdedShape.toString());
                 layer.addShape(holdedShape);
                 layer.setHoldedShape(null);
                 layer.repaint();
                 break;
-            case EDITING:   
-            resetEditingFactors();
+            case EDITING: 
+                if (!isMoving) {
+                    setSelectedShapes();
+                    layer.setHoldedShape(null);
+                }
+                layer.repaint();
+                resetEditingFactors();
                 break;
         } 
     }
@@ -310,8 +392,16 @@ public class Stage implements Triggable {
             currentShapeType = ShapeType.ELLIPSE;
         } // add line with L later;
               
-        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+        if (e.isControlDown() && !e.isShiftDown() && 
+                e.getKeyCode() == KeyEvent.VK_Z) {
             layer.popLastShape();
+            layer.repaint();
+        }
+        
+        if (e.isControlDown() && 
+                (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
+                (e.getKeyCode() == KeyEvent.VK_Y)) {
+            layer.unPopLastShape();
             layer.repaint();
         }
         
@@ -330,19 +420,23 @@ public class Stage implements Triggable {
         }
         
         if (currentMode == Mode.EDITING && e.isControlDown() 
+                && e.getKeyCode() == KeyEvent.VK_D) {
+            duplicateSelectedShapes();
+        }
+        if (currentMode == Mode.EDITING && e.isControlDown() 
                 && e.getKeyCode() == KeyEvent.VK_A) {
             selectAll();
         }
         
-        if (e.isControlDown()) {
-            ctrlActived = true;
+        if (e.isControlDown() || e.isShiftDown()) {
+            multiSelectionActivated = true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (!e.isControlDown()) {
-            ctrlActived = false;
+        if (!e.isControlDown() && !e.isShiftDown() ) {
+            multiSelectionActivated = false;
         }
     }
 }

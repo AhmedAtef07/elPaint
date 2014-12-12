@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import javax.swing.JPanel;
 
 /**
@@ -16,14 +17,18 @@ import javax.swing.JPanel;
  */
 public class Layer extends JPanel {
 
-    private ArrayList<elShape> elShapes;
+//    private ArrayList<elShape> elShapes;
+    private LinkedList<elShape> elShapes;
+    private LinkedList<elShape> redo;
     private elShape holdedShape;
     
     public Layer(Point point, int width, int height) {
             setBounds(point.x, point.y, width, height);
             setBackground(Color.white);
             
-            elShapes = new ArrayList<>();
+//            elShapes = new ArrayList<>();
+            elShapes = new LinkedList<>();
+            redo = new LinkedList<>();
             holdedShape = null;
     }
 
@@ -31,23 +36,34 @@ public class Layer extends JPanel {
         if (elShapes.size() == 0) {
             return;
         }
-        elShapes.remove(elShapes.size() - 1);
+//        elShapes.remove(elShapes.size() - 1);
+        redo.add(elShapes.peekLast());
+        elShapes.removeLast();
+    }
+    
+    void unPopLastShape() {
+        if (redo.size() == 0) {
+            return;
+        }        
+        elShapes.add(redo.peekLast());
+        redo.removeLast();
     }
     
     public void setHoldedShape(elShape holdedShape) {
         this.holdedShape = holdedShape;
     }
     
-    public ArrayList<elShape> getElShapes() {
+    public LinkedList<elShape> getElShapes() {
         return elShapes;
     }
 
-    public void setElShapes(ArrayList<elShape> elShapes) {
+    public void setElShapes(LinkedList<elShape> elShapes) {
         this.elShapes = elShapes;
     }
     
     public void addShape(elShape shape) {
         elShapes.add(shape);
+        redo.clear();
     }
     
     @Override
