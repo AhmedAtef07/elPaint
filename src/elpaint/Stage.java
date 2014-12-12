@@ -132,17 +132,30 @@ public class Stage implements Triggable {
     void updateToDrawingMode() {
         // Remove everything related to editing.
         unselectAll();
+        layer.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 
         //
     }
     
-    void setCursorOnAll(Cursor cursor) {
+    void setCursorOnAll(Point point) {
          
-        for (elShape elshape: elShapes) {
-            // add curosr in model.
+        boolean foundAny = false;
+        for (elShape shape: elShapes) {
+                // A selected objectd and started dragging over it.
+                if ( shape.getFloat().contains(point)) {
+                    if (shape.getIsSelected()) {
+                        layer.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                    } else {
+                        layer.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }
+                    foundAny = true;
+                    break;
+                }                   
         }
-        layer.repaint();
+        if (!foundAny) {
+            layer.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
     }
     
     void unselectAll() {
@@ -244,7 +257,6 @@ public class Stage implements Triggable {
         Point point = e.getPoint();
         int x = point.x - ui.getComponents()[0].getX();
         int y = point.y - ui.getComponents()[0].getY();
-        
         switch (currentMode) {
             case DRAWING:    
                 if (startX == -1) {
@@ -305,10 +317,13 @@ public class Stage implements Triggable {
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();
         switch (currentMode) {
             case DRAWING:
                 break;
-            case EDITING:                
+            case EDITING:  
+                setCursorOnAll(new Point(x, y));                
                 break;
         }
         
@@ -316,18 +331,19 @@ public class Stage implements Triggable {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {        
+    public void mouseClicked(MouseEvent e) {          
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();
         switch (currentMode) {
             case DRAWING:
                 break;
             case EDITING:                
                 Point point = e.getPoint();
-                int x = point.x - ui.getComponents()[0].getX();
-                int y = point.y - ui.getComponents()[0].getY();
                 setSelectedShapes(new Point(x, y));
                 layer.repaint();  
                 break;
         }   
+        setCursorOnAll(new Point(x, y));    
     }
 
     @Override
@@ -335,7 +351,9 @@ public class Stage implements Triggable {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) {        
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();  
         switch (currentMode) {
             case DRAWING:
                 if (isDragging) {
@@ -358,6 +376,7 @@ public class Stage implements Triggable {
                 break;
         } 
         isDragging = false;
+        setCursorOnAll(new Point(x, y));  
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
  * @author Ahmed Atef
  */
 public class InputHandler implements MouseMotionListener, MouseListener,
-        KeyListener{
+        KeyListener {
     
     Triggable triggable;
     public InputHandler(Triggable triggable) {

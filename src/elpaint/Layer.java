@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 
@@ -84,33 +82,46 @@ public class Layer extends JPanel {
         } else {
             for (elShape shape: elShapes) {
                 if (shape.getIsSelected()) {
-                    Rectangle boundry = shape.getFloat().getBounds();
-//                    elShape selectionShape = 
-                    g2d.setColor(Color.blue);
-                    float dash[] = { 10.0f };
-//                    g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT,
-//                         BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f));
+//                    Rectangle boundry = shape.getFloat().getBounds();
+////                    elShape selectionShape = 
+//                    g2d.setColor(Color.black);
+//                    float dash[] = { 10.0f };
+////                    g2d.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_BUTT,
+////                         BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f));
+//                    g2d.setStroke(new BasicStroke(1));
+//                    g2d.draw(boundry);            
+//                    
+//                    
+//                    
+//                    g2d.setStroke(new BasicStroke(1));
+//                    g2d.setColor(Color.black);
+//                    int smallRectSize = 3;
+//                    elRectangle sbNW = new elRectangle(
+//                            boundry.x - smallRectSize, 
+//                            boundry.y - smallRectSize, 
+//                            2 * smallRectSize, 
+//                            2 * smallRectSize);
+//                    g2d.fill(sbNW.getFloat());    
+//                    elRectangle sbSE = new elRectangle(
+//                            boundry.x + boundry.width - smallRectSize, 
+//                            boundry.y + boundry.height - smallRectSize, 
+//                            2 * smallRectSize, 
+//                            2 * smallRectSize);
+//                    g2d.fill(sbSE.getFloat());         
+                    
+                    g2d.setColor(new Color(0, 0, 255, 150));
+                    ResizeBox resizeBoxes = shape.getResizeBoxes();
+                    for(elRectangle rect: resizeBoxes.getBoxes()) {
+                        if (rect == null) {
+                            continue;
+                        }
+//                        g2d.setColor(ResizeBox.boxColor);
+                        g2d.fill(rect.getFloat());
+                    }
                     g2d.setStroke(new BasicStroke(1));
-                    g2d.draw(boundry);            
+                    g2d.draw(shape.getFloat().getBounds2D());
                     
                     
-                    
-                    g2d.setStroke(new BasicStroke(1));
-                    g2d.setColor(Color.black);
-                    int smallRectSize = 3;
-                    elRectangle sbNW = new elRectangle(
-                            boundry.x - smallRectSize, 
-                            boundry.y - smallRectSize, 
-                            2 * smallRectSize, 
-                            2 * smallRectSize);
-                    g2d.fill(sbNW.getFloat());    
-                    
-                    elRectangle sbSE = new elRectangle(
-                            boundry.x + boundry.width - smallRectSize, 
-                            boundry.y + boundry.height - smallRectSize, 
-                            2 * smallRectSize, 
-                            2 * smallRectSize);
-                    g2d.fill(sbSE.getFloat());         
                 }
             }
         }
