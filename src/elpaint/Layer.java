@@ -109,14 +109,13 @@ public class Layer extends JPanel {
 //                            2 * smallRectSize);
 //                    g2d.fill(sbSE.getFloat());         
                     
-                    g2d.setColor(new Color(0, 0, 255, 150));
-                    ResizeBox resizeBoxes = shape.getResizeBoxes();
-                    for(elRectangle rect: resizeBoxes.getBoxes()) {
-                        if (rect == null) {
+                    g2d.setColor(ResizeBox.boxColor);
+                    for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                        if (box == null) {
                             continue;
                         }
 //                        g2d.setColor(ResizeBox.boxColor);
-                        g2d.fill(rect.getFloat());
+                        g2d.fill(box.getRect().getFloat());
                     }
                     g2d.setStroke(new BasicStroke(1));
                     g2d.draw(shape.getFloat().getBounds2D());
