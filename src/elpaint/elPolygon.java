@@ -58,19 +58,18 @@ public class elPolygon extends elShape {
     
     private Polygon polygondraw;
     
-    @Override
     public Shape getShape() {
         return polygondraw;
     }
 
-    @Override
-    public void Rotate(double angle) {
-        super.angle = angle;
-        Rectangle rect = polygondraw.getBounds();
-        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
-                rect.getCenterX(), rect.getCenterY());
-        transform.createTransformedShape((Shape) this);
-    }
+//    @Override
+//    public void Rotate(double angle) {
+//        super.angle = angle;
+//        Rectangle rect = polygondraw.getBounds();
+//        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
+//                rect.getCenterX(), rect.getCenterY());
+//        transform.createTransformedShape((Shape) this);
+//    }
 
     @Override
     public elShape getCopy() {

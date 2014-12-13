@@ -23,6 +23,11 @@ public class elComponent {
     }
     
     public enum ComponentType {
-        
+        RECTANGLE,
+        LINE,
+        ELLIPSE,
+        POLYGON,
+        TRIANGLE,
+        TEXTBOX,
     }
 }
