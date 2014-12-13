@@ -9,21 +9,27 @@ import java.awt.Stroke;
  *
  * @author HackerGhost
  */
-public abstract class elShape  {
+public abstract class elShape extends elComponent  {
  
-    private boolean IsSelected = false;
-        
-    private Stroke LineType;
-    private Color  FillColor;
-    private Color  BorderColor;
+    private boolean selected = false;
+ 
+    private Stroke lineType;
+    private Color  fillColor;
+    private Color  borderColor;
+    
+    protected double angle = 0.0;
+
+    public double getAngle() {
+        return angle;
+    }
     
      /**
       * 
       */
      public elShape() {
-        this.LineType = new BasicStroke(2);
-        this.FillColor = Color.WHITE;
-        this.BorderColor = Color.BLACK;
+        this.lineType = new BasicStroke(2);
+        this.fillColor = Color.WHITE;
+        this.borderColor = Color.BLACK;
     }
      /**
       * 
@@ -32,9 +38,9 @@ public abstract class elShape  {
       * @param LineType 
       */
     public elShape(Color FillColor,Color BorderColor,Stroke LineType){
-        this.FillColor= FillColor;
-        this.BorderColor= BorderColor;
-        this.LineType = LineType;
+        this.fillColor= FillColor;
+        this.borderColor= BorderColor;
+        this.lineType = LineType;
     }
     
     /**
@@ -44,21 +50,45 @@ public abstract class elShape  {
      */
     public abstract Shape getShape();
     // For Line and text to know if exist 
-    public abstract boolean hasStroke();
-    public abstract boolean hasFillColor();
-    public abstract boolean hasBorderColor();
+    public abstract void Rotate(double angle);
 
+    public abstract elShape getCopy();
+    
     /**
      * @return the IsSelected
      */
     public boolean IsSelected() {
-        return IsSelected;
+        return selected;
     }
 
     /**
      * @param IsSelected the IsSelected to set
      */
-    public void setIsSelected(boolean IsSelected) {
-        this.IsSelected = IsSelected;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public void setLineType(Stroke lineType) {
+        this.lineType = lineType;
+    }
+
+    public void setFillColor(Color fillColor) {
+        this.fillColor = fillColor;
+    }
+
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
+    }
+
+    public Stroke getLineType() {
+        return lineType;
+    }
+
+    public Color getFillColor() {
+        return fillColor;
+    }
+
+    public Color getBorderColor() {
+        return borderColor;
     }
 }
