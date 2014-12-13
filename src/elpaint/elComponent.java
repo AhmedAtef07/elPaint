@@ -21,4 +21,8 @@ public class elComponent {
         COLOR,
         STROKE,
     }
+    
+    public enum ComponentType {
+        
+    }
 }

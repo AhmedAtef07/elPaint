@@ -57,7 +57,7 @@ public abstract class elShape extends elComponent  {
     /**
      * @return the IsSelected
      */
-    public boolean IsSelected() {
+    public boolean isSelected() {
         return selected;
     }
 

@@ -2,8 +2,10 @@ package elpaint;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 
@@ -32,4 +34,14 @@ public class elRectangle extends elPolygon {
             return new Rectangle2D.Float(x, y, width, height);
     }
     
+    private Rectangle2D.Float rectangledraw;
+    
+    @Override
+    public void Rotate(double angle) {
+        super.angle = angle;
+        Rectangle rect = rectangledraw.getBounds();
+        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
+                rect.getCenterX(), rect.getCenterY());
+        transform.createTransformedShape((Shape) this);
+    }
 }

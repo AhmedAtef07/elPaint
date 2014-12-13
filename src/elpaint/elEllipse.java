@@ -2,8 +2,10 @@ package elpaint;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -19,9 +21,10 @@ public class elEllipse extends elShape {
      * @param Point2 
      */
     public elEllipse(Point Point1 ,Point Point2) {
-        super();
         this.Point1 = Point1;
         this.Point2 = Point2;
+        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
+                Point2.x - Point1.x, Point2.y-Point1.y);
     }
     /**
      * 
@@ -35,9 +38,11 @@ public class elEllipse extends elShape {
             Color BorderColor ,Stroke LineType){
         super(FillColor,BorderColor,LineType);
         this.Point1 = Point1;
-        this.Point2 = Point2;    
+        this.Point2 = Point2; 
+        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
+                Point2.x - Point1.x, Point2.y-Point1.y);
     }
-    Point temp ;
+    private Point temp ;
     /**
      * 
      * @param x1
@@ -51,6 +56,8 @@ public class elEllipse extends elShape {
         this.Point1 = temp;
         temp = new Point (x2,y2);
         this.Point2 = temp;
+        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
+                Point2.x - Point1.x, Point2.y-Point1.y);
     }
     /**
      * 
@@ -69,6 +76,8 @@ public class elEllipse extends elShape {
         this.Point1 = temp;
         temp = new Point (x2,y2);
         this.Point2 = temp;
+        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
+                Point2.x - Point1.x, Point2.y-Point1.y);
     }
     /**
      * 
@@ -76,36 +85,23 @@ public class elEllipse extends elShape {
      */
     @Override
     public Shape getShape() {
-        
-        return new Ellipse2D.Float(Point1.x ,Point1.y , Point2.x -Point1.x ,
-                Point2.y-Point1.y);
+        return ellipsedraw;
+    } 
+    
+    private Ellipse2D.Float ellipsedraw;
+    
+    @Override
+    public void Rotate(double angle) {
+        super.angle = angle;
+        Rectangle rect = ellipsedraw.getBounds();
+        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
+                rect.getCenterX(), rect.getCenterY());
+        transform.createTransformedShape((Shape) this);
     }
 
-    /**
-     * @return return boolean if the shape has a stroke
-     */
     @Override
-    public boolean hasStroke() {
-        return true;
+    public elShape getCopy() {
+        return new elEllipse(Point1.x, Point1.y, Point2.x, Point2.y, 
+                getFillColor(), getBorderColor(), getLineType());
     }
-    
-    /**
-     * 
-     * @return boolean if the shape has a fill color
-     */
-    @Override
-    public boolean hasFillColor() {
-        return true ;
-    }
-    /**
-     * 
-     * @return boolean if the shape has a border color 
-     */
-    @Override
-    public boolean hasBorderColor() {
-        return true;
-    }
-
-    
-   
 }

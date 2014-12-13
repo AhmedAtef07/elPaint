@@ -29,19 +29,40 @@ public class  elLine extends elComponent {
         this.p2 = p2;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
     public elLine(Point p1, Point p2) {
         this.p1 = p1;
         this.p2 = p2;
         this.color = Color.BLACK;
+        linedraw = new Line2D.Float(p1, p2); 
     }
 
     public elLine(Point p1, Point p2, Color color) {
         this.p1 = p1;
         this.p2 = p2;
         this.color = color;
+        linedraw = new Line2D.Float(p1, p2); 
     }
     
-    public Shape getFloat() {
-        return new Line2D.Float(p1, p2);
+    public Shape getShape() {
+        return linedraw;
+    }
+    
+    private Line2D.Float linedraw;
+    private double angle;
+    
+    public void Rotate(double angle) {
+        this.angle = angle;
+        Rectangle rect = linedraw.getBounds();
+        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
+                rect.getCenterX(), rect.getCenterY());
+        transform.createTransformedShape((Shape) this);
     }
 }

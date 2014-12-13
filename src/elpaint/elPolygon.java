@@ -1,6 +1,7 @@
 package elpaint;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 /**
  *
@@ -42,6 +43,7 @@ public class elPolygon extends elShape {
             x[i] = p[i].x;
             y[i] = p[i].y;
         }
+        polygondraw = new Polygon(x, y, x.length);
     }
     
     public elPolygon(Point... p) {
@@ -53,29 +55,28 @@ public class elPolygon extends elShape {
         super(FillColor, BorderColor, LineType);
         initialize(p);
     }
-
-    public Shape getFloat() {
-        return new Polygon(x, y, x.length);
-    }
-
+    
+    private Polygon polygondraw;
+    
     @Override
     public Shape getShape() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return polygondraw;
     }
 
     @Override
-    public boolean hasStroke() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void Rotate(double angle) {
+        super.angle = angle;
+        Rectangle rect = polygondraw.getBounds();
+        AffineTransform transform = AffineTransform.getRotateInstance(angle, 
+                rect.getCenterX(), rect.getCenterY());
+        transform.createTransformedShape((Shape) this);
     }
 
     @Override
-    public boolean hasFillColor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public elShape getCopy() {
+        Point[] p = new Point[x.length];
+        for( int i = 0 ; i < p.length ; i ++ )
+            p[i] = new Point(x[i],y[i]);
+        return new elPolygon(getFillColor(), getBorderColor(), getLineType(), p);
     }
-
-    @Override
-    public boolean hasBorderColor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }
