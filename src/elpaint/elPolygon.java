@@ -79,4 +79,13 @@ public class elPolygon extends elShape {
             p[i] = new Point(x[i],y[i]);
         return new elPolygon(getFillColor(), getBorderColor(), getLineType(), p);
     }
+    @Override
+    public int getX() {
+        return polygondraw.getBounds().x;
+    }
+
+    @Override
+    public int getY() {
+        return polygondraw.getBounds().y;
+    }
 }

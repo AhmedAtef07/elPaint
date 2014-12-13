@@ -65,4 +65,12 @@ public class  elLine extends elComponent {
                 rect.getCenterX(), rect.getCenterY());
         transform.createTransformedShape((Shape) this);
     }
+    
+    public int getX() {
+        return linedraw.getBounds().x;
+    }
+
+    public int getY() {
+        return linedraw.getBounds().y;
+    }
 }

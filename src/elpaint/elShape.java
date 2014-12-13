@@ -22,7 +22,8 @@ public abstract class elShape extends elComponent  {
     public double getAngle() {
         return angle;
     }
-    
+    public abstract int getX();
+    public abstract int getY();
      /**
       * 
       */

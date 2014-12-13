@@ -104,4 +104,14 @@ public class elEllipse extends elShape {
         return new elEllipse(Point1.x, Point1.y, Point2.x, Point2.y, 
                 getFillColor(), getBorderColor(), getLineType());
     }
+
+    @Override
+    public int getX() {
+        return ellipsedraw.getBounds().x;
+    }
+
+    @Override
+    public int getY() {
+        return ellipsedraw.getBounds().y;
+    }
 }

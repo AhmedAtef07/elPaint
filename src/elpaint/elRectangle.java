@@ -44,4 +44,13 @@ public class elRectangle extends elPolygon {
                 rect.getCenterX(), rect.getCenterY());
         transform.createTransformedShape((Shape) this);
     }
+    @Override
+    public int getX() {
+        return rectangledraw.getBounds().x;
+    }
+
+    @Override
+    public int getY() {
+        return rectangledraw.getBounds().y;
+    }
 }
