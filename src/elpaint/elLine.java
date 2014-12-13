@@ -73,4 +73,14 @@ public class  elLine extends elComponent {
     public int getY() {
         return linedraw.getBounds().y;
     }
+    
+    public void setX(int x) {
+        p1.x += x;
+        p2.x += x;
+    }
+
+    public void setY(int y) {
+        p1.y += y;
+        p2.y += y;
+    }
 }

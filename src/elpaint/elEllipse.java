@@ -13,18 +13,18 @@ import java.awt.geom.Ellipse2D;
  * @author HackerGhost
  */
 public class elEllipse extends elShape {
-    private Point Point1 ;
-    private Point Point2 ;
+    private Point point1 ;
+    private Point point2 ;
     /**
      * 
-     * @param Point1
-     * @param Point2 
+     * @param point1
+     * @param point2 
      */
-    public elEllipse(Point Point1 ,Point Point2) {
-        this.Point1 = Point1;
-        this.Point2 = Point2;
-        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
-                Point2.x - Point1.x, Point2.y-Point1.y);
+    public elEllipse(Point point1 ,Point point2) {
+        this.point1 = point1;
+        this.point2 = point2;
+        ellipsedraw = new Ellipse2D.Float(point1.x, point1.y, 
+                point2.x - point1.x, point2.y-point1.y);
     }
     /**
      * 
@@ -37,8 +37,8 @@ public class elEllipse extends elShape {
     public elEllipse(Point Point1 , Point Point2 , Color FillColor ,
             Color BorderColor ,Stroke LineType){
         super(FillColor,BorderColor,LineType);
-        this.Point1 = Point1;
-        this.Point2 = Point2; 
+        this.point1 = Point1;
+        this.point2 = Point2; 
         ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
                 Point2.x - Point1.x, Point2.y-Point1.y);
     }
@@ -53,11 +53,11 @@ public class elEllipse extends elShape {
     public elEllipse(int x1,int y1,int x2 ,int y2){
         super();
         temp = new Point(x1,y1);
-        this.Point1 = temp;
+        this.point1 = temp;
         temp = new Point (x2,y2);
-        this.Point2 = temp;
-        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
-                Point2.x - Point1.x, Point2.y-Point1.y);
+        this.point2 = temp;
+        ellipsedraw = new Ellipse2D.Float(point1.x, point1.y, 
+                point2.x - point1.x, point2.y-point1.y);
     }
     /**
      * 
@@ -73,11 +73,11 @@ public class elEllipse extends elShape {
             Color BorderColor , Stroke LineType){
         super(FillColor,BorderColor,LineType);
         temp = new Point(x1,y1);
-        this.Point1 = temp;
+        this.point1 = temp;
         temp = new Point (x2,y2);
-        this.Point2 = temp;
-        ellipsedraw = new Ellipse2D.Float(Point1.x, Point1.y, 
-                Point2.x - Point1.x, Point2.y-Point1.y);
+        this.point2 = temp;
+        ellipsedraw = new Ellipse2D.Float(point1.x, point1.y, 
+                point2.x - point1.x, point2.y-point1.y);
     }
     /**
      * 
@@ -101,7 +101,7 @@ public class elEllipse extends elShape {
 
     @Override
     public elShape getCopy() {
-        return new elEllipse(Point1.x, Point1.y, Point2.x, Point2.y, 
+        return new elEllipse(point1.x, point1.y, point2.x, point2.y, 
                 getFillColor(), getBorderColor(), getLineType());
     }
 
@@ -113,5 +113,17 @@ public class elEllipse extends elShape {
     @Override
     public int getY() {
         return ellipsedraw.getBounds().y;
+    }
+
+    @Override
+    public void setX(int x) {
+        point1.x += x;
+        point2.x += x;
+    }
+
+    @Override
+    public void setY(int y) {
+        point1.y += y;
+        point2.y += y;
     }
 }

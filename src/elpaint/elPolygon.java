@@ -88,4 +88,16 @@ public class elPolygon extends elShape {
     public int getY() {
         return polygondraw.getBounds().y;
     }
+
+    @Override
+    public void setX(int x) {
+        for ( int i = 0 ; i < this.x.length ; i ++ )
+            this.x[i] += x;
+    }
+
+    @Override
+    public void setY(int y) {
+        for ( int i = 0 ; i < this.y.length ; i ++ )
+            this.y[i] += y;
+    }
 }

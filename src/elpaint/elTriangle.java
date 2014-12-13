@@ -1,6 +1,8 @@
 package elpaint;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -51,10 +53,5 @@ public class elTriangle extends elPolygon {
     public elTriangle(Color FillColor, Color BorderColor, 
             Stroke LineType, Point p1, Point p2, Point p3) {
         super(FillColor, BorderColor, LineType, p1, p2, p3);
-    }
-    
-    @Override
-    public Shape getFloat() {
-        return super.getFloat();
     }
 }
