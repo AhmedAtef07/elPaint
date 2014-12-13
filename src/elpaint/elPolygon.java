@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class elPolygon extends elShape {
     
-    private int[] x;
-    private int[] y;
+    protected int[] x;
+    protected int[] y;
     
     /**
      * @param index
@@ -54,9 +54,28 @@ public class elPolygon extends elShape {
         initialize(p);
     }
 
-    @Override
     public Shape getFloat() {
         return new Polygon(x, y, x.length);
+    }
+
+    @Override
+    public Shape getShape() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean hasStroke() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean hasFillColor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean hasBorderColor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

@@ -11,18 +11,16 @@ import java.awt.Stroke;
  */
 public abstract class elShape  {
  
-    private boolean IsSelected;
+    private boolean IsSelected = false;
         
-     Stroke LineType;
-     Color  FillColor;
-     Color  BorderColor;
+    private Stroke LineType;
+    private Color  FillColor;
+    private Color  BorderColor;
     
      /**
       * 
       */
      public elShape() {
-
-        this.IsSelected = false;
         this.LineType = new BasicStroke(2);
         this.FillColor = Color.WHITE;
         this.BorderColor = Color.BLACK;
@@ -36,8 +34,7 @@ public abstract class elShape  {
     public elShape(Color FillColor,Color BorderColor,Stroke LineType){
         this.FillColor= FillColor;
         this.BorderColor= BorderColor;
-        this.LineType = LineType ;
-        this.IsSelected= false;
+        this.LineType = LineType;
     }
     
     /**
@@ -57,7 +54,6 @@ public abstract class elShape  {
     public boolean IsSelected() {
         return IsSelected;
     }
-    
 
     /**
      * @param IsSelected the IsSelected to set
@@ -65,7 +61,4 @@ public abstract class elShape  {
     public void setIsSelected(boolean IsSelected) {
         this.IsSelected = IsSelected;
     }
-    
-    
- 
 }
