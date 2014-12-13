@@ -56,7 +56,7 @@ public class ResizeBox {
     }
     
     public static Color boxColor = new Color(0, 0, 255, 150);
-    public static int boxHSize = 10; // Default by 3.
+    public static int boxHSize = 4; // Default by 3.
     
     private Rectangle2D bound;
     private Box[] boxes;

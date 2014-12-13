@@ -3,18 +3,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elRectangle.java</file>
+            <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/ResizeBox.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elShape.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/ElPaint.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/Layer.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elEllipse.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/Triggable.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/InputHandler.java</file>
+            <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elComponent.java</file>
+            <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elRectangle.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elPolygon.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/Stage.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elLine.java</file>
             <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/UserInterface.java</file>
-            <file>file:/E:/Ahmed/My%20Projects/elPaint/src/elpaint/elComponent.java</file>
         </group>
     </open-files>
 </project-private>

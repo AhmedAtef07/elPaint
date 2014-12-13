@@ -140,6 +140,7 @@ public class Stage implements Triggable {
         //
     }
     
+    
     void setCursorOnAll(Point point) {         
         boolean foundAny = false;
         for (elShape shape: elShapes) {
@@ -280,10 +281,45 @@ public class Stage implements Triggable {
                     startX = x;
                     startY = y;
                 } 
-                int minX = Math.min(x, startX);
-                int minY = Math.min(y,startY);
-                int width = Math.abs(minX - Math.max(startX, x));
-                int height = Math.abs(minY - Math.max(startY, y));
+                // Remove default values later.
+                int minX = 0, minY = 0, width = 70, height = 70;
+                
+                if (e.isShiftDown()) {
+                    minX = Math.min(x, startX);
+                    minY = Math.min(y,startY);
+                    width = Math.max(Math.abs(minX - Math.max(startX, x)), 
+                            Math.abs(minY - Math.max(startY, y)));
+                    height = width;
+                    if (x >= startX && y >= startY) {
+                    } else if (x > startX && y < startY) {
+                        minY = Math.min(y, startY - height);              
+                    } else if (x < startX && y > startY) {
+                        minX = Math.min(x, startX - width);
+                    } else if (x < startX && y < startY) {
+                        minX = Math.min(x, startX - width);
+                        minY = Math.min(y, startY - height);
+                    }
+                   
+                        
+//                    height = Math.abs(startX-x);
+//                    width = Math.abs(startY-y);
+//                    int max = Math.max(height, width);
+//                    if ( max != height ) {
+//                        height += max-width;
+//                    } else if ( max != width ) {
+//                        width += max - height;
+//                    }
+//                    if ( x > startX ) minX = startX+width;
+//                    else minX = startX- width;
+//                    if ( y > startY ) minY = startY + height;
+//                    else minY = startY - height;
+                }
+                else {
+                    minX = Math.min(x, startX);
+                    minY = Math.min(y,startY);
+                    width = Math.abs(minX - Math.max(startX, x));
+                    height = Math.abs(minY - Math.max(startY, y));
+                }
         
                 drawHoldedShape(minX, minY, width, height); 
                 break;
@@ -297,13 +333,17 @@ public class Stage implements Triggable {
                     isResizing = false;
                     for (elShape shape: elShapes) {
                         Rectangle bound = shape.getFloat().getBounds();
-                        bound.grow(ResizeBox.boxHSize * 2, ResizeBox.boxHSize * 2);
-                        if (shape.getIsSelected() && bound.contains(new Point(x, y))) {                    
-                            for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                        bound.grow(ResizeBox.boxHSize * 2, 
+                                ResizeBox.boxHSize * 2);
+                        if (shape.getIsSelected() && bound.contains(
+                                new Point(x, y))) {                    
+                            for(ResizeBox.Box box:
+                                    shape.getResizeBoxes().getBoxes()) {
                                 if (box == null) {
                                     continue;
                                 }
-                                if (box.getRect().getFloat().contains(new Point(x, y))) {
+                                if (box.getRect().getFloat().contains(
+                                        new Point(x, y))) {
                                     selectedResizeBoxType = box.getBoxType();
                                     isResizing = true;
                                     break;
@@ -328,6 +368,7 @@ public class Stage implements Triggable {
                 } 
                 
                 if (isResizing) {
+                    System.out.println((x - startX) + " " + (y - startY));
                     for (int i = 0; i < elShapes.size(); i++) {
                         elShape elshape = elShapes.get(i);
                         elShape clonedShape = clonedShapes.get(i);
@@ -359,11 +400,13 @@ public class Stage implements Triggable {
                                         clonedShape.getHeight() + 
                                                 clonedShape.getY()) - y));
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));
                                 break;
                             case E:
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));
                                 break;
                             case W:
                                 elshape.setX(Math.min(x, clonedShape.getX() + 
@@ -374,7 +417,8 @@ public class Stage implements Triggable {
                                 break;
                             case SW:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));                               
                                 elshape.setX(Math.min(x, clonedShape.getX() + 
                                         clonedShape.getWidth())); 
                                 elshape.setWidth(Math.abs((
@@ -383,13 +427,16 @@ public class Stage implements Triggable {
                                 break;
                             case S:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));
                                 break;
                             case SE:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));                               
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));                                
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));                                
                                 break;
                             default:
                                 break;
@@ -409,7 +456,8 @@ public class Stage implements Triggable {
                         if (elshape.getIsSelected()) {
                             if (e.isShiftDown()) {
                                 System.out.println(x + " " + y);
-                                if (Math.abs(x - startX) < Math.abs(startY - y)) {
+                                if (Math.abs(x - startX) < 
+                                        Math.abs(startY - y)) {
                                     elshape.setX(clonedShape.getX());
                                     elshape.setY(clonedShape.getY() - (
                                             startY - y));                                      
