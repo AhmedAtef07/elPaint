@@ -18,7 +18,12 @@ public class UserInterface extends JFrame {
         setSize(500, 500);
         setLocationRelativeTo(null);
         
-        layer = new Layer(new Point(0, 0), 0, 0);
+        InputHandler stageInputHandler = new InputHandler(stage);
+        addMouseListener(stageInputHandler);
+        addMouseMotionListener(stageInputHandler);
+        addKeyListener(stageInputHandler);
+        
+        layer = new Layer(new Point(0, 0), 70, 70);
         add(layer);
         
         setVisible(true);
