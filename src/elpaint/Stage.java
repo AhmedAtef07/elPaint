@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList; 
 import java.util.LinkedList;
 
@@ -14,7 +13,7 @@ import java.util.LinkedList;
  *
  * @author Ahmed Atef
  */
-public class Stage implements Triggable {
+public final class Stage implements Triggable {
 
     enum Mode {
         DRAWING,
@@ -27,18 +26,18 @@ public class Stage implements Triggable {
         LINE,
     }
     
-    private UserInterface ui;
-    private Layer layer;
+    private final UserInterface ui;
+    private final Layer layer;
     
     private int startX, startY;
     private elShape holdedShape;
     private boolean multiSelectionActivated;
     private boolean isMoving, isDragging, isResizing;
-    ResizeBox.BoxType selectedResizeBoxType;
+    SelectionBox.ResizeBoxType selectedResizeBoxType;
     
     private LinkedList<elShape> elShapes;
-    private ArrayList<elShape> clonedShapes;
-    private ArrayList<elShape> copiedShapes;
+    private LinkedList<elShape> clonedShapes;
+    private LinkedList<elShape> copiedShapes;
     
     Mode currentMode;
     ShapeType currentShapeType;
@@ -54,9 +53,6 @@ public class Stage implements Triggable {
         isDragging = false;
         currentMode = Mode.DRAWING;
         currentShapeType = ShapeType.RECTANGLE;
-        
-//        elShape sh = new elEllipse(0, 0, 100, 100);
-//        layer.addShape(sh);
         
         resetDrawingFactors();
         resetEditingFactors();
@@ -94,7 +90,7 @@ public class Stage implements Triggable {
     }
     
     /**
-     * Add shapes which are totally in selection region.
+     * Add shapes which are totally contained in selection region.
      */
     public void setSelectedShapes() {
         if (!multiSelectionActivated) {
@@ -111,11 +107,10 @@ public class Stage implements Triggable {
                 }      
             } 
         }
-    }
+    }    
     
-    
-    private void drawHoldedShape(int pressedX, int pressedY, int width, int height) {
-            
+    private void drawHoldedShape(int pressedX, int pressedY, int width, 
+            int height) {            
          switch (currentShapeType) {
             case RECTANGLE:   
                 holdedShape = new elRectangle(
@@ -144,9 +139,10 @@ public class Stage implements Triggable {
         boolean foundAny = false;
         for (elShape shape: elShapes) {
             Rectangle bound = shape.getShape().getBounds();
-            bound.grow(ResizeBox.boxHSize * 2, ResizeBox.boxHSize * 2);
+            bound.grow(SelectionBox.boxHSize * 2, SelectionBox.boxHSize * 2);
             if (shape.isSelected() && bound.contains(point)) {                    
-                for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                for(SelectionBox.ResizeBox box: 
+                        shape.getResizeBox().getBoxes()) {
                     if (box == null) {
                         continue;
                     }
@@ -192,7 +188,7 @@ public class Stage implements Triggable {
     }
     
     void cloneShapesList() {
-        clonedShapes = new ArrayList<>();
+        clonedShapes = new LinkedList<>();
         for (elShape elshape: layer.getElShapes()) {
             clonedShapes.add(elshape.getCopy());
         }
@@ -220,7 +216,7 @@ public class Stage implements Triggable {
         elShapes = layer.getElShapes();
     }
     private void copySelecetedShapes() {
-        ArrayList<elShape> newCopiedShapes = new ArrayList<>();
+        LinkedList<elShape> newCopiedShapes = new LinkedList<>();
         for (elShape elshape: layer.getElShapes()) {
             if (elshape.isSelected()) {
                 newCopiedShapes.add(elshape.getCopy());
@@ -262,11 +258,7 @@ public class Stage implements Triggable {
             layer.repaint();
             cloneShapesList();
         }        
-    }
-    
-    
-    
-    
+    }    
     
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -296,13 +288,12 @@ public class Stage implements Triggable {
                        minX = Math.min(x, startX - width);
                        minY = Math.min(y, startY - height);
                     }
-                 } else {                     
+                } else {
                     minX = Math.min(x, startX);
                     minY = Math.min(y,startY);
                     width = Math.abs(minX - Math.max(startX, x));
                     height = Math.abs(minY - Math.max(startY, y));
-                 }
-        
+                }        
                 drawHoldedShape(minX, minY, width, height); 
                 break;
             case EDITING:
@@ -315,13 +306,17 @@ public class Stage implements Triggable {
                     isResizing = false;
                     for (elShape shape: elShapes) {
                         Rectangle bound = shape.getShape().getBounds();
-                        bound.grow(ResizeBox.boxHSize * 2, ResizeBox.boxHSize * 2);
-                        if (shape.isSelected() && bound.contains(new Point(x, y))) {                    
-                            for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                        bound.grow(SelectionBox.boxHSize * 2, 
+                                SelectionBox.boxHSize * 2);
+                        if (shape.isSelected() && bound.contains(
+                                new Point(x, y))) {
+                            for(SelectionBox.ResizeBox box: 
+                                    shape.getResizeBox().getBoxes()) {
                                 if (box == null) {
                                     continue;
                                 }
-                                if (box.getRect().getShape().contains(new Point(x, y))) {
+                                if (box.getRect().getShape().contains(
+                                        new Point(x, y))) {
                                     selectedResizeBoxType = box.getBoxType();
                                     isResizing = true;
                                     break;
@@ -336,8 +331,8 @@ public class Stage implements Triggable {
                     if (!isResizing) {                        
                         for (elShape shape: elShapes) {
                             // A selected objectd and started dragging over it.
-                            if (shape.isSelected() &&
-                                    shape.getShape().contains(new Point(x, y))) {
+                            if (shape.isSelected() && shape.getShape().contains(
+                                    new Point(x, y))) {
                                 isMoving = true;
                                 break;
                             }                   
@@ -377,11 +372,13 @@ public class Stage implements Triggable {
                                         clonedShape.getHeight() + 
                                                 clonedShape.getY()) - y));
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));
                                 break;
                             case E:
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));
                                 break;
                             case W:
                                 elshape.setX(Math.min(x, clonedShape.getX() + 
@@ -392,7 +389,8 @@ public class Stage implements Triggable {
                                 break;
                             case SW:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));                               
                                 elshape.setX(Math.min(x, clonedShape.getX() + 
                                         clonedShape.getWidth())); 
                                 elshape.setWidth(Math.abs((
@@ -401,21 +399,20 @@ public class Stage implements Triggable {
                                 break;
                             case S:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));
                                 break;
                             case SE:
                                 elshape.setY(Math.min(y, clonedShape.getY()));                            
-                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setHeight(
+                                        Math.abs(y - clonedShape.getY()));                               
                                 elshape.setX(Math.min(x, clonedShape.getX()));                            
-                                elshape.setWidth(Math.abs(x - clonedShape.getX()));                                
+                                elshape.setWidth(
+                                        Math.abs(x - clonedShape.getX()));                                
                                 break;
                             default:
                                 break;
                             }
-    //                        elRectangle rect = (elRectangle)elshape;
-                        
-//                            elshape.setX(clonedShape.getX() - (startX - x));
-//                            elshape.setY(clonedShape.getY() - (startY - y));
                         }        
                     }
                     layer.repaint();
@@ -427,7 +424,8 @@ public class Stage implements Triggable {
                         if (elshape.isSelected()) {
                             if (e.isShiftDown()) {
                                 System.out.println(x + " " + y);
-                                if (Math.abs(x - startX) < Math.abs(startY - y)) {
+                                if (Math.abs(x - startX) < 
+                                        Math.abs(startY - y)) {
                                     elshape.setX(clonedShape.getX());
                                     elshape.setY(clonedShape.getY() - (
                                             startY - y));                                      
@@ -536,7 +534,7 @@ public class Stage implements Triggable {
     }
     
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) {        
         if (e.getKeyCode() == KeyEvent.VK_1) {
             currentMode = Mode.DRAWING;
             updateToDrawingMode();
@@ -545,7 +543,6 @@ public class Stage implements Triggable {
             updateToEditingMode();
         }
         ui.setTitle(currentMode + "");
-
         
         if (e.getKeyCode() == KeyEvent.VK_R) {
             currentShapeType = ShapeType.RECTANGLE;
@@ -557,41 +554,43 @@ public class Stage implements Triggable {
                 e.getKeyCode() == KeyEvent.VK_Z) {
             layer.popLastShape();
             layer.repaint();
-        }
-        
-        if (e.isControlDown() && 
+        } else if (e.isControlDown() && 
                 (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
                 (e.getKeyCode() == KeyEvent.VK_Y)) {
             layer.unPopLastShape();
             layer.repaint();
         }
         
-        if (currentMode == Mode.EDITING && e.getKeyCode() == KeyEvent.VK_DELETE) {
-            deleteSelectedShapes();
-        }
-        
-        if (currentMode == Mode.EDITING && e.isControlDown() 
-                && e.getKeyCode() == KeyEvent.VK_C) {
-            copySelecetedShapes();
-        }
-        
-        if (currentMode == Mode.EDITING && e.isControlDown() 
-                && e.getKeyCode() == KeyEvent.VK_V) {
-            pasteCopiedShaped();
-        }
-        
-        if (currentMode == Mode.EDITING && e.isControlDown() 
-                && e.getKeyCode() == KeyEvent.VK_D) {
-            duplicateSelectedShapes();
-        }
-        if (currentMode == Mode.EDITING && e.isControlDown() 
-                && e.getKeyCode() == KeyEvent.VK_A) {
-            selectAll();
-        }
-        
-        if (e.isControlDown() || e.isShiftDown()) {
-            multiSelectionActivated = true;
-        }
+        switch (currentMode) {
+            case DRAWING:
+                break;
+            case EDITING:
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    deleteSelectedShapes();
+                }        
+                if (e.isControlDown() 
+                        && e.getKeyCode() == KeyEvent.VK_C) {
+                    copySelecetedShapes();
+                }
+                if (e.isControlDown() 
+                        && e.getKeyCode() == KeyEvent.VK_V) {
+                    pasteCopiedShaped();
+                }
+                if (e.isControlDown() 
+                        && e.getKeyCode() == KeyEvent.VK_D) {
+                    duplicateSelectedShapes();
+                }
+                if (e.isControlDown() 
+                        && e.getKeyCode() == KeyEvent.VK_A) {
+                    selectAll();
+                }
+                if (e.isControlDown() || e.isShiftDown()) {
+                    multiSelectionActivated = true;
+                }
+                break;
+            default:
+                break;
+        }      
     }
 
     @Override

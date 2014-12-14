@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 
@@ -15,26 +14,23 @@ import javax.swing.JPanel;
  */
 public class Layer extends JPanel {
 
-//    private ArrayList<elShape> elShapes;
     private LinkedList<elShape> elShapes;
     private LinkedList<elShape> redo;
     private elShape holdedShape;
     
     public Layer(Point point, int width, int height) {
-            setBounds(point.x, point.y, width, height);
-            setBackground(Color.white);
-            
-//            elShapes = new ArrayList<>();
-            elShapes = new LinkedList<>();
-            redo = new LinkedList<>();
-            holdedShape = null;
+        setBounds(point.x, point.y, width, height);
+        setBackground(Color.white);
+
+        elShapes = new LinkedList<>();
+        redo = new LinkedList<>();
+        holdedShape = null;
     }
 
     void popLastShape() {
         if (elShapes.size() == 0) {
             return;
         }
-//        elShapes.remove(elShapes.size() - 1);
         redo.add(elShapes.peekLast());
         elShapes.removeLast();
     }
@@ -82,18 +78,16 @@ public class Layer extends JPanel {
         } else {
             for (elShape shape: elShapes) {
                 if (shape.isSelected()) {                    
-                    g2d.setColor(ResizeBox.boxColor);
-                    for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                    g2d.setColor(SelectionBox.boxColor);
+                    for(SelectionBox.ResizeBox box: 
+                            shape.getResizeBox().getBoxes()) {
                         if (box == null) {
                             continue;
                         }
-//                        g2d.setColor(ResizeBox.boxColor);
                         g2d.fill(box.getRect().getShape());
                     }
                     g2d.setStroke(new BasicStroke(1));
-                    g2d.draw(shape.getShape().getBounds2D());
-                    
-                    
+                    g2d.draw(shape.getShape().getBounds2D());                    
                 }
             }
         }
