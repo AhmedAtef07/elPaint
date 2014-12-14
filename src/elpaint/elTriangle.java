@@ -1,127 +1,100 @@
 package elpaint;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
+import javafx.scene.shape.TriangleMesh;
 /**
  *
  * @author Hassan Rezk
  */
-public class elTriangle extends elPolygon {
+public class elTriangle extends elShape {
     
     public enum Type {
         ISOSCELES,
         RIGHT,
     }
     
-    private void initialize(Point p1, Point p2, Type type) {
-        Point p3;
-        switch(type) {
-            case RIGHT:
-                p3 = new Point(p1.x, p2.y);
-                break;
-            default:
-                p3 = new Point(p1.x + p2.x, p2.y);
-                break;
-        }
-        x = new int[3];
-        y = new int[3];
-        
-        x[0] = p1.x;
-        x[1] = p2.x;
-        x[2] = p3.x;
-        
-        y[0] = p1.y;
-        y[1] = p2.y;
-        y[2] = p3.y;
-    }
-    
     private Type type;
-    private int width,height;
+    private Point p1,p2,p3;
+    
     public elTriangle(Point p, int width, int height, Type type) {
-        Point p2,p3;
-        switch(type) {
-            case RIGHT:
-                p2 = new Point(p.x,p.y+height);
-                p3 = new Point(p.x+width,p.y+height);
-                break;
-            default:
-                p.x = p.x + width/2;
-                p2 = new Point(p.x+width/2,p.y+height);
-                p3 = new Point(p.x-width/2,p.y+height);
-                break;    
-        }
+        this.x = p.x;
+        this.y = p.y;
         this.width = width;
         this.height = height;
         this.type = type;
-        
-        x = new int[3];
-        y = new int[3];
-        
-        x[0] = p.x;
-        x[1] = p2.x;
-        x[2] = p3.x;
-        
-        y[0] = p.y;
-        y[1] = p2.y;
-        y[2] = p3.y;
-                
-    }
-    
-    public elTriangle(Point p, int width, int height, Type type,
-            Color FillColor, Color BorderColor, 
-            Stroke LineType) {
-        setLineType(LineType);
-        setFillColor(FillColor);
-        setBorderColor(BorderColor);
-        this.type = type;
-        
-        Point p2,p3;
         switch(type) {
             case RIGHT:
-                p2 = new Point(p.x,p.y+height);
-                p3 = new Point(p.x+width,p.y+height);
+                p1 = new Point(p);
+                p2 = new Point(p1.x,p1.y+height);
+                p3 = new Point(p1.x+width,p1.y+height);
                 break;
             default:
-                p.x = p.x + width/2;
-                p2 = new Point(p.x+width/2,p.y+height);
-                p3 = new Point(p.x-width/2,p.y+height);
+                p1 = new Point(p.x+width/2,p.y);
+                p2 = new Point(p1.x+width/2,p1.y+height);
+                p3 = new Point(p1.x-width/2,p1.y+height);
                 break;    
         }
+    }
+
+    @Override
+    public elShape getCopy() {
+        return new elTriangle(new Point(this.x,this.y), width, height, type);
+    }
+
+    @Override
+    public Shape getShape() {
+        int[] ptx = new int[3];
+        int[] pty = new int[3];
+        
+        ptx[0] = p1.x;
+        ptx[1] = p2.x;
+        ptx[2] = p3.x;
+        
+        pty[0] = p1.y;
+        pty[1] = p2.y;
+        pty[2] = p3.y;
+        
+        return new Polygon(ptx, pty, 3);
+    }
+
+    @Override
+    public void setX(int x) {
+        //int width = this.width + this.x - x;
+        this.x = x;
+        Point p = new Point(x,y);
         this.width = width;
+        switch(type) {
+            case RIGHT:
+                p1 = new Point(p);
+                p2 = new Point(p1.x,p1.y+height);
+                p3 = new Point(p1.x+width,p1.y+height);
+                break;
+            default:
+                p1 = new Point(p.x+width/2,p.y);
+                p2 = new Point(p1.x+width/2,p1.y+height);
+                p3 = new Point(p1.x-width/2,p1.y+height);
+                break;    
+        }
+    }
+
+    @Override
+    public void setY(int y) {
+        //int height = this.height + this.y - y;
+        this.y = y;
+        Point p = new Point(x,y);
         this.height = height;
-        this.type = type;
+        switch(type) {
+            case RIGHT:
+                p1 = new Point(p);
+                p2 = new Point(p1.x,p1.y+height);
+                p3 = new Point(p1.x+width,p1.y+height);
+                break;
+            default:
+                p1 = new Point(p.x+width/2,p.y);
+                p2 = new Point(p1.x+width/2,p1.y+height);
+                p3 = new Point(p1.x-width/2,p1.y+height);
+                break;    
+        }
+    }
         
-        x = new int[3];
-        y = new int[3];
-        
-        x[0] = p.x;
-        x[1] = p2.x;
-        x[2] = p3.x;
-        
-        y[0] = p.y;
-        y[1] = p2.y;
-        y[2] = p3.y;
-          
-        
-    }
-    
-    public elTriangle(Point p1, Point p2, Type type) {
-        initialize(p1, p2, type);
-    }
-    
-    public elTriangle(Color FillColor, Color BorderColor, 
-            Stroke LineType, Point p1, Point p2, Type type) {
-        initialize(p1, p2, type);
-    }
-
-    public elTriangle(Point p1, Point p2, Point p3) {
-        super(p1,p2,p3);
-    }
-
-    public elTriangle(Color FillColor, Color BorderColor, 
-            Stroke LineType, Point p1, Point p2, Point p3) {
-        super(FillColor, BorderColor, LineType, p1, p2, p3);
-    }
 }
