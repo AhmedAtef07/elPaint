@@ -24,6 +24,8 @@ public final class Stage implements Triggable {
         RECTANGLE,
         ELLIPSE,
         LINE,
+        ISOSCELES_TRIANGLE,
+        RIGHT_TRIANGLE,
     }
     
     private final UserInterface ui;
@@ -119,6 +121,15 @@ public final class Stage implements Triggable {
             case ELLIPSE:
                 holdedShape = new elEllipse(pressedX, pressedY, width, height);
                 break;
+            case ISOSCELES_TRIANGLE:
+                holdedShape = new elTriangle(new Point(pressedX, pressedY), 
+                        width, height, elTriangle.Type.ISOSCELES);
+                break;
+            case RIGHT_TRIANGLE:
+                holdedShape = new elTriangle(new Point(pressedX, pressedY), 
+                        width, height, elTriangle.Type.RIGHT);
+                break;
+        
          }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
@@ -548,8 +559,12 @@ public final class Stage implements Triggable {
             currentShapeType = ShapeType.RECTANGLE;
         } else if (e.getKeyCode() == KeyEvent.VK_E) {
             currentShapeType = ShapeType.ELLIPSE;
-        } // add line with L later;
-              
+        } else if (e.getKeyCode() == KeyEvent.VK_I) {
+            currentShapeType = ShapeType.ISOSCELES_TRIANGLE;
+        } else if (e.getKeyCode() == KeyEvent.VK_T) {
+            currentShapeType = ShapeType.RIGHT_TRIANGLE;
+        } // add line with L later;          
+   
         if (e.isControlDown() && !e.isShiftDown() && 
                 e.getKeyCode() == KeyEvent.VK_Z) {
             layer.popLastShape();
