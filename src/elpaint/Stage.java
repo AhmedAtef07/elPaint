@@ -35,14 +35,14 @@ public final class Stage implements Triggable {
     private elShape holdedShape;
     private boolean multiSelectionActivated;
     private boolean isMoving, isDragging, isResizing;
-    SelectionBox.ResizeBoxType selectedResizeBoxType;
+    private SelectionBox.ResizeBoxType selectedResizeBoxType;
     
     private LinkedList<elShape> elShapes;
     private LinkedList<elShape> clonedShapes;
     private LinkedList<elShape> copiedShapes;
     
-    Mode currentMode;
-    ShapeType currentShapeType;
+    private Mode currentMode;
+    private  ShapeType currentShapeType;
     
     public Stage() {
         ui = new UserInterface(this);
@@ -129,7 +129,11 @@ public final class Stage implements Triggable {
                 holdedShape = new elTriangle(new Point(pressedX, pressedY), 
                         width, height, elTriangle.Type.RIGHT);
                 break;
-        
+            case LINE:
+//                holdedShape = new elLine(new Point(pressedX, pressedY), 
+//                        new Point(pressedX + width,pressedY + height));
+                
+                break;        
          }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
@@ -563,7 +567,9 @@ public final class Stage implements Triggable {
             currentShapeType = ShapeType.ISOSCELES_TRIANGLE;
         } else if (e.getKeyCode() == KeyEvent.VK_T) {
             currentShapeType = ShapeType.RIGHT_TRIANGLE;
-        } // add line with L later;          
+        } else if (e.getKeyCode() == KeyEvent.VK_L) {
+            currentShapeType = ShapeType.LINE;
+        }  
    
         if (e.isControlDown() && !e.isShiftDown() && 
                 e.getKeyCode() == KeyEvent.VK_Z) {
@@ -614,4 +620,22 @@ public final class Stage implements Triggable {
             multiSelectionActivated = false;
         }
     }
+
+    public Mode getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(Mode currentMode) {
+        this.currentMode = currentMode;
+    }
+
+    public ShapeType getCurrentShapeType() {
+        return currentShapeType;
+    }
+
+    public void setCurrentShapeType(ShapeType currentShapeType) {
+        this.currentShapeType = currentShapeType;
+    }
+    
+    
 }
