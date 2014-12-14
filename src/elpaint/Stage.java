@@ -754,23 +754,30 @@ public final class Stage implements Triggable {
     public void keyPressed(KeyEvent e) {        
         if (e.getKeyCode() == KeyEvent.VK_1) {
             currentMode = Mode.DRAWING;
+            ui.setCurrentMode(currentMode);
             updateToDrawingMode();
         } else if (e.getKeyCode() == KeyEvent.VK_2) {
             currentMode = Mode.EDITING;
+            ui.setCurrentMode(currentMode);
             updateToEditingMode();
         }
         ui.setTitle(currentMode + "");
  
         if (e.getKeyCode() == KeyEvent.VK_R) {
             currentShapeType = ShapeType.RECTANGLE;
+            ui.setButton(UserInterface.Button.RECTANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_E) {
             currentShapeType = ShapeType.ELLIPSE;
+            ui.setButton(UserInterface.Button.ELLIPSE);
         } else if (e.getKeyCode() == KeyEvent.VK_I) {
             currentShapeType = ShapeType.ISOSCELES_TRIANGLE;
+            ui.setButton(UserInterface.Button.ISOTRIANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_T) {
             currentShapeType = ShapeType.RIGHT_TRIANGLE;
+            ui.setButton(UserInterface.Button.RIGHTTRIANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_L) {
             currentShapeType = ShapeType.LINE;
+            ui.setButton(UserInterface.Button.LINE);
         }  
  
         if (e.isControlDown() && !e.isShiftDown() && 

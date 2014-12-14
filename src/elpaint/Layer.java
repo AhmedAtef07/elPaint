@@ -12,11 +12,18 @@ import javax.swing.JPanel;
  *
  * @author Ahmed Atef
  */
+
 public class Layer extends JPanel {
 
     private LinkedList<elShape> elShapes;
     private LinkedList<elShape> redo;
     private elShape holdedShape;
+    Color color;
+
+    public void setColor(Color color) {
+        this.color = color;
+        repaint();
+    }
     
     public Layer(Point point, int width, int height) {
         setBounds(point.x, point.y, width, height);
@@ -25,6 +32,7 @@ public class Layer extends JPanel {
         elShapes = new LinkedList<>();
         redo = new LinkedList<>();
         holdedShape = null;
+        color = Color.WHITE;
     }
 
     void popLastShape() {
@@ -62,7 +70,9 @@ public class Layer extends JPanel {
     
     @Override
     public void paint(Graphics g) {
-        g.clearRect(0, 0, this.getWidth(), this.getHeight());
+        g.setColor(color);
+        g.fillRect(0, 0, this.getWidth(), this.getHeight());
+        //g.clearRect(0, 0, this.getWidth(), this.getHeight());
         
         Graphics2D g2d = (Graphics2D)g;
         for (elShape shape: elShapes) {
