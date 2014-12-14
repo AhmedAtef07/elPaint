@@ -3,6 +3,7 @@ package elpaint;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -32,7 +33,8 @@ public class Stage implements Triggable {
     private int startX, startY;
     private elShape holdedShape;
     private boolean multiSelectionActivated;
-    private boolean isMoving, isDragging;
+    private boolean isMoving, isDragging, isResizing;
+    ResizeBox.BoxType selectedResizeBoxType;
     
     private LinkedList<elShape> elShapes;
     private ArrayList<elShape> clonedShapes;
@@ -132,17 +134,45 @@ public class Stage implements Triggable {
     void updateToDrawingMode() {
         // Remove everything related to editing.
         unselectAll();
+        layer.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
 
         //
     }
     
-    void setCursorOnAll(Cursor cursor) {
-         
-        for (elShape elshape: elShapes) {
-            // add curosr in model.
+    void setCursorOnAll(Point point) {         
+        boolean foundAny = false;
+        for (elShape shape: elShapes) {
+            Rectangle bound = shape.getShape().getBounds();
+            bound.grow(ResizeBox.boxHSize * 2, ResizeBox.boxHSize * 2);
+            if (shape.isSelected() && bound.contains(point)) {                    
+                for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                    if (box == null) {
+                        continue;
+                    }
+                    if (box.getRect().getShape().contains(point)) {
+                        layer.setCursor(box.getCursor());                            
+                        foundAny = true;
+                        break;
+                    }
+                }
+            }
+            if (foundAny) {
+                break;
+            }
+            if (shape.getShape().contains(point) && !foundAny) {
+                    if (shape.isSelected()) {
+                        layer.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                    } else {
+                        layer.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    }
+                    foundAny = true;
+                    break;
+                }                   
         }
-        layer.repaint();
+        if (!foundAny) {
+            layer.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
     }
     
     void unselectAll() {
@@ -244,7 +274,6 @@ public class Stage implements Triggable {
         Point point = e.getPoint();
         int x = point.x - ui.getComponents()[0].getX();
         int y = point.y - ui.getComponents()[0].getY();
-        
         switch (currentMode) {
             case DRAWING:    
                 if (startX == -1) {
@@ -258,34 +287,141 @@ public class Stage implements Triggable {
         
                 drawHoldedShape(minX, minY, width, height); 
                 break;
-            case EDITING:  
-                 
+            case EDITING:
                 // startX != -1 means you are curruntly drawing the selection 
                 // region.
                 if (startX  == -1) {
                     startX = x;
                     startY = y;
                     isMoving = false;
+                    isResizing = false;
                     for (elShape shape: elShapes) {
-                        // A selected objectd and started dragging over it.
-                        if (shape.isSelected() &&
-                                shape.getShape().contains(new Point(x, y))) {
-                            isMoving = true;
+                        Rectangle bound = shape.getShape().getBounds();
+                        bound.grow(ResizeBox.boxHSize * 2, ResizeBox.boxHSize * 2);
+                        if (shape.isSelected() && bound.contains(new Point(x, y))) {                    
+                            for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                                if (box == null) {
+                                    continue;
+                                }
+                                if (box.getRect().getShape().contains(new Point(x, y))) {
+                                    selectedResizeBoxType = box.getBoxType();
+                                    isResizing = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isResizing) {
                             break;
-                        }                   
+                        }
                     }
-                }  
-              
-                if (isMoving) {                    
+                    // If resizing it will never be moving.
+                    if (!isResizing) {                        
+                        for (elShape shape: elShapes) {
+                            // A selected objectd and started dragging over it.
+                            if (shape.isSelected() &&
+                                    shape.getShape().contains(new Point(x, y))) {
+                                isMoving = true;
+                                break;
+                            }                   
+                        }
+                    }
+                } 
+                
+                if (isResizing) {
+                    for (int i = 0; i < elShapes.size(); i++) {
+                        elShape elshape = elShapes.get(i);
+                        elShape clonedShape = clonedShapes.get(i);
+                        if (elshape.isSelected()) {
+                            switch(selectedResizeBoxType) {
+                            case NW:
+                                elshape.setY(Math.min(y, clonedShape.getY() + 
+                                        clonedShape.getHeight())); 
+                                elshape.setHeight(Math.abs((
+                                        clonedShape.getHeight() + 
+                                                clonedShape.getY()) - y));
+                                elshape.setX(Math.min(x, clonedShape.getX() + 
+                                        clonedShape.getWidth())); 
+                                elshape.setWidth(Math.abs((
+                                        clonedShape.getWidth() + 
+                                                clonedShape.getX()) - x));                                
+                                break;
+                            case N:
+                                elshape.setY(Math.min(y, clonedShape.getY() + 
+                                        clonedShape.getHeight())); 
+                                elshape.setHeight(Math.abs((
+                                        clonedShape.getHeight() + 
+                                                clonedShape.getY()) - y));
+                                break;
+                            case NE:
+                                elshape.setY(Math.min(y, clonedShape.getY() + 
+                                        clonedShape.getHeight())); 
+                                elshape.setHeight(Math.abs((
+                                        clonedShape.getHeight() + 
+                                                clonedShape.getY()) - y));
+                                elshape.setX(Math.min(x, clonedShape.getX()));                            
+                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                break;
+                            case E:
+                                elshape.setX(Math.min(x, clonedShape.getX()));                            
+                                elshape.setWidth(Math.abs(x - clonedShape.getX()));
+                                break;
+                            case W:
+                                elshape.setX(Math.min(x, clonedShape.getX() + 
+                                        clonedShape.getWidth())); 
+                                elshape.setWidth(Math.abs((
+                                        clonedShape.getWidth() + 
+                                                clonedShape.getX()) - x));
+                                break;
+                            case SW:
+                                elshape.setY(Math.min(y, clonedShape.getY()));                            
+                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setX(Math.min(x, clonedShape.getX() + 
+                                        clonedShape.getWidth())); 
+                                elshape.setWidth(Math.abs((
+                                        clonedShape.getWidth() + 
+                                                clonedShape.getX()) - x));                                
+                                break;
+                            case S:
+                                elshape.setY(Math.min(y, clonedShape.getY()));                            
+                                elshape.setHeight(Math.abs(y - clonedShape.getY()));
+                                break;
+                            case SE:
+                                elshape.setY(Math.min(y, clonedShape.getY()));                            
+                                elshape.setHeight(Math.abs(y - clonedShape.getY()));                               
+                                elshape.setX(Math.min(x, clonedShape.getX()));                            
+                                elshape.setWidth(Math.abs(x - clonedShape.getX()));                                
+                                break;
+                            default:
+                                break;
+                            }
+    //                        elRectangle rect = (elRectangle)elshape;
+                        
+//                            elshape.setX(clonedShape.getX() - (startX - x));
+//                            elshape.setY(clonedShape.getY() - (startY - y));
+                        }        
+                    }
+                    layer.repaint();
+                } else if (isMoving) {                    
                     // Move shapes.
                     for (int i = 0; i < elShapes.size(); i++) {
                         elShape elshape = elShapes.get(i);
                         elShape clonedShape = clonedShapes.get(i);
                         if (elshape.isSelected()) {
-    //                        elRectangle rect = (elRectangle)elshape;
-                        
-                            elshape.setX(clonedShape.getX() - (startX - x));
-                            elshape.setY(clonedShape.getY() - (startY - y));
+                            if (e.isShiftDown()) {
+                                System.out.println(x + " " + y);
+                                if (Math.abs(x - startX) < Math.abs(startY - y)) {
+                                    elshape.setX(clonedShape.getX());
+                                    elshape.setY(clonedShape.getY() - (
+                                            startY - y));                                      
+                                } else {
+                                    elshape.setX(clonedShape.getX() - (
+                                            startX - x));                                    
+                                    elshape.setY(clonedShape.getY());
+                                }
+                            } else {                                
+                                elshape.setX(clonedShape.getX() - (startX - x));
+                                elshape.setY(clonedShape.getY() - (startY - y));
+                            }
                         }        
                     }
                     layer.repaint();
@@ -305,10 +441,13 @@ public class Stage implements Triggable {
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();
         switch (currentMode) {
             case DRAWING:
                 break;
-            case EDITING:                
+            case EDITING:  
+                setCursorOnAll(new Point(x, y));                
                 break;
         }
         
@@ -316,18 +455,19 @@ public class Stage implements Triggable {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {        
+    public void mouseClicked(MouseEvent e) {          
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();
         switch (currentMode) {
             case DRAWING:
                 break;
             case EDITING:                
                 Point point = e.getPoint();
-                int x = point.x - ui.getComponents()[0].getX();
-                int y = point.y - ui.getComponents()[0].getY();
                 setSelectedShapes(new Point(x, y));
                 layer.repaint();  
                 break;
         }   
+        setCursorOnAll(new Point(x, y));    
     }
 
     @Override
@@ -335,7 +475,9 @@ public class Stage implements Triggable {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent e) {        
+        int x = e.getX() - ui.getComponents()[0].getX();
+        int y = e.getY() - ui.getComponents()[0].getY();  
         switch (currentMode) {
             case DRAWING:
                 if (isDragging) {
@@ -348,7 +490,7 @@ public class Stage implements Triggable {
                 break;
             case EDITING: 
                 if (isDragging) {
-                    if (!isMoving) {
+                    if (!isMoving && !isResizing) {
                         setSelectedShapes();
                         layer.setHoldedShape(null);
                     }
@@ -358,6 +500,7 @@ public class Stage implements Triggable {
                 break;
         } 
         isDragging = false;
+        setCursorOnAll(new Point(x, y));  
     }
 
     @Override

@@ -113,6 +113,11 @@ public abstract class elShape   {
     public void setHeight(int height) {
         this.height = height;
     }
+    
+    public ResizeBox getResizeBoxes() {
+        return new ResizeBox(this);
+    }
+     
     public abstract elShape getCopy();
  
 }

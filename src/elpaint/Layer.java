@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 
@@ -83,29 +81,19 @@ public class Layer extends JPanel {
             g2d.draw(holdedShape.getShape());            
         } else {
             for (elShape shape: elShapes) {
-                if (shape.isSelected()) {
-                    Rectangle boundry = shape.getShape().getBounds();
-                    g2d.setColor(Color.blue);
-                    float dash[] = { 10.0f };
+                if (shape.isSelected()) {                    
+                    g2d.setColor(ResizeBox.boxColor);
+                    for(ResizeBox.Box box: shape.getResizeBoxes().getBoxes()) {
+                        if (box == null) {
+                            continue;
+                        }
+//                        g2d.setColor(ResizeBox.boxColor);
+                        g2d.fill(box.getRect().getShape());
+                    }
                     g2d.setStroke(new BasicStroke(1));
-                    g2d.draw(boundry);          
+                    g2d.draw(shape.getShape().getBounds2D());
                     
-                    g2d.setStroke(new BasicStroke(1));
-                    g2d.setColor(Color.black);
-                    int smallRectSize = 3;
-                    elRectangle sbNW = new elRectangle(
-                            boundry.x - smallRectSize, 
-                            boundry.y - smallRectSize, 
-                            2 * smallRectSize, 
-                            2 * smallRectSize);
-                    g2d.fill(sbNW.getShape());    
                     
-                    elRectangle sbSE = new elRectangle(
-                            boundry.x + boundry.width - smallRectSize, 
-                            boundry.y + boundry.height - smallRectSize, 
-                            2 * smallRectSize, 
-                            2 * smallRectSize);
-                    g2d.fill(sbSE.getShape());         
                 }
             }
         }
