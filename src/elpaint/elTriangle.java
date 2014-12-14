@@ -30,11 +30,11 @@ public class elTriangle extends elPolygon {
         
         x[0] = p1.x;
         x[1] = p2.x;
-        x[3] = p3.x;
+        x[2] = p3.x;
         
         y[0] = p1.y;
         y[1] = p2.y;
-        y[3] = p3.y;
+        y[2] = p3.y;
     }
     
     public elTriangle(Point p1, Point p2, Type type) {
