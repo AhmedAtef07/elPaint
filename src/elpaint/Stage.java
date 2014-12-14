@@ -280,10 +280,28 @@ public class Stage implements Triggable {
                     startX = x;
                     startY = y;
                 } 
-                int minX = Math.min(x, startX);
-                int minY = Math.min(y,startY);
-                int width = Math.abs(minX - Math.max(startX, x));
-                int height = Math.abs(minY - Math.max(startY, y));
+                int minX, minY, width, height;
+                if (e.isShiftDown()) {
+                    minX = Math.min(x, startX);
+                    minY = Math.min(y,startY);
+                    width = Math.max(Math.abs(minX - Math.max(startX, x)), 
+                            Math.abs(minY - Math.max(startY, y)));
+                    height = width;
+                    if (x >= startX && y >= startY) {
+                    } else if (x > startX && y < startY) {
+                        minY = Math.min(y, startY - height);              
+                    } else if (x < startX && y > startY) {
+                       minX = Math.min(x, startX - width);
+                    } else if (x < startX && y < startY) {
+                       minX = Math.min(x, startX - width);
+                       minY = Math.min(y, startY - height);
+                    }
+                 } else {                     
+                    minX = Math.min(x, startX);
+                    minY = Math.min(y,startY);
+                    width = Math.abs(minX - Math.max(startX, x));
+                    height = Math.abs(minY - Math.max(startY, y));
+                 }
         
                 drawHoldedShape(minX, minY, width, height); 
                 break;
