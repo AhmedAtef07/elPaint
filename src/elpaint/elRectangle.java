@@ -67,6 +67,7 @@ public class elRectangle extends elShape {
         return true ;
     }
 
+    @Override
     public elShape getCopy() {
         return new elRectangle(x, y, width, height, FillColor, BorderColor,
                 LineType);

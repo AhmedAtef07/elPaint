@@ -58,8 +58,9 @@ public class elPolygon extends elShape {
     
     private Polygon polygondraw;
     
+    @Override
     public Shape getShape() {
-        return polygondraw;
+        return new Polygon(x, y, x.length);
     }
 
 //    @Override

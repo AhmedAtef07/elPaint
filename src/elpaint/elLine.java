@@ -52,7 +52,7 @@ public class  elLine extends elComponent {
     }
     
     public Shape getShape() {
-        return linedraw;
+        return new Line2D.Float(p1, p2);
     }
     
     private Line2D.Float linedraw;

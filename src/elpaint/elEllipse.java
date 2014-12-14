@@ -43,6 +43,6 @@ public class elEllipse extends elShape {
     
     @Override
     public Shape getShape() {
-        return ellipsedraw;
+        return new Ellipse2D.Float(x, y, width, height);
     }
 }
