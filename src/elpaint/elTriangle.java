@@ -47,6 +47,7 @@ public class elTriangle extends elPolygon {
                 p3 = new Point(p.x+width,p.y+height);
                 break;
             default:
+                p.x = p.x + width/2;
                 p2 = new Point(p.x+width/2,p.y+height);
                 p3 = new Point(p.x-width/2,p.y+height);
                 break;    
@@ -54,6 +55,9 @@ public class elTriangle extends elPolygon {
         this.width = width;
         this.height = height;
         this.type = type;
+        
+        x = new int[3];
+        y = new int[3];
         
         x[0] = p.x;
         x[1] = p2.x;
@@ -80,6 +84,7 @@ public class elTriangle extends elPolygon {
                 p3 = new Point(p.x+width,p.y+height);
                 break;
             default:
+                p.x = p.x + width/2;
                 p2 = new Point(p.x+width/2,p.y+height);
                 p3 = new Point(p.x-width/2,p.y+height);
                 break;    
@@ -87,6 +92,9 @@ public class elTriangle extends elPolygon {
         this.width = width;
         this.height = height;
         this.type = type;
+        
+        x = new int[3];
+        y = new int[3];
         
         x[0] = p.x;
         x[1] = p2.x;
