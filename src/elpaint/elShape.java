@@ -13,9 +13,9 @@ public abstract class elShape   {
  
  private boolean IsSelected;
 
-    Stroke LineType;
-    Color  FillColor;
-    Color  BorderColor;
+   protected Stroke LineType;
+   protected Color  FillColor;
+   protected Color  BorderColor;
     
     protected int x;
     protected int y;

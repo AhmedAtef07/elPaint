@@ -37,6 +37,68 @@ public class elTriangle extends elPolygon {
         y[2] = p3.y;
     }
     
+    private Type type;
+    private int width,height;
+    public elTriangle(Point p, int width, int height, Type type) {
+        Point p2,p3;
+        switch(type) {
+            case RIGHT:
+                p2 = new Point(p.x,p.y+height);
+                p3 = new Point(p.x+width,p.y+height);
+                break;
+            default:
+                p2 = new Point(p.x+width/2,p.y+height);
+                p3 = new Point(p.x-width/2,p.y+height);
+                break;    
+        }
+        this.width = width;
+        this.height = height;
+        this.type = type;
+        
+        x[0] = p.x;
+        x[1] = p2.x;
+        x[2] = p3.x;
+        
+        y[0] = p.y;
+        y[1] = p2.y;
+        y[2] = p3.y;
+                
+    }
+    
+    public elTriangle(Point p, int width, int height, Type type,
+            Color FillColor, Color BorderColor, 
+            Stroke LineType) {
+        setLineType(LineType);
+        setFillColor(FillColor);
+        setBorderColor(BorderColor);
+        this.type = type;
+        
+        Point p2,p3;
+        switch(type) {
+            case RIGHT:
+                p2 = new Point(p.x,p.y+height);
+                p3 = new Point(p.x+width,p.y+height);
+                break;
+            default:
+                p2 = new Point(p.x+width/2,p.y+height);
+                p3 = new Point(p.x-width/2,p.y+height);
+                break;    
+        }
+        this.width = width;
+        this.height = height;
+        this.type = type;
+        
+        x[0] = p.x;
+        x[1] = p2.x;
+        x[2] = p3.x;
+        
+        y[0] = p.y;
+        y[1] = p2.y;
+        y[2] = p3.y;
+          
+        
+    }
+    
     public elTriangle(Point p1, Point p2, Type type) {
         initialize(p1, p2, type);
     }
