@@ -13,7 +13,7 @@ public class elPolygon extends elShape {
     
     @Override
     public Shape getShape() {
-        return new Polygon(ptx,pty,ptx.length);
+        return new Polygon(ptx, pty, ptx.length);
     }
 
     @Override

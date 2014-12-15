@@ -466,7 +466,8 @@ public final class Stage implements Triggable {
                                 elshape.setHeight(clonedShape.getHeight() +  
                                         (int)(clonedShape.getHeight() * r)); 
                                 elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight()- elshape.getHeight());
+                                        clonedShape.getHeight() -
+                                        elshape.getHeight());
                                 r = (double)((xR - x) / wR);                                                           
                                 elshape.setWidth((int)(
                                         clonedShape.getWidth() * r));
@@ -535,7 +536,8 @@ public final class Stage implements Triggable {
                                 r = (double)((yR - y) / hR);                                                           
                                 elshape.setHeight((int)(
                                         clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() - elshape.getHeight());
+                                elshape.setY(clonedShape.getY() - 
+                                        elshape.getHeight());
                                 r = (double)(((xR - x)) / wR);
                                 elshape.setWidth(clonedShape.getWidth() + 
                                         (int)(clonedShape.getWidth() * r)); 
@@ -612,7 +614,8 @@ public final class Stage implements Triggable {
                                 r = (double)((xR - x) / wR);                                                           
                                 elshape.setWidth((int)(
                                         clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() - elshape.getWidth());
+                                elshape.setX(clonedShape.getX() -
+                                        elshape.getWidth());
                             }
                             else if (y < yR && x < xR){
                                 r = (double)((yR - y) / hR);                                                           

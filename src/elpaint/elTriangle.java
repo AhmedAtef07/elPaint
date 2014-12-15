@@ -1,7 +1,6 @@
 package elpaint;
 
 import java.awt.*;
-import javafx.scene.shape.TriangleMesh;
 /**
  *
  * @author Hassan Rezk
@@ -14,7 +13,7 @@ public class elTriangle extends elShape {
     }
     
     private Type type;
-    private Point p1,p2,p3;
+    private Point p1, p2, p3;
     
     public elTriangle(Point p, int width, int height, Type type) {
         this.x = p.x;
@@ -25,20 +24,15 @@ public class elTriangle extends elShape {
         switch(type) {
             case RIGHT:
                 p1 = new Point(p);
-                p2 = new Point(p1.x,p1.y+height);
-                p3 = new Point(p1.x+width,p1.y+height);
+                p2 = new Point(p1.x, p1.y + height);
+                p3 = new Point(p1.x + width, p1.y + height);
                 break;
             default:
-                p1 = new Point(p.x+width/2,p.y);
-                p2 = new Point(p1.x+width/2,p1.y+height);
-                p3 = new Point(p1.x-width/2,p1.y+height);
+                p1 = new Point(p.x + width / 2, p.y);
+                p2 = new Point(p1.x + width / 2, p1.y + height);
+                p3 = new Point(p1.x - width / 2, p1.y + height);
                 break;    
         }
-    }
-
-    @Override
-    public elShape getCopy() {
-        return new elTriangle(new Point(this.x,this.y), width, height, type);
     }
 
     @Override
@@ -59,42 +53,42 @@ public class elTriangle extends elShape {
 
     @Override
     public void setX(int x) {
-        //int width = this.width + this.x - x;
         this.x = x;
-        Point p = new Point(x,y);
-        this.width = width;
+        Point p = new Point(x, y);
         switch(type) {
             case RIGHT:
                 p1 = new Point(p);
-                p2 = new Point(p1.x,p1.y+height);
-                p3 = new Point(p1.x+width,p1.y+height);
+                p2 = new Point(p1.x, p1.y + height);
+                p3 = new Point(p1.x + width, p1.y + height);
                 break;
             default:
-                p1 = new Point(p.x+width/2,p.y);
-                p2 = new Point(p1.x+width/2,p1.y+height);
-                p3 = new Point(p1.x-width/2,p1.y+height);
+                p1 = new Point(p.x + width / 2, p.y);
+                p2 = new Point(p1.x + width / 2, p1.y + height);
+                p3 = new Point(p1.x - width / 2, p1.y + height);
                 break;    
         }
     }
 
     @Override
     public void setY(int y) {
-        //int height = this.height + this.y - y;
         this.y = y;
         Point p = new Point(x,y);
-        this.height = height;
         switch(type) {
             case RIGHT:
                 p1 = new Point(p);
-                p2 = new Point(p1.x,p1.y+height);
-                p3 = new Point(p1.x+width,p1.y+height);
+                p2 = new Point(p1.x, p1.y + height);
+                p3 = new Point(p1.x + width, p1.y + height);
                 break;
             default:
-                p1 = new Point(p.x+width/2,p.y);
-                p2 = new Point(p1.x+width/2,p1.y+height);
-                p3 = new Point(p1.x-width/2,p1.y+height);
+                p1 = new Point(p.x + width / 2, p.y);
+                p2 = new Point(p1.x + width / 2, p1.y + height);
+                p3 = new Point(p1.x - width / 2, p1.y + height);
                 break;    
         }
     }
-        
+       
+    @Override
+    public elShape getCopy() {
+        return new elTriangle(new Point(this.x, this.y), width, height, type);
+    } 
 }

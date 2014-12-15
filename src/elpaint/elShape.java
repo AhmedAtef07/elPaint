@@ -9,79 +9,66 @@ import java.awt.Stroke;
  *
  * @author HackerGhost
  */
-public abstract class elShape   {
- 
- private boolean IsSelected;
-
-   protected Stroke LineType;
-   protected Color  FillColor;
-   protected Color  BorderColor;
+public abstract class elShape extends elComponent {
+    
+    protected Stroke lineType;
+    protected Color fillColor;
+    protected Color borderColor;   
     
     protected int x;
     protected int y;
     protected int width;
     protected int height;
+    
+    private boolean isSelected;
 
     
-     public elShape() {
-        this.IsSelected = false;
-        this.LineType = new BasicStroke(2);
-        this.FillColor = Color.WHITE;
-        this.BorderColor = Color.BLACK;
-    }
-
+    public elShape() {
+        this.isSelected = false;
+        this.lineType = new BasicStroke(2);
+        this.fillColor = Color.WHITE;
+        this.borderColor = Color.BLACK;
+    }   
+    
+    public elShape(Color fillColor, Color borderColor, Stroke lineType) {
+        this.fillColor = fillColor;
+        this.borderColor = borderColor;
+        this.lineType = lineType ;
+        this.isSelected = false;
+    }    
+    
     public Stroke getLineType() {
-        return LineType;
+        return lineType;
     }
 
-    public void setLineType(Stroke LineType) {
-        this.LineType = LineType;
+    public void setLineType(Stroke lineType) {
+        this.lineType = lineType;
     }
 
     public Color getFillColor() {
-        return FillColor;
+        return fillColor;
     }
 
-    public void setFillColor(Color FillColor) {
-        this.FillColor = FillColor;
+    public void setFillColor(Color fillColor) {
+        this.fillColor = fillColor;
     }
 
     public Color getBorderColor() {
-        return BorderColor;
+        return borderColor;
     }
 
-    public void setBorderColor(Color BorderColor) {
-        this.BorderColor = BorderColor;
-    }
-    public elShape(Color FillColor,Color BorderColor,Stroke LineType){
-        this.FillColor= FillColor;
-        this.BorderColor= BorderColor;
-        this.LineType = LineType ;
-        this.IsSelected= false;
-    }
-    
-    /**
-     * @param mask a mask within the type of object to be returned
-     * @
-     * @return object which has the implementation of shape 
-     */
-    public abstract Shape getShape();
+    public void setBorderColor(Color borderColor) {
+        this.borderColor = borderColor;
+    }  
 
-    /**
-     * @return the IsSelected
-     */
     public boolean isSelected() {
-        return IsSelected;
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
     
-
-    /**
-     * @param IsSelected the IsSelected to set
-     */
-    public void setSelected(boolean IsSelected) {
-        this.IsSelected = IsSelected;
-    }
-
     public int getX() {
         return x;
     }
@@ -119,5 +106,6 @@ public abstract class elShape   {
     }
      
     public abstract elShape getCopy();
+    public abstract Shape getShape();
  
 }
