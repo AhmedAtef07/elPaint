@@ -45,7 +45,7 @@ public class elPolygon extends ElShape {
         for (int i = 0; i < getN(); i++) {
             ptx[i] = (int)(this.x + getRadius() * Math.cos(2 * Math.PI * i / getN()));
             pty[i] = (int)(this.y + getRadius() * Math.sin(2 * Math.PI * i / getN()));
-            System.out.println(ptx[i] + " " + pty[i]);
+           //System.out.println(ptx[i] + " " + pty[i]);
         }
     }
     @Override
@@ -56,6 +56,60 @@ public class elPolygon extends ElShape {
         //Shape rotated = new Polygon(ptx , pty , getN());
         //return new Polygon(ptx,pty,n);
         return rotated;
+    }
+    public Shape Move(int displacement , SelectionBox.ResizeBoxType selectedResizeBoxType){
+        switch(selectedResizeBoxType){
+            case NW:
+                for(int i=0;i<n;i++){
+                    ptx[i] -= displacement;
+                    pty[i] -= displacement;
+                }
+                break;
+            case N:
+                for(int i=0;i<n;i++){
+                  //  ptx[i] += displacement;
+                    pty[i] -= displacement;
+                }
+                break;
+            case NE:
+                for(int i=0;i<n;i++){
+                    ptx[i] += displacement;
+                    pty[i] -= displacement;
+                }
+                break;
+            case E:
+                for(int i=0;i<n;i++){
+                    ptx[i] += displacement;
+                   // pty[i] += displacement;
+                }
+                break;
+            case W:
+                for(int i=0;i<n;i++){
+                    ptx[i] -= displacement;
+                   // pty[i] += displacement;
+                }
+                break;
+                
+            case S:
+                for(int i=0;i<n;i++){
+                //    ptx[i] -= displacement;
+                    pty[i] += displacement;
+                }
+                break;
+            case SE:
+                for(int i=0;i<n;i++){
+                    ptx[i] += displacement;
+                    pty[i] += displacement;
+                }
+                break;
+            case SW:
+                for(int i=0;i<n;i++){
+                    ptx[i] -= displacement;
+                    pty[i] += displacement;
+                }
+                break;    
+        }
+        return getShape();
     }
 //    public void Move(int displacement ,){
 //        switch(){
