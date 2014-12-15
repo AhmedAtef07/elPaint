@@ -214,22 +214,17 @@ public final class Stage implements Triggable {
     }
  
  
-    private void deleteSelectedShapes() {              
-        LinkedList<ElShape> newShapes = new LinkedList<>();
-        for (ElShape elshape: elShapes) {
-            if (!elshape.isSelected()) {
-                newShapes.add(elshape);
+    private void deleteSelectedShapes() {
+        for (int i = elShapes.size() - 1; i > -1; --i) {
+             if (elShapes.get(i).isSelected()) {
+                elShapes.remove(elShapes.get(i));
+                --i;
             }
         }
-        setNewShapesReference(newShapes);
         layer.repaint();
         cloneShapesList();
-    }
- 
-    void setNewShapesReference(LinkedList<ElShape> newShapesListRef) {
-        layer.setElShapes(newShapesListRef);
-        elShapes = layer.getElShapes();
-    }
+    }  
+
     private void copySelecetedShapes() {
         LinkedList<ElShape> newCopiedShapes = new LinkedList<>();
         for (ElShape elshape: layer.getElShapes()) {

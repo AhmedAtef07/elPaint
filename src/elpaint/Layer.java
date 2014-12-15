@@ -16,7 +16,8 @@ import javax.swing.JPanel;
 
 public class Layer extends JPanel {
 
-    private LinkedList<ElShape> elShapes;
+    // 'elShapes' must be final to always have only one reference.
+    private final LinkedList<ElShape> elShapes;
     private LinkedList<ElShape> redo;
     private ElShape holdedShape;
     Color color;
@@ -58,10 +59,6 @@ public class Layer extends JPanel {
     
     public LinkedList<ElShape> getElShapes() {
         return elShapes;
-    }
-
-    public void setElShapes(LinkedList<ElShape> elShapes) {
-        this.elShapes = elShapes;
     }
     
     public void addShape(ElShape shape) {
