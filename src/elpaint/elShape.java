@@ -2,13 +2,11 @@ package elpaint;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 
-/**
- *
- * @author HackerGhost
- */
+
 public abstract class ElShape {
     
     protected Stroke lineType;
@@ -19,6 +17,11 @@ public abstract class ElShape {
     protected int y;
     protected int width;
     protected int height;
+    
+    private int clonedX;
+    private int clonedY;
+    private int clonedWidth;
+    private int clonedHeight;
     
     private boolean isSelected;
 
@@ -107,4 +110,239 @@ public abstract class ElShape {
     public abstract ElShape getCopy();
     public abstract Shape getShape();
  
+    public void cloneSelf() {
+        clonedX = x;
+        clonedY = y;
+        clonedWidth = width;
+        clonedHeight = height;
+    }
+
+    public int getClonedX() {
+        return clonedX;
+    }
+
+    public int getClonedY() {
+        return clonedY;
+    }
+
+    public int getClonedWidth() {
+        return clonedWidth;
+    }
+
+    public int getClonedHeight() {
+        return clonedHeight;
+    }
+    
+    public void move(int xDisplacment, int yDisplacment) {
+        x = clonedX - xDisplacment;
+        y = clonedY - yDisplacment;
+    }
+    
+    public void resize(ElShape relativeShape, 
+            SelectionBox.ResizeBoxType selectedResizeBoxType, 
+            Point draggedPoint) {
+        double xR = relativeShape.getClonedX();
+        double yR = relativeShape.getClonedY();
+        double wR = relativeShape.getClonedWidth();
+        double hR = relativeShape.getClonedHeight(); 
+        int draggedX = draggedPoint.x;
+        int draggedY = draggedPoint.y;
+        
+        double r;
+        switch(selectedResizeBoxType) {
+        case NW:
+            if (draggedY <= yR + hR && draggedX <= xR + wR) {
+                r = (double)(((yR - draggedY)) / hR);
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight - getHeight());
+                r = (double)(((xR - draggedX)) / wR);
+                setWidth(clonedWidth + (int) (clonedWidth * r)); 
+                setX(clonedX + clonedWidth - getWidth());
+            }
+            else if (draggedY > yR + hR && draggedX <= xR + wR) {
+                r = (double)(((draggedY - (yR + hR))) / hR);
+                setHeight((int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight);
+                r = (double)(((xR - draggedX)) / wR);
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth - getWidth());
+            }
+            else if (draggedY <= yR + hR && draggedX > xR + wR) {                                    
+                r = (double)(((yR - draggedY)) / hR);
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY +
+                        clonedHeight - 
+                        getHeight());
+                r = (double)(((draggedX - (xR + wR))) / wR);
+                setWidth((int) (clonedWidth * r)); 
+                setX(clonedX + clonedWidth); 
+            }
+            else if (draggedY > yR + hR && draggedX > xR + wR) {
+                r = (double) (((draggedY - (yR + hR))) / hR);
+                setHeight((int)(clonedHeight * r)); 
+                setY(clonedY +
+                        clonedHeight); 
+                r = (double) (((draggedX - (xR + wR))) / wR);
+                setWidth((int) (clonedWidth * r)); 
+                setX(clonedX + clonedWidth); 
+            }
+            break;
+        case N:
+            if (draggedY <= yR + hR) {                                    
+                r = (double)(((yR - draggedY)) / hR);
+                System.out.print(height + " " );
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight - getHeight());
+            }
+            else if (draggedY > yR + hR) {
+                r = (double)(((draggedY - (yR + hR))) / hR);
+                setHeight((int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight);                                    
+            }
+            System.out.println(height);
+            break;
+        case NE:
+            if (draggedY <= yR + hR && draggedX >= xR) {                                    
+                r = (double)(((yR - draggedY)) / hR);
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight - getHeight());
+                r = (double)((draggedX - xR - wR) / wR);                                                           
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX);
+            }
+            else if (draggedY > yR + hR && draggedX >= xR) {
+                r = (double)(((draggedY - (yR + hR))) / hR);
+                setHeight(
+                        (int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight); 
+                r = (double)((draggedX - xR - wR) / wR);                                                           
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX);
+            }
+            else if (draggedY <= yR + hR && draggedX < xR) {                                    
+                r = (double)(((yR - draggedY)) / hR);
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight - getHeight());
+                r = (double)((xR - draggedX) / wR);                                                           
+                setWidth((int)(clonedWidth * r));
+                setX(clonedX - getWidth());
+            }
+            else if (draggedY > yR + hR && draggedX < xR) {
+                r = (double)(((draggedY - (yR + hR))) / hR);
+                setHeight((int)(clonedHeight * r)); 
+                setY(clonedY + clonedHeight); 
+                r = (double)((xR - draggedX) / wR);                                                           
+                setWidth((int)(clonedWidth * r));
+                setX(clonedX - getWidth());
+            }
+            break;
+        case E:  
+            if (draggedX >= xR) {                                    
+                r = (double)((draggedX - xR - wR) / wR);                                                           
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX);
+            }
+            else if (draggedX < xR) {
+                r = (double)((xR - draggedX) / wR);                                                           
+                setWidth((int)(clonedWidth * r));
+                setX(clonedX - getWidth());
+            }                                  
+            break;
+        case W:                                
+            if (draggedX <= xR + wR) {                                    
+                r = (double)(((xR - draggedX)) / wR);
+                setWidth(clonedWidth + (int) (clonedWidth * r)); 
+                setX(clonedX + clonedWidth - getWidth());
+            }
+            else if (draggedX > xR + wR) {
+                r = (double)(((draggedX - (xR + wR))) / wR);
+                setWidth((int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth);                                    
+            }                              
+            break;
+        case SW:
+            if (draggedY >= yR && draggedX <= xR + wR) {                                    
+                r = (double)((draggedY - yR - hR) / hR);                                                           
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY);
+                r = (double)(((xR - draggedX)) / wR);
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth - getWidth());
+            }
+            else if (draggedY < yR && draggedX <= xR + wR) {
+                r = (double)((yR - draggedY) / hR);                                                           
+                setHeight((int)(clonedHeight * r));
+                setY(clonedY - getHeight());
+                r = (double)(((xR - draggedX)) / wR);
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth - getWidth());
+            }
+            else if (draggedY >= yR && draggedX > xR + wR) {                                    
+                r = (double)((draggedY - yR - hR) / hR);                                                           
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY);
+                r = (double)(((draggedX - (xR + wR))) / wR);
+                setWidth((int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth);
+            }
+            else if (draggedY < yR && draggedX > xR + wR) {
+                r = (double)((yR - draggedY) / hR);                                                           
+                setHeight((int)(clonedHeight * r));
+                setY(clonedY - getHeight());
+                r = (double)(((draggedX - (xR + wR))) / wR);
+                setWidth((int)(clonedWidth * r)); 
+                setX(clonedX + clonedWidth);
+            }
+            break;
+        case S:
+            if (draggedY >= yR) {                                    
+                r = (double)((draggedY - yR - hR) / hR);                                                           
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY);
+            }
+            else if (draggedY < yR) {
+                r = (double)((yR - draggedY) / hR);                                                           
+                setHeight((int)(clonedHeight * r));
+                setY(clonedY - getHeight());
+            }
+            break;
+        case SE:
+            if (draggedY >= yR && draggedX >= xR) {                                    
+                r = (double)((draggedY - yR - hR) / hR);                                                           
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY);
+                r = (double)((draggedX - xR - wR) / wR);                                                           
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX);
+            }
+            else if (draggedY < yR && draggedX >= xR) {
+                r = (double)((yR - draggedY) / hR);                                                           
+                setHeight((int)(clonedHeight * r));
+                setY(clonedY - getHeight());
+                r = (double)((draggedX - xR - wR) / wR);                                                           
+                setWidth(clonedWidth + (int)(clonedWidth * r)); 
+                setX(clonedX);
+            }
+            else if (draggedY >= yR && draggedX < xR) {                                    
+                r = (double)((draggedY - yR - hR) / hR);                                                           
+                setHeight(clonedHeight + (int)(clonedHeight * r)); 
+                setY(clonedY);
+                r = (double)((xR - draggedX) / wR);                                                           
+                setWidth((int)(clonedWidth * r));
+                setX(clonedX - getWidth());
+            }
+            else if (draggedY < yR && draggedX < xR) {
+                r = (double)((yR - draggedY) / hR);                                                           
+                setHeight((int)(clonedHeight * r));
+                setY(clonedY - getHeight());
+                r = (double)((xR - draggedX) / wR);                                                           
+                setWidth((int)(clonedWidth * r));
+                setX(clonedX - getWidth());
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    
 }

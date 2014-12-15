@@ -24,16 +24,14 @@ public final class Stage implements Triggable {
         ISOSCELES_TRIANGLE,
         RIGHT_TRIANGLE,
     }
- 
-    double r=0.0, wR=0, hR=0;
-    int xR=0, yR=0;
- 
+    
     private final UserInterface ui;
     private final Layer layer;
     private final Properties properties;
  
     private int startX, startY;
     private ElShape holdedShape;
+    private ElShape resizingRelativeShape;
     private boolean multiSelectionActivated;
     private boolean isMoving, isDragging, isResizing;
     private SelectionBox.ResizeBoxType selectedResizeBoxType;
@@ -43,7 +41,7 @@ public final class Stage implements Triggable {
     private LinkedList<ElShape> copiedShapes;
  
     private Mode currentMode;
-    private  ShapeType currentShapeType;
+    private ShapeType currentShapeType;
  
     public Stage() {
         ui = new UserInterface(this);
@@ -208,6 +206,7 @@ public final class Stage implements Triggable {
         clonedShapes = new LinkedList<>();
         for (ElShape elshape: layer.getElShapes()) {
             clonedShapes.add(elshape.getCopy());
+            elshape.cloneSelf();
         }
     }
  
@@ -316,6 +315,7 @@ public final class Stage implements Triggable {
         case EDITING:
             // startX != -1 means you are curruntly drawing the selection 
             // region.
+            // startX == 1 means you just started to drag.
             if (startX  == -1) {
                 startX = x;
                 startY = y;
@@ -333,16 +333,11 @@ public final class Stage implements Triggable {
                             }
                             if (box.getRect().getShape().contains(
                                     new Point(x, y))) {
+                                resizingRelativeShape = shape;
                                 selectedResizeBoxType = box.getBoxType();
                                 isResizing = true;
-                                selectedResizeBoxType = box.getBoxType();
-                                isResizing = true;
-                                xR = shape.getX();
-                                yR = shape.getY();
-                                wR = shape.getWidth();
-                                hR = shape.getHeight();
                                 break;
-                            }
+                            }   
                         }
                     }
                     if (isResizing) {
@@ -363,302 +358,26 @@ public final class Stage implements Triggable {
             } 
 
             if (isResizing) {
-                for (int i = 0; i < elShapes.size(); i++) {
-                    ElShape elshape = elShapes.get(i);
-                    ElShape clonedShape = clonedShapes.get(i);
-                    if (elshape.isSelected()) {
-                        switch(selectedResizeBoxType) {
-                        case NW:
-                            if (y <= yR + hR && x <= xR + wR) {
-                                r = (double)(((yR - y)) / hR);
-                                elshape.setHeight(clonedShape.getHeight() + 
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight() - 
-                                        elshape.getHeight());
-                                r = (double)(((xR - x)) / wR);
-                                elshape.setWidth(clonedShape.getWidth() + 
-                                        (int) (clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth() -
-                                        elshape.getWidth());
-                            }
-                            else if (y > yR + hR && x <= xR + wR){
-                                r = (double)(((y - (yR + hR))) / hR);
-                                elshape.setHeight(
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight());
-                                r = (double)(((xR - x)) / wR);
-                                elshape.setWidth(clonedShape.getWidth() + 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth() -
-                                        elshape.getWidth());
-                            }
-                            else if (y <= yR + hR && x > xR + wR) {                                    
-                                r = (double)(((yR - y)) / hR);
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() +
-                                        clonedShape.getHeight() - 
-                                        elshape.getHeight());
-                                r = (double)(((x - (xR + wR))) / wR);
-                                elshape.setWidth( 
-                                        (int) (clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth()); 
-                            }
-                            else if (y > yR + hR && x > xR + wR){
-                                r = (double) (((y - (yR + hR))) / hR);
-                                elshape.setHeight(
-                                        (int) (clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() +
-                                        clonedShape.getHeight()); 
-                                r = (double) (((x - (xR + wR))) / wR);
-                                elshape.setWidth( 
-                                        (int) (clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth()); 
-                            }
-                            break;
-                        case N:
-                            if (y <= yR + hR) {                                    
-                                r = (double)(((yR - y)) / hR);
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int) (clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight()- 
-                                        elshape.getHeight());
-                            }
-                            else if (y > yR + hR){
-                                r = (double)(((y - (yR + hR))) / hR);
-                                elshape.setHeight(
-                                        (int) (clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight());                                    
-                            }
-                            break;
-                        case NE:
-                            if (y <= yR + hR && x >= xR) {                                    
-                                r = (double)(((yR - y)) / hR);
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight() - 
-                                        elshape.getHeight());
-                                r = (double)((x - xR - wR) / wR);                                                           
-                                elshape.setWidth(clonedShape.getWidth() +  
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX());
-                            }
-                            else if (y > yR + hR && x >= xR){
-                                r = (double)(((y - (yR + hR))) / hR);
-                                elshape.setHeight(
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight()); 
-                                r = (double)((x - xR - wR) / wR);                                                           
-                                elshape.setWidth(clonedShape.getWidth() +  
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX());
-                            }
-                            else if (y <= yR + hR && x < xR) {                                    
-                                r = (double)(((yR - y)) / hR);
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() + 
-                                        clonedShape.getHeight() -
-                                        elshape.getHeight());
-                                r = (double)((xR - x) / wR);                                                           
-                                elshape.setWidth((int)(
-                                        clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() - 
-                                        elshape.getWidth());
-                            }
-                            else if (y > yR + hR && x < xR){
-                                r = (double)(((y - (yR + hR))) / hR);
-                                elshape.setHeight(
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY() +
-                                        clonedShape.getHeight()); 
-                                r = (double)((xR - x) / wR);                                                           
-                                elshape.setWidth((int)(
-                                        clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() - 
-                                        elshape.getWidth());
-                            }
-                            break;
-                        case E:  
-                            if (x >= xR) {                                    
-                                r = (double)((x - xR - wR) / wR);                                                           
-                                elshape.setWidth(clonedShape.getWidth() +  
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX());
-                            }
-                            else if (x < xR){
-                                r = (double)((xR - x) / wR);                                                           
-                                elshape.setWidth((int)(
-                                        clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() -
-                                        elshape.getWidth());
-                            }                                  
-                            break;
-                        case W:                                
-                            if (x <= xR + wR) {                                    
-                                r = (double)(((xR - x)) / wR);
-                                elshape.setWidth(clonedShape.getWidth() + 
-                                        (int) (clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth() - 
-                                        elshape.getWidth());
-                            }
-                            else if (x > xR + wR){
-                                r = (double)(((x - (xR + wR))) / wR);
-                                elshape.setWidth( 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() +
-                                        clonedShape.getWidth());                                    
-                            }                              
-                            break;
-                        case SW:
-                            if (y >= yR && x <= xR + wR) {                                    
-                                r = (double)((y - yR - hR) / hR);                                                           
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY());
-                                r = (double)(((xR - x)) / wR);
-                                elshape.setWidth(clonedShape.getWidth() + 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth() - 
-                                        elshape.getWidth());
-                            }
-                            else if (y < yR && x <= xR + wR){
-                                r = (double)((yR - y) / hR);                                                           
-                                elshape.setHeight((int)(
-                                        clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() - 
-                                        elshape.getHeight());
-                                r = (double)(((xR - x)) / wR);
-                                elshape.setWidth(clonedShape.getWidth() + 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() +
-                                        clonedShape.getWidth() - 
-                                        elshape.getWidth());
-                            }
-                            else if (y >= yR && x > xR + wR) {                                    
-                                r = (double)((y - yR - hR) / hR);                                                           
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY());
-                                r = (double)(((x - (xR + wR))) / wR);
-                                elshape.setWidth( 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth());
-                            }
-                            else if (y < yR && x > xR + wR){
-                                r = (double)((yR - y) / hR);                                                           
-                                elshape.setHeight((int)(
-                                        clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() -
-                                        elshape.getHeight());
-                                r = (double)(((x - (xR + wR))) / wR);
-                                elshape.setWidth( 
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX() + 
-                                        clonedShape.getWidth());
-                            }
-                            break;
-                        case S:
-                            if (y >= yR) {                                    
-                                r = (double)((y - yR - hR) / hR);                                                           
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY());
-                            }
-                            else if (y < yR){
-                                r = (double)((yR - y) / hR);                                                           
-                                elshape.setHeight((int)(
-                                        clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() - 
-                                        elshape.getHeight());
-                            }
-                            break;
-                        case SE:
-                            if (y >= yR && x >= xR) {                                    
-                                r = (double)((y - yR - hR) / hR);                                                           
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY());
-                                r = (double)((x - xR - wR) / wR);                                                           
-                                elshape.setWidth(clonedShape.getWidth() +  
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX());
-                            }
-                            else if (y < yR && x >= xR){
-                                r = (double)((yR - y) / hR);                                                           
-                                elshape.setHeight((int)(
-                                        clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() - 
-                                        elshape.getHeight());
-                                r = (double)((x - xR - wR) / wR);                                                           
-                                elshape.setWidth(clonedShape.getWidth() +  
-                                        (int)(clonedShape.getWidth() * r)); 
-                                elshape.setX(clonedShape.getX());
-                            }
-                            else if (y >= yR && x < xR) {                                    
-                                r = (double)((y - yR - hR) / hR);                                                           
-                                elshape.setHeight(clonedShape.getHeight() +  
-                                        (int)(clonedShape.getHeight() * r)); 
-                                elshape.setY(clonedShape.getY());
-                                r = (double)((xR - x) / wR);                                                           
-                                elshape.setWidth((int)(
-                                        clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() -
-                                        elshape.getWidth());
-                            }
-                            else if (y < yR && x < xR){
-                                r = (double)((yR - y) / hR);                                                           
-                                elshape.setHeight((int)(
-                                        clonedShape.getHeight() * r));
-                                elshape.setY(clonedShape.getY() -
-                                        elshape.getHeight());
-                                r = (double)((xR - x) / wR);                                                           
-                                elshape.setWidth((int)(
-                                        clonedShape.getWidth() * r));
-                                elshape.setX(clonedShape.getX() -
-                                        elshape.getWidth());
-                            }
-                            break;
-                        default:
-                            break;
-                        }
+                for (ElShape elShape : elShapes) {           
+                    if (elShape.isSelected()) {
+                        elShape.resize(resizingRelativeShape, 
+                                selectedResizeBoxType, new Point(x, y));
                     }        
                 }
                 layer.repaint();
-            } else if (isMoving) {                    
+            } else if (isMoving) {
                 // Move shapes.
-                for (int i = 0; i < elShapes.size(); i++) {
-                    ElShape elshape = elShapes.get(i);
-                    ElShape clonedShape = clonedShapes.get(i);
+                for (ElShape elshape : elShapes) {                
                     if (elshape.isSelected()) {
                         if (e.isShiftDown()) {
                             System.out.println(x + " " + y);
-                            if (Math.abs(x - startX) < 
-                                    Math.abs(startY - y)) {
-                                elshape.setX(clonedShape.getX());
-                                elshape.setY(clonedShape.getY() - (
-                                        startY - y));                                      
+                            if (Math.abs(x - startX) < Math.abs(startY - y)) {
+                                elshape.move(0, startY - y);                 
                             } else {
-                                elshape.setX(clonedShape.getX() - (
-                                        startX - x));                                    
-                                elshape.setY(clonedShape.getY());
+                                elshape.move(startX - x, 0);
                             }
                         } else {                                
-                            elshape.setX(clonedShape.getX() - (startX - x));
-                            elshape.setY(clonedShape.getY() - (startY - y));
+                            elshape.move(startX - x, startY - y);
                         }
                     }        
                 }
