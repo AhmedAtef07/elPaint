@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.util.LinkedList;
 import javax.swing.JPanel;
 
@@ -75,6 +76,9 @@ public class Layer extends JPanel {
         //g.clearRect(0, 0, this.getWidth(), this.getHeight());
         
         Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+        
         for (elShape shape: elShapes) {
             g2d.setColor(shape.getFillColor());
             g2d.fill(shape.getShape());
