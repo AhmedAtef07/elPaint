@@ -15,16 +15,7 @@ public final class Stage implements Triggable {
     enum Mode {
         DRAWING,
         EDITING,        
-    }
- 
-    enum ShapeType {
-        RECTANGLE,
-        ELLIPSE,
-        LINE,
-        ISOSCELES_TRIANGLE,
-        RIGHT_TRIANGLE,
-        POLYGON
-    }    
+    } 
 
     private final UserInterface ui;
     private final Layer layer;
@@ -45,7 +36,7 @@ public final class Stage implements Triggable {
     private LinkedList<ElShape> copiedShapes;
  
     private Mode currentMode;
-    private ShapeType currentShapeType;
+    private ElShape.Type currentShapeType;
  
     public Stage() {
         ui = new UserInterface(this);
@@ -62,7 +53,7 @@ public final class Stage implements Triggable {
         multiSelectionActivated = false;
         isDragging = false;
         currentMode = Mode.DRAWING;
-        currentShapeType = ShapeType.RECTANGLE;
+        currentShapeType = ElShape.Type.RECTANGLE;
  
         resetDrawingFactors();
         resetEditingFactors();
@@ -489,19 +480,19 @@ public final class Stage implements Triggable {
         ui.setTitle(currentMode + "");
  
         if (e.getKeyCode() == KeyEvent.VK_R) {
-            currentShapeType = ShapeType.RECTANGLE;
+            currentShapeType = ElShape.Type.RECTANGLE;
             ui.setButton(UserInterface.Button.RECTANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_E) {
-            currentShapeType = ShapeType.ELLIPSE;
+            currentShapeType = ElShape.Type.ELLIPSE;
             ui.setButton(UserInterface.Button.ELLIPSE);
         } else if (e.getKeyCode() == KeyEvent.VK_I) {
-            currentShapeType = ShapeType.ISOSCELES_TRIANGLE;
+            currentShapeType = ElShape.Type.ISOSCELES_TRIANGLE;
             ui.setButton(UserInterface.Button.ISOTRIANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_T) {
-            currentShapeType = ShapeType.RIGHT_TRIANGLE;
+            currentShapeType = ElShape.Type.RIGHT_TRIANGLE;
             ui.setButton(UserInterface.Button.RIGHTTRIANGLE);
         } else if (e.getKeyCode() == KeyEvent.VK_L) {
-            currentShapeType = ShapeType.LINE;
+            currentShapeType = ElShape.Type.LINE;
             ui.setButton(UserInterface.Button.LINE);
         }  
  
@@ -573,11 +564,11 @@ public final class Stage implements Triggable {
         }
     }
  
-    public ShapeType getCurrentShapeType() {
+    public ElShape.Type getCurrentShapeType() {
         return currentShapeType;
     }
  
-    public void setCurrentShapeType(ShapeType currentShapeType) {
+    public void setCurrentShapeType(ElShape.Type currentShapeType) {
         this.currentShapeType = currentShapeType;
     }
  

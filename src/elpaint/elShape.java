@@ -9,6 +9,15 @@ import java.awt.Stroke;
 
 public abstract class ElShape {
     
+    enum Type {
+        RECTANGLE,
+        ELLIPSE,
+        LINE,
+        ISOSCELES_TRIANGLE,
+        RIGHT_TRIANGLE,
+        POLYGON,
+    }
+        
     protected Stroke lineType;
     protected Color fillColor;
     protected Color borderColor;   

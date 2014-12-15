@@ -232,7 +232,7 @@ public class UserInterface extends JFrame {
             case EDITING :
                 modeToggle.setSelected(true);
                 setButton(Button.RECTANGLE);
-                stage.setCurrentShapeType(Stage.ShapeType.RECTANGLE);
+                stage.setCurrentShapeType(ElShape.Type.RECTANGLE);
                 break;
         }
     }
@@ -241,27 +241,27 @@ public class UserInterface extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == lineToggle) {               
-                stage.setCurrentShapeType(Stage.ShapeType.LINE);
+                stage.setCurrentShapeType(ElShape.Type.LINE);
                 setButton(Button.LINE);                
             }
             else if (e.getSource() == rectangleToggle) {
-                stage.setCurrentShapeType(Stage.ShapeType.RECTANGLE);
+                stage.setCurrentShapeType(ElShape.Type.RECTANGLE);
                 setButton(Button.RECTANGLE);
             }
             else if (e.getSource() == ellipseToggle) {
-                stage.setCurrentShapeType(Stage.ShapeType.ELLIPSE);
+                stage.setCurrentShapeType(ElShape.Type.ELLIPSE);
                 setButton(Button.ELLIPSE);
             }
             else if (e.getSource() == rightTriangleToggle) {               
-                stage.setCurrentShapeType(Stage.ShapeType.RIGHT_TRIANGLE);
+                stage.setCurrentShapeType(ElShape.Type.RIGHT_TRIANGLE);
                 setButton(Button.RIGHTTRIANGLE);
             }
             else if (e.getSource() == isoTriangleToggle) {               
-                stage.setCurrentShapeType(Stage.ShapeType.ISOSCELES_TRIANGLE);
+                stage.setCurrentShapeType(ElShape.Type.ISOSCELES_TRIANGLE);
                 setButton(Button.ISOTRIANGLE);
             }
             else if (e.getSource() == polygonToggle) {               
-                stage.setCurrentShapeType(Stage.ShapeType.POLYGON);
+                stage.setCurrentShapeType(ElShape.Type.POLYGON);
                 setButton(Button.POLYGON);
             }
             else if (e.getSource() == colorChooser) {
@@ -274,7 +274,7 @@ public class UserInterface extends JFrame {
                     modeToggle.setSelected(true);
                     stage.setCurrentMode(Stage.Mode.EDITING);
                     setButton(Button.RECTANGLE);
-                    stage.setCurrentShapeType(Stage.ShapeType.RECTANGLE);                    
+                    stage.setCurrentShapeType(ElShape.Type.RECTANGLE);                    
                 } 
                 else {
                     modeToggle.setSelected(false);
