@@ -34,7 +34,29 @@ public class elTriangle extends elShape {
                 break;    
         }
     }
-
+    
+    public elTriangle(Point p, int width, int height, Type type, 
+            Color fillColor, Color borderColor ,Stroke lineType) {
+        super(fillColor, borderColor, lineType);
+        this.x = p.x;
+        this.y = p.y;
+        this.width = width;
+        this.height = height;
+        this.type = type;
+        switch(type) {
+            case RIGHT:
+                p1 = new Point(p);
+                p2 = new Point(p1.x, p1.y + height);
+                p3 = new Point(p1.x + width, p1.y + height);
+                break;
+            default:
+                p1 = new Point(p.x + width / 2, p.y);
+                p2 = new Point(p1.x + width / 2, p1.y + height);
+                p3 = new Point(p1.x - width / 2, p1.y + height);
+                break;    
+        }
+    }
+        
     @Override
     public Shape getShape() {
         int[] ptx = new int[3];
@@ -89,6 +111,7 @@ public class elTriangle extends elShape {
        
     @Override
     public elShape getCopy() {
-        return new elTriangle(new Point(this.x, this.y), width, height, type);
+        return new elTriangle(new Point(this.x, this.y), width, height, type, 
+                fillColor, borderColor, lineType);
     } 
 }

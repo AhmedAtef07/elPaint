@@ -18,9 +18,9 @@ public class elRectangle extends elShape {
         this.height = height;
     }
   
-    public elRectangle (int x, int y, int width, int height, 
-                Color FillColor, Color BorderColor ,Stroke LineType){
-        super(FillColor, BorderColor, LineType);
+    public elRectangle (int x, int y, int width, int height,
+            Color fillColor, Color borderColor, Stroke lineType) {
+        super(fillColor, borderColor, lineType);;
         this.x = x;
         this.y = y;
         this.width = width;
