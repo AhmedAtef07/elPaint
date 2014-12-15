@@ -23,11 +23,14 @@ public final class Stage implements Triggable {
         LINE,
         ISOSCELES_TRIANGLE,
         RIGHT_TRIANGLE,
+        POLYGON
     }
     
     private final UserInterface ui;
     private final Layer layer;
-    private final Properties properties;
+    
+    private Properties properties;
+    ArrayList<Property> propertiesList = new ArrayList<Property>();
  
     private int startX, startY;
     private ElShape holdedShape;
@@ -49,6 +52,8 @@ public final class Stage implements Triggable {
         // Only need to be initialized once, as it will always keep the 
         // reference.
         elShapes = layer.getElShapes();
+        
+        properties = new Properties(propertiesList, this);
  
         multiSelectionActivated = false;
         isDragging = false;
@@ -444,10 +449,11 @@ public final class Stage implements Triggable {
                     if (!isMoving && !isResizing) {
                         setSelectedShapes();
                         layer.setHoldedShape(null);
-                    }
+                    }                    
                     layer.repaint();
-                    resetEditingFactors();
+                    resetEditingFactors();                    
                 }
+                setProperties();
                 break;
         } 
         isDragging = false;
@@ -570,5 +576,68 @@ public final class Stage implements Triggable {
         this.currentShapeType = currentShapeType;
     }
  
+    public void setProperties() {  
+        propertiesList.clear();
+        System.out.println("Set : " + propertiesList);
+        for (ElShape elShape : elShapes) {
+            if (elShape.isSelected()) {
+                System.out.println("??");
+                propertiesList.add(new Property(
+                        " X : ", elShape.getX(), 
+                        Property.PropertyName.X));
+                propertiesList.add(new Property(
+                        " Y : ", elShape.getY(), 
+                        Property.PropertyName.Y));
+                propertiesList.add(new Property(
+                        " WIDTH : ", elShape.getWidth(), 
+                        Property.PropertyName.WIDTH));
+                propertiesList.add(new Property(
+                        " HEIGHT : ", elShape.getHeight(), 
+                        Property.PropertyName.HEIGHT));
+                propertiesList.add(new Property(
+                        " Fill Color : ", elShape.getFillColor(), 
+                        Property.PropertyName.COLOR));
+                System.out.println("Add :" + elShape.getFillColor());
+                propertiesList.add(new Property(
+                      " Stroke Collor : ", elShape.getBorderColor(), 
+                        Property.PropertyName.STROKE_COLOR));
+            }
+        }
+        //properties.update();
+        ui.setProperties(properties);
+    }
+    
+    public void checkProperties() {
+        for (ElShape elShape : elShapes) {
+            if (elShape.isSelected()) {   
+                for(Property p : propertiesList) {
+                    System.out.println("Check: "  + propertiesList);
+                    //System.out.println("C " + p.getValue());
+                    switch (p.getPropertyName()) {
+                        case X:
+                            elShape.setX((int)p.getValue());
+                            break;
+                        case Y:
+                            elShape.setY((int)p.getValue());
+                            break;
+                        case WIDTH:
+                            elShape.setWidth((int)p.getValue());
+                            break;
+                        case HEIGHT:
+                            elShape.setHeight((int)p.getValue());
+                            break;
+                        case COLOR:
+                            elShape.setFillColor((Color)p.getValue());
+                            System.out.println("Ch " + (Color)p.getValue());
+                            break;
+                        case STROKE_COLOR:
+                            elShape.setBorderColor((Color)p.getValue());
+                            break;
+                    }
+                }
+            }
+        }
+        layer.repaint();
+    }
  
 }
