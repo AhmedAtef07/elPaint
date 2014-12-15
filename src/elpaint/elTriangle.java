@@ -5,7 +5,7 @@ import java.awt.*;
  *
  * @author Hassan Rezk
  */
-public class elTriangle extends elShape {
+public class ElTriangle extends ElShape {
     
     public enum Type {
         ISOSCELES,
@@ -15,7 +15,7 @@ public class elTriangle extends elShape {
     private Type type;
     private Point p1, p2, p3;
     
-    public elTriangle(Point p, int width, int height, Type type) {
+    public ElTriangle(Point p, int width, int height, Type type) {
         this.x = p.x;
         this.y = p.y;
         this.width = width;
@@ -35,7 +35,7 @@ public class elTriangle extends elShape {
         }
     }
     
-    public elTriangle(Point p, int width, int height, Type type, 
+    public ElTriangle(Point p, int width, int height, Type type, 
             Color fillColor, Color borderColor ,Stroke lineType) {
         super(fillColor, borderColor, lineType);
         this.x = p.x;
@@ -110,8 +110,8 @@ public class elTriangle extends elShape {
     }
        
     @Override
-    public elShape getCopy() {
-        return new elTriangle(new Point(this.x, this.y), width, height, type, 
+    public ElShape getCopy() {
+        return new ElTriangle(new Point(this.x, this.y), width, height, type, 
                 fillColor, borderColor, lineType);
     } 
 }

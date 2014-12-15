@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 
 public class Layer extends JPanel {
 
-    private LinkedList<elShape> elShapes;
-    private LinkedList<elShape> redo;
-    private elShape holdedShape;
+    private LinkedList<ElShape> elShapes;
+    private LinkedList<ElShape> redo;
+    private ElShape holdedShape;
     Color color;
 
     public void setColor(Color color) {
@@ -52,19 +52,19 @@ public class Layer extends JPanel {
         redo.removeLast();
     }
     
-    public void setHoldedShape(elShape holdedShape) {
+    public void setHoldedShape(ElShape holdedShape) {
         this.holdedShape = holdedShape;
     }
     
-    public LinkedList<elShape> getElShapes() {
+    public LinkedList<ElShape> getElShapes() {
         return elShapes;
     }
 
-    public void setElShapes(LinkedList<elShape> elShapes) {
+    public void setElShapes(LinkedList<ElShape> elShapes) {
         this.elShapes = elShapes;
     }
     
-    public void addShape(elShape shape) {
+    public void addShape(ElShape shape) {
         elShapes.add(shape);
         redo.clear();
     }
@@ -79,7 +79,7 @@ public class Layer extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
         
-        for (elShape shape: elShapes) {
+        for (ElShape shape: elShapes) {
             g2d.setColor(shape.getFillColor());
             g2d.fill(shape.getShape());
             g2d.setColor(shape.getBorderColor());
@@ -90,7 +90,7 @@ public class Layer extends JPanel {
             g2d.setColor(Color.gray);
             g2d.draw(holdedShape.getShape());            
         } else {
-            for (elShape shape: elShapes) {
+            for (ElShape shape: elShapes) {
                 if (shape.isSelected()) {                    
                     g2d.setColor(SelectionBox.boxColor);
                     for(SelectionBox.ResizeBox box: 

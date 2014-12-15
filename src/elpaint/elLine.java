@@ -8,7 +8,7 @@ import java.awt.geom.*;
  * @author Hassan Rezk
  */
 
-public class  elLine extends elComponent {
+public class  ElLine extends ElShape {
 
     private Point p1, p2;
     private Color color;
@@ -37,14 +37,14 @@ public class  elLine extends elComponent {
         return angle;
     }
 
-    public elLine(Point p1, Point p2) {
+    public ElLine(Point p1, Point p2) {
         this.p1 = p1;
         this.p2 = p2;
         this.color = Color.BLACK;
         linedraw = new Line2D.Float(p1, p2); 
     }
 
-    public elLine(Point p1, Point p2, Color color) {
+    public ElLine(Point p1, Point p2, Color color) {
         this.p1 = p1;
         this.p2 = p2;
         this.color = color;
@@ -82,5 +82,10 @@ public class  elLine extends elComponent {
     public void setY(int y) {
         p1.y += y;
         p2.y += y;
+    }
+
+    @Override
+    public ElShape getCopy() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

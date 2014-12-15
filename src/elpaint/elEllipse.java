@@ -9,16 +9,16 @@ import java.awt.geom.Ellipse2D;
  *
  * @author Ahmed Atef
  */
-public class elEllipse extends elShape {
+public class ElEllipse extends ElShape {
 
-    public elEllipse(int x, int y, int width, int height) {
+    public ElEllipse(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
 
-    public elEllipse(int x, int y, int width, int height, 
+    public ElEllipse(int x, int y, int width, int height, 
             Color fillColor, Color borderColor, Stroke lineType) {
         super(fillColor, borderColor, lineType);
         this.x = x;
@@ -33,8 +33,8 @@ public class elEllipse extends elShape {
     }
         
     @Override
-    public elShape getCopy() {
-        return new elEllipse(x, y, width, height, fillColor, borderColor,
+    public ElShape getCopy() {
+        return new ElEllipse(x, y, width, height, fillColor, borderColor,
                 lineType);
     }
 }

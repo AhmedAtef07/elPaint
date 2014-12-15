@@ -6,7 +6,7 @@ import java.awt.*;
  * @author Hassan Rezk
  */
 
-public class elPolygon extends elShape {
+public class ElPolygon extends ElShape {
     
     private int[] ptx;
     private int[] pty;
@@ -17,8 +17,8 @@ public class elPolygon extends elShape {
     }
 
     @Override
-    public elShape getCopy() {
-        return new elPolygon();
+    public ElShape getCopy() {
+        return new ElPolygon();
     }
    
 }

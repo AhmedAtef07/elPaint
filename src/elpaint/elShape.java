@@ -9,7 +9,7 @@ import java.awt.Stroke;
  *
  * @author HackerGhost
  */
-public abstract class elShape extends elComponent {
+public abstract class ElShape {
     
     protected Stroke lineType;
     protected Color fillColor;
@@ -23,14 +23,14 @@ public abstract class elShape extends elComponent {
     private boolean isSelected;
 
     
-    public elShape() {
+    public ElShape() {
         this.isSelected = false;
         this.lineType = new BasicStroke(2);
         this.fillColor = Color.WHITE;
         this.borderColor = Color.BLACK;
     }   
     
-    public elShape(Color fillColor, Color borderColor, Stroke lineType) {
+    public ElShape(Color fillColor, Color borderColor, Stroke lineType) {
         this.fillColor = fillColor;
         this.borderColor = borderColor;
         this.lineType = lineType ;
@@ -105,7 +105,7 @@ public abstract class elShape extends elComponent {
         return new SelectionBox(this);
     }
      
-    public abstract elShape getCopy();
+    public abstract ElShape getCopy();
     public abstract Shape getShape();
  
 }

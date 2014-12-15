@@ -22,7 +22,7 @@ public class SelectionBox {
     // Minumum dimension in which middle boxes appear.
     private final int minDimension = 30;
     
-    public SelectionBox(elShape shape) {
+    public SelectionBox(ElShape shape) {
         bound = shape.getShape().getBounds2D();
         
         int x = (int)bound.getX();
@@ -55,21 +55,21 @@ public class SelectionBox {
     }
     
     public class ResizeBox {
-        private elRectangle rect;
+        private ElRectangle rect;
         private ResizeBoxType boxType;
 
-        public ResizeBox(elRectangle rect, ResizeBoxType boxType) {
+        public ResizeBox(ElRectangle rect, ResizeBoxType boxType) {
             this.rect = rect;
             this.boxType = boxType;
         }
 
         public ResizeBox(int x, int y, ResizeBoxType boxType) {
-            rect = new elRectangle(x - boxHSize, y - boxHSize, 
+            rect = new ElRectangle(x - boxHSize, y - boxHSize, 
                     boxHSize * 2, boxHSize * 2);
             this.boxType = boxType;
         }
         
-        public elRectangle getRect() {
+        public ElRectangle getRect() {
             return rect;
         }
 

@@ -9,16 +9,16 @@ import java.awt.geom.Rectangle2D;
  *
  * @author HackerGhost
  */
-public class elRectangle extends elShape {    
+public class ElRectangle extends ElShape {    
 
-    public elRectangle(int x, int y, int width, int height) {
+    public ElRectangle(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
   
-    public elRectangle (int x, int y, int width, int height,
+    public ElRectangle (int x, int y, int width, int height,
             Color fillColor, Color borderColor, Stroke lineType) {
         super(fillColor, borderColor, lineType);;
         this.x = x;
@@ -33,8 +33,8 @@ public class elRectangle extends elShape {
     }    
     
     @Override
-    public elShape getCopy() {
-        return new elRectangle(x, y, width, height, fillColor, borderColor,
+    public ElShape getCopy() {
+        return new ElRectangle(x, y, width, height, fillColor, borderColor,
                 lineType);
     }    
 }
