@@ -2,23 +2,15 @@ package elpaint;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.AbstractAction;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-
 /**
  *
  * @author Ahmed Emad
@@ -27,6 +19,8 @@ public class Properties extends JPanel {
     
     private ArrayList<Property> propertyList;
     private Stage stage;
+    private Property pr;
+    int num = 0;
     JPanel panel;
 
     public void setStage(Stage stage) {
@@ -46,19 +40,41 @@ public class Properties extends JPanel {
         this.stage = stage;
     }
     
-    public void update() {
-        getJPanel();
-    }
-    
     public JPanel getJPanel() {
-        panel = new JPanel(new GridLayout(propertyList.size(), 2));
+        panel = new JPanel(new GridLayout(propertyList.size(), 2));        
         for(Property p : propertyList) {
+            pr = p;
             panel.add(new JLabel(p.getLabel()));
             switch (p.getPropertyType()) {
                 case INTEGER :
+                    num = (int)p.getValue();
                     JTextField t = new JTextField(Integer.toString(
-                            (int)p.getValue()).toString());
-                    t.getDocument().addDocumentListener(documentListener);
+                            (int)p.getValue()));
+                    t.addKeyListener(new KeyAdapter() {            
+                        public void keyReleased(KeyEvent e) {
+                            JTextField textField = (JTextField) e.getSource();
+                            String text = textField.getText();
+                            if(e.getKeyChar() == '\n') {
+                                try {
+                                    num = Integer.parseInt(text);
+                                } catch (NumberFormatException exep) {
+                                    t.setText("");
+                                }
+                                p.setValue(num);  
+                                stage.checkProperties();
+                            }
+                            try {
+                                num = Integer.parseInt(text);
+                            } catch (NumberFormatException exep) {
+                                t.setText("");
+                            }
+                        }
+                        public void keyTyped(KeyEvent e) {
+                        }
+                        public void keyPressed(KeyEvent e) {
+                        }
+                    });
+                    p.setValue(num);
                     panel.add(t);
                     break;
                 case COLOR :
@@ -80,36 +96,4 @@ public class Properties extends JPanel {
         }
         return panel;
     }
-    
-      DocumentListener documentListener = new DocumentListener() {
-      public void changedUpdate(DocumentEvent documentEvent) {
-        printIt(documentEvent);
-      }
-      public void insertUpdate(DocumentEvent documentEvent) {
-        printIt(documentEvent);
-      }
-      public void removeUpdate(DocumentEvent documentEvent) {
-        printIt(documentEvent);
-      }
-      private void printIt(DocumentEvent documentEvent) {
-        DocumentEvent.EventType type = documentEvent.getType();
-        String typeString = null;
-        if (type.equals(DocumentEvent.EventType.CHANGE)) {
-          typeString = "Change";
-          
-        }  else if (type.equals(DocumentEvent.EventType.INSERT)) {
-          typeString = "Insert";
-        }  else if (type.equals(DocumentEvent.EventType.REMOVE)) {
-          typeString = "Remove";
-        }
-//        System.out.print("Type : " + typeString);
-//        Document source = documentEvent.getDocument();
-//        int length = source.getLength();
-//        try {
-//          System.out.println("Contents: " + source.getText(0, length));
-//        } catch (BadLocationException badLocationException) {
-//          System.out.println("Contents: Unknown");
-//        }        
-      }
-    };
 }
