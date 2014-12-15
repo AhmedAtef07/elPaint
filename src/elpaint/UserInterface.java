@@ -2,6 +2,7 @@ package elpaint;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -26,13 +27,6 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 
 public class UserInterface extends JFrame {
-
-    enum property {
-        elComponents,
-        elShape,
-        elLine,
-        elText,        
-    }
     
     enum Button {
         RECTANGLE,
@@ -40,21 +34,19 @@ public class UserInterface extends JFrame {
         LINE,
         RIGHTTRIANGLE,
         ISOTRIANGLE,
+        POLYGON
     }
     
     private Stage stage;
     private Layer layer;
     private Properties properties;
-    private int propertiesWidth = 0;
-    private int x , y, elWidth, elHeight;
     
     Thread thread;
     
     Color color;
-    JPanel buttonsJPanel, elComponentsJPanel, elShapeJPanel,
-           elLineJPanel, elTextJPanel, propertiesJPanel, BackJPanel;
+    JPanel buttonsJPanel, propertiesJPanel, BackJPanel;
     JToggleButton lineToggle, rectangleToggle, ellipseToggle, 
-            rightTriangleToggle, isoTriangleToggle, modeToggle;
+            rightTriangleToggle, isoTriangleToggle, polygonToggle, modeToggle;
     JButton colorChooser;
     JTextField positionX, positionY, shapeHeight, shapeWidth,
                positionX2, positionY2;
@@ -65,19 +57,18 @@ public class UserInterface extends JFrame {
         setSystemLook();
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 700);
         setLocationRelativeTo(null);                
         
         setButtonsJPanel();
         setPropertyJPanel();
-        this.add(propertiesJPanel, BorderLayout.EAST);
+        
         setSize(800, 650);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         
-        JPanel a = new JPanel();        
-        a.add(buttonsJPanel);
-        a.setBackground(Color.LIGHT_GRAY);
-        add(a, BorderLayout.SOUTH);
+        JPanel buttons = new JPanel();        
+        buttons.add(buttonsJPanel);
+        buttons.setBackground(Color.LIGHT_GRAY);
+        add(buttons, BorderLayout.SOUTH);
         
         setButton(Button.RECTANGLE);
         
@@ -88,9 +79,7 @@ public class UserInterface extends JFrame {
         
         layer = new Layer(new Point(0, 0), 300, 300);
         add(layer, BorderLayout.CENTER);
-        layer.requestFocusInWindow();        
-        
-        properties = new Properties();
+        layer.requestFocusInWindow();               
         
         setVisible(true);
     }
@@ -123,6 +112,7 @@ public class UserInterface extends JFrame {
         Icon ellipseIcon = new ImageIcon("src/resources/ellipse.png");
         Icon rightTriangleIcon = new ImageIcon("src/resources/tri.png");
         Icon isoTriangleIcon = new ImageIcon("src/resources/tri2.png");
+        Icon polygonIcon = new ImageIcon("src/resources/polygon.png");
         Icon modeIcon = new ImageIcon("src/resources/cursor.png");
         
         lineToggle = new JToggleButton(lineIcon);
@@ -130,14 +120,15 @@ public class UserInterface extends JFrame {
         ellipseToggle = new JToggleButton(ellipseIcon);
         rightTriangleToggle = new JToggleButton(rightTriangleIcon);
         isoTriangleToggle = new JToggleButton(isoTriangleIcon);
+        polygonToggle = new JToggleButton(polygonIcon);
         modeToggle = new JToggleButton(modeIcon);
-        lineToggle.setBackground(Color.BLUE);
         
         buttonsJPanel.add(lineToggle);
         buttonsJPanel.add(rectangleToggle);
         buttonsJPanel.add(ellipseToggle);
         buttonsJPanel.add(rightTriangleToggle);
         buttonsJPanel.add(isoTriangleToggle);
+        buttonsJPanel.add(polygonToggle);
         buttonsJPanel.add(modeToggle);
         
         lineToggle.addActionListener(buttonPressed);
@@ -145,6 +136,7 @@ public class UserInterface extends JFrame {
         ellipseToggle.addActionListener(buttonPressed);
         rightTriangleToggle.addActionListener(buttonPressed);
         isoTriangleToggle.addActionListener(buttonPressed);
+        polygonToggle.addActionListener(buttonPressed);
         modeToggle.addActionListener(buttonPressed);
         
         lineToggle.setFocusable(false);
@@ -152,6 +144,7 @@ public class UserInterface extends JFrame {
         ellipseToggle.setFocusable(false);
         rightTriangleToggle.setFocusable(false);
         isoTriangleToggle.setFocusable(false);
+        polygonToggle.setFocusable(false);
         modeToggle.setFocusable(false);
         //this.getContentPane().add(tools, BorderLayout.NORTH);                
     }
@@ -160,130 +153,13 @@ public class UserInterface extends JFrame {
         return layer;
     }
     
-    private void setPropertyJPanel() {
-        positionX = new JTextField();
-        positionY = new JTextField();
-        positionX2 = new JTextField();
-        positionY2 = new JTextField();
-        shapeWidth = new JTextField();
-        shapeHeight = new JTextField();
-        colorChooser = new JButton();
-        colorChooser.setFocusable(false);
-        colorChooser.setBackground(Color.BLUE);
-        colorChooser.addActionListener(buttonPressed);
-        
+    private void setPropertyJPanel() {               
         propertiesJPanel = new JPanel();
         propertiesJPanel.setBackground(Color.LIGHT_GRAY);
-        
-        elComponentsJPanel = new JPanel(new GridLayout(5, 2, 0, 0));
-        elComponentsJPanel.setBackground(Color.LIGHT_GRAY);
-        elComponentsJPanel.add(new JLabel(" X : "));
-        elComponentsJPanel.add(positionX);
-        elComponentsJPanel.add(new JLabel(" Y : "));
-        elComponentsJPanel.add(positionY);
-        elComponentsJPanel.add(new JLabel(" Color : "));
-        elComponentsJPanel.add(colorChooser);
-        
-        elShapeJPanel = new JPanel(new GridLayout(5, 2, 2, 2));
-        elShapeJPanel.setBackground(Color.LIGHT_GRAY);
-        elShapeJPanel.add(new JLabel(" X : "));
-        elShapeJPanel.add(positionX2);
-        elShapeJPanel.add(new JLabel(" Y : "));
-        elShapeJPanel.add(positionY2);
-        elShapeJPanel.add(new JLabel(" Width : "));
-        elShapeJPanel.add(shapeWidth);
-        elShapeJPanel.add(new JLabel(" Height : "));
-        elShapeJPanel.add(shapeHeight);
-        elShapeJPanel.add(new JLabel(" Color : "));
-        
-        colorLabel = new JLabel();        
-        colorLabel.setOpaque(false);
-        color = new Color(0);
-        color = Color.WHITE;
-        color = this.getBackground();
-        colorLabel.setBackground(color);
-        colorLabel.setOpaque(true);
-        colorLabel.addMouseListener(new MouseAdapter()   {   
-        public void mouseClicked(MouseEvent e)   
-        {   
-              color = JColorChooser.showDialog(null, "Choose Color", 
-                        color); 
-              layer.setColor(color);
-              colorLabel.setBackground(color);
-        }   
-        });
-        
-        BackJPanel = new JPanel(new GridLayout(1,2,2,2));
-        BackJPanel.setBackground(Color.LIGHT_GRAY);
-        BackJPanel.add(new JLabel(" Color : "));
-        BackJPanel.add(colorLabel);    
-        
-        propertiesJPanel.add(BackJPanel);
+        propertiesJPanel.setMinimumSize(new Dimension(100, this.getHeight()));
+        propertiesJPanel.setMaximumSize(new Dimension(100, this.getHeight()));
+        this.add(propertiesJPanel, BorderLayout.EAST);
     }
-    
-    private void deleteProperties(boolean all) {
-        if (all)
-            this.remove(propertiesJPanel);
-        else {
-            try {
-                propertiesJPanel.remove(elComponentsJPanel);
-            } catch (Exception e) {
-            }
-            try {
-                propertiesJPanel.remove(elShapeJPanel);
-            } catch (Exception e) {
-            }
-            try {
-                propertiesJPanel.remove(elLineJPanel);
-            } catch (Exception e) {
-            }
-            try {
-                propertiesJPanel.remove(elTextJPanel);
-            } catch (Exception e) {
-            }
-        }
-        positionX.setFocusable(false);
-        positionY.setFocusable(false);
-        positionX2.setFocusable(false);
-        positionY2.setFocusable(false);
-        shapeWidth.setFocusable(false);
-        shapeHeight.setFocusable(false);
-    }
-    
-    public void setProperty(property p) {      
-        if (p == null) {
-            deleteProperties(true);
-            this.setSize(this.getWidth()-propertiesWidth, this.getHeight());
-            propertiesWidth = 0;         
-        }            
-        else {
-            deleteProperties(false);
-            switch(p) {
-                case elComponents :
-                    propertiesJPanel.add(elComponentsJPanel);
-                    this.add(propertiesJPanel, BorderLayout.EAST);
-                    if (propertiesWidth != 150) {
-                        this.setSize(this.getWidth()-propertiesWidth, 
-                                this.getHeight());
-                        propertiesWidth = 150;
-                        this.setSize(this.getWidth() + propertiesWidth, 
-                                this.getHeight());                        
-                    }
-                    break;
-                case elShape : 
-                    propertiesJPanel.add(elShapeJPanel);
-                    this.add(propertiesJPanel, BorderLayout.EAST);
-                    if (propertiesWidth != 152) {
-                        this.setSize(this.getWidth()-propertiesWidth, 
-                                this.getHeight());
-                        propertiesWidth = 152;
-                        this.setSize(this.getWidth() + propertiesWidth, 
-                                this.getHeight());                        
-                    }                    
-                    break;
-            }
-        }            
-    }        
     
     public void setButton(Button button) {
         switch (button) {
@@ -293,6 +169,7 @@ public class UserInterface extends JFrame {
                 ellipseToggle.setSelected(false);
                 rightTriangleToggle.setSelected(false);
                 isoTriangleToggle.setSelected(false);
+                polygonToggle.setSelected(false);
                 modeToggle.setSelected(false);
                 stage.setCurrentMode(Stage.Mode.DRAWING);
                 break;
@@ -302,6 +179,7 @@ public class UserInterface extends JFrame {
                 ellipseToggle.setSelected(false);
                 rightTriangleToggle.setSelected(false);
                 isoTriangleToggle.setSelected(false);
+                polygonToggle.setSelected(false);
                 break;
             case ELLIPSE :
                 lineToggle.setSelected(false);
@@ -309,6 +187,7 @@ public class UserInterface extends JFrame {
                 ellipseToggle.setSelected(true);
                 rightTriangleToggle.setSelected(false);
                 isoTriangleToggle.setSelected(false);
+                polygonToggle.setSelected(false);
                 break;
             case RIGHTTRIANGLE :
                 lineToggle.setSelected(false);
@@ -316,6 +195,7 @@ public class UserInterface extends JFrame {
                 ellipseToggle.setSelected(false);
                 rightTriangleToggle.setSelected(true);
                 isoTriangleToggle.setSelected(false);
+                polygonToggle.setSelected(false);
                 modeToggle.setSelected(false);
                 stage.setCurrentMode(Stage.Mode.DRAWING);
                 break;
@@ -325,6 +205,17 @@ public class UserInterface extends JFrame {
                 ellipseToggle.setSelected(false);
                 rightTriangleToggle.setSelected(false);
                 isoTriangleToggle.setSelected(true);
+                polygonToggle.setSelected(false);
+                modeToggle.setSelected(false);
+                stage.setCurrentMode(Stage.Mode.DRAWING);
+                break;
+            case POLYGON :
+                lineToggle.setSelected(false);
+                rectangleToggle.setSelected(false);
+                ellipseToggle.setSelected(false);
+                rightTriangleToggle.setSelected(false);
+                isoTriangleToggle.setSelected(false);
+                polygonToggle.setSelected(true);
                 modeToggle.setSelected(false);
                 stage.setCurrentMode(Stage.Mode.DRAWING);
                 break;
@@ -368,6 +259,10 @@ public class UserInterface extends JFrame {
                 stage.setCurrentShapeType(Stage.ShapeType.ISOSCELES_TRIANGLE);
                 setButton(Button.ISOTRIANGLE);
             }
+            else if (e.getSource() == polygonToggle) {               
+                stage.setCurrentShapeType(Stage.ShapeType.POLYGON);
+                setButton(Button.POLYGON);
+            }
             else if (e.getSource() == colorChooser) {
                 color = JColorChooser.showDialog(null, "Choose Color", 
                         colorChooser.getBackground());             
@@ -387,4 +282,16 @@ public class UserInterface extends JFrame {
             }
         }
     };
+    
+    public void setProperties(Properties properties){
+        remove(propertiesJPanel);
+        propertiesJPanel = new JPanel();
+        propertiesJPanel.setBackground(Color.LIGHT_GRAY);
+        propertiesJPanel.setMinimumSize(new Dimension(150, this.getHeight()));
+        propertiesJPanel.add(properties.getJPanel());
+        this.add(propertiesJPanel, BorderLayout.EAST);
+        revalidate();
+        repaint();
+        layer.repaint();
+    }
 }
