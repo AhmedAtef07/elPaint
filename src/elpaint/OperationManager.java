@@ -18,8 +18,13 @@ public class OperationManager {
         redoOperations = new Stack<>();
     }   
     
-    public void execute(Operation operation, boolean addInHistory) {
-        if (addInHistory) {
+    public void execute(Operation operation, boolean addToHistory) {
+        if (operation.getClass().equals(OpAdd.class)) {
+            operation = new OpAdd(operation, elShapes);
+        } else if (operation.getClass().equals(OpDelete.class)) {
+            operation = new OpDelete(operation, elShapes);
+        }
+        if (addToHistory) {
             undoOperations.add(operation.perform());        
             redoOperations.clear();
             return;

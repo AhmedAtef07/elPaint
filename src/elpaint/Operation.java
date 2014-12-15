@@ -15,6 +15,16 @@ public abstract class Operation {
     
     /**
      *
+     * @param targetedShapes Shapes to be processed.
+     * @param elShapes Reference to list of shapes in drawing layer.
+     */
+    public Operation(LinkedList<ElShape> targetedShapes, 
+            LinkedList<ElShape> elShapes) {
+        this.targetedShapes = targetedShapes;
+    }
+        
+    /**
+     *
      * @return A reverse operation to revert the changes this operation 
      * performs.
      */

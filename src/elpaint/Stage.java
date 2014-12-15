@@ -41,12 +41,12 @@ public final class Stage implements Triggable {
     public Stage() {
         ui = new UserInterface(this);
         layer = ui.getLayer();
+        elShapes = layer.getElShapes();
         opManager = new OperationManager(elShapes);
         
         properties = ui.getProperties();
         // Only need to be initialized once, as it will always keep the 
         // reference.
-        elShapes = layer.getElShapes();
         
         properties = new Properties(propertiesList, this);
  
@@ -219,12 +219,13 @@ public final class Stage implements Triggable {
     }
  
     private void deleteSelectedShapes() {
-        for (int i = elShapes.size() - 1; i > -1; --i) {
-             if (elShapes.get(i).isSelected()) {
-                elShapes.remove(elShapes.get(i));
-                --i;
-            }
-        }
+//        for (int i = elShapes.size() - 1; i > -1; --i) {
+//             if (elShapes.get(i).isSelected()) {
+//                elShapes.remove(elShapes.get(i));
+//                --i;
+//            }
+//        }
+        opManager.execute(new OpDelete(getSelectedShapes()), true);
         layer.repaint();
         cloneShapesList();
     }  
@@ -243,19 +244,21 @@ public final class Stage implements Triggable {
  
     private void pasteCopiedShaped() {
         unselectAll();
+        LinkedList<ElShape> paddedShapes = new LinkedList<>();
         for (ElShape shape : copiedShapes) {
             shape.setX(shape.getX() + 10);
             shape.setY(shape.getY() + 10);
             shape.setSelected(true);
-            layer.addShape(shape);
+            paddedShapes.add(shape);
         }
+        opManager.execute(new OpAdd(paddedShapes), true);
         layer.repaint();
         copySelecetedShapes();
         cloneShapesList();
     }
  
     private void duplicateSelectedShapes() {
-        ArrayList<ElShape> newCopiedShapes = new ArrayList<>();
+        LinkedList<ElShape> newCopiedShapes = new LinkedList<>();
         for (ElShape elshape: layer.getElShapes()) {
             if (elshape.isSelected()) {
                 newCopiedShapes.add(elshape.getCopy());
@@ -267,8 +270,8 @@ public final class Stage implements Triggable {
                 shape.setX(shape.getX() + 37);
                 shape.setY(shape.getY() + 17);
                 shape.setSelected(true);
-                layer.addShape(shape);
             }
+            opManager.execute(new OpAdd(newCopiedShapes), true);
             layer.repaint();
             cloneShapesList();
         }        
@@ -427,7 +430,7 @@ public final class Stage implements Triggable {
                 if (isDragging) {
                     resetDrawingFactors(); 
                     cloneShapesList();
-                    layer.addShape(holdedShape);
+                    opManager.execute(new OpAdd(holdedShape), true);
                     layer.setHoldedShape(null);
                     layer.repaint();
                 }
