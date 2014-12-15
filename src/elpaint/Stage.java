@@ -37,7 +37,6 @@ public final class Stage implements Triggable {
     private SelectionBox.ResizeBoxType selectedResizeBoxType;
  
     private LinkedList<ElShape> elShapes;
-    private LinkedList<ElShape> clonedShapes;
     private LinkedList<ElShape> copiedShapes;
  
     private Mode currentMode;
@@ -65,19 +64,16 @@ public final class Stage implements Triggable {
         startY = -1;
     }
  
-    void resetEditingFactors() {        
- 
+    void resetEditingFactors() { 
         startX = -1;
         startY = -1;
         cloneShapesList();
     }
  
-    public void setSelectedShapes(Point p) {
- 
+    public void setSelectedShapes(Point p) { 
         if (!multiSelectionActivated) {
             unselectAll();
-        }
- 
+        } 
         for (int i = elShapes.size() - 1; i != -1; --i) {
             if (elShapes.get(i).getShape().contains(p)) {
                 // Toggle selcetion.
@@ -203,9 +199,7 @@ public final class Stage implements Triggable {
     }
  
     void cloneShapesList() {
-        clonedShapes = new LinkedList<>();
         for (ElShape elshape: layer.getElShapes()) {
-            clonedShapes.add(elshape.getCopy());
             elshape.cloneSelf();
         }
     }

@@ -138,6 +138,15 @@ public abstract class ElShape {
         y = clonedY - yDisplacment;
     }
     
+    /**
+     * Change the reference point and dimension of the shape in relative to the 
+     * relative shape.
+     * 
+     * @param relativeShape Shape in which all selected shapes will be resized 
+     * in relative to it's dimension.
+     * @param selectedResizeBoxType Type of resize box used in resizing.
+     * @param draggedPoint The point the cursor points to in this instance.
+     */
     public void resize(ElShape relativeShape, 
             SelectionBox.ResizeBoxType selectedResizeBoxType, 
             Point draggedPoint) {
