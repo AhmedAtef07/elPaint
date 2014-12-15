@@ -42,8 +42,9 @@ public class UserInterface extends JFrame {
         ISOTRIANGLE,
     }
     
-    private Layer layer;
     private Stage stage;
+    private Layer layer;
+    private Properties properties;
     private int propertiesWidth = 0;
     private int x , y, elWidth, elHeight;
     
@@ -89,7 +90,13 @@ public class UserInterface extends JFrame {
         add(layer, BorderLayout.CENTER);
         layer.requestFocusInWindow();        
         
+        properties = new Properties();
+        
         setVisible(true);
+    }
+
+    public Properties getProperties() {
+        return properties;
     }
     
     private void setSystemLook() {

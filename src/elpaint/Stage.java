@@ -30,6 +30,7 @@ public final class Stage implements Triggable {
  
     private final UserInterface ui;
     private final Layer layer;
+    private final Properties properties;
  
     private int startX, startY;
     private ElShape holdedShape;
@@ -47,6 +48,7 @@ public final class Stage implements Triggable {
     public Stage() {
         ui = new UserInterface(this);
         layer = ui.getLayer();
+        properties = ui.getProperties();
         // Only need to be initialized once, as it will always keep the 
         // reference.
         elShapes = layer.getElShapes();

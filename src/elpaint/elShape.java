@@ -22,7 +22,6 @@ public abstract class ElShape {
     
     private boolean isSelected;
 
-    
     public ElShape() {
         this.isSelected = false;
         this.lineType = new BasicStroke(2);

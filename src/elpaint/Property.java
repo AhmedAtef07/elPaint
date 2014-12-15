@@ -14,33 +14,57 @@ public class Property {
     }
     
     public enum PropertyName {
-        X,
-        Y,
-        WIDTH,
-        HEIGHT,
-        COLOR,
-        STROKE_COLOR,
-        STROKE_THICKNESS,
+        X(PropertyType.INTEGER),
+        Y(PropertyType.INTEGER),
+        WIDTH(PropertyType.INTEGER),
+        HEIGHT(PropertyType.INTEGER),
+        COLOR(PropertyType.COLOR),
+        STROKE_COLOR(PropertyType.COLOR),
+        STROKE_THICKNESS(PropertyType.INTEGER);
+        
+        PropertyType propertyType;
+
+        private PropertyName(PropertyType propertyType) {
+            this.propertyType = propertyType;
+        }
+
+        public PropertyType getPropertyType() {
+            return propertyType;
+        }        
     }
 
-    PropertyType propertyType;
+    private PropertyType propertyType;
+    private PropertyName propertyName;
     
-    String label;
-    int intValue;
-    Color colorValue;
+    private String label;
+    private Object value;
 
-    public Property(String label, int intValue) {
+
+    public Property(String label, Object value, PropertyName propertyName) {
         this.label = label;
-        this.intValue = intValue;
-        propertyType = PropertyType.INTEGER;
+        this.propertyName = propertyName;
+        this.propertyType = propertyName.getPropertyType();
+        
+        this.value = value;
     }
- 
-    public Property(String label, Color colorValue) {
-        this.label = label;
-        this.colorValue = colorValue;
-        propertyType = PropertyType.COLOR;
+
+    public PropertyType getPropertyType() {
+        return propertyType;
     }
-    
-    
-    
+
+    public PropertyName getPropertyName() {
+        return propertyName;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }    
 }
