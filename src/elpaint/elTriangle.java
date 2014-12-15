@@ -109,13 +109,13 @@ public class ElTriangle extends ElShape {
         }
     }
 
+
     @Override
     public void move(int xDisplacment, int yDisplacment) {
-        super.move(xDisplacment, yDisplacment); //To change body of generated methods, choose Tools | Templates.
+        setX(getClonedX()-xDisplacment);
+        setY(getClonedY()-yDisplacment);
     }
        
-    
-    
     @Override
     public ElShape getCopy() {
         return new ElTriangle(new Point(this.x, this.y), width, height, type, 
