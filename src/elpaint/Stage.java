@@ -24,10 +24,12 @@ public final class Stage implements Triggable {
         ISOSCELES_TRIANGLE,
         RIGHT_TRIANGLE,
         POLYGON
-    }
-    
+    }    
+
     private final UserInterface ui;
     private final Layer layer;
+    private final OperationManager opManager;
+    
     
     private Properties properties;
     ArrayList<Property> propertiesList = new ArrayList<Property>();
@@ -48,6 +50,8 @@ public final class Stage implements Triggable {
     public Stage() {
         ui = new UserInterface(this);
         layer = ui.getLayer();
+        opManager = new OperationManager(elShapes);
+        
         properties = ui.getProperties();
         // Only need to be initialized once, as it will always keep the 
         // reference.
@@ -213,6 +217,15 @@ public final class Stage implements Triggable {
        cloneShapesList();        
     }
  
+    private LinkedList<ElShape> getSelectedShapes() {
+        LinkedList<ElShape> selectedShapes = new LinkedList<>();
+        for (ElShape elshape: layer.getElShapes()) {
+            if (elshape.isSelected()) {
+                selectedShapes.add(elshape);
+            }
+        }
+        return selectedShapes;
+    }
  
     private void deleteSelectedShapes() {
         for (int i = elShapes.size() - 1; i > -1; --i) {
@@ -361,20 +374,9 @@ public final class Stage implements Triggable {
                 layer.repaint();
             } else if (isMoving) {
                 // Move shapes.
-                for (ElShape elshape : elShapes) {                
-                    if (elshape.isSelected()) {
-                        if (e.isShiftDown()) {
-                            System.out.println(x + " " + y);
-                            if (Math.abs(x - startX) < Math.abs(startY - y)) {
-                                elshape.move(0, startY - y);                 
-                            } else {
-                                elshape.move(startX - x, 0);
-                            }
-                        } else {                                
-                            elshape.move(startX - x, startY - y);
-                        }
-                    }        
-                }
+                opManager.execute(new OpMove(new Point(startX, startY), 
+                        new Point(x, y), e.isShiftDown(), getSelectedShapes()),
+                        false);
                 layer.repaint();
             } else {
                 minX = Math.min(x, startX);
@@ -441,7 +443,11 @@ public final class Stage implements Triggable {
                 break;
             case EDITING: 
                 if (isDragging) {
-                    if (!isMoving && !isResizing) {
+                    if (isMoving) {
+                        opManager.execute(new OpMove(new Point(startX, startY), 
+                        new Point(x, y), e.isShiftDown(), getSelectedShapes()),
+                        true);
+                    } else if (!isMoving && !isResizing) {
                         setSelectedShapes();
                         layer.setHoldedShape(null);
                     }                    
@@ -501,12 +507,16 @@ public final class Stage implements Triggable {
  
         if (e.isControlDown() && !e.isShiftDown() && 
                 e.getKeyCode() == KeyEvent.VK_Z) {
-            layer.popLastShape();
+//            layer.popLastShape();
+            opManager.undo();
+            cloneShapesList();
             layer.repaint();
         } else if (e.isControlDown() && 
                 (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
                 (e.getKeyCode() == KeyEvent.VK_Y)) {
-            layer.unPopLastShape();
+//            layer.unPopLastShape();
+            opManager.redo();
+            cloneShapesList();
             layer.repaint();
         }
  
