@@ -373,7 +373,6 @@ public final class Stage implements Triggable {
                 }
                 layer.repaint();
             } else if (isMoving) {
-                // Move shapes.
                 opManager.execute(new OpMove(new Point(startX, startY), 
                         new Point(x, y), e.isShiftDown(), getSelectedShapes()),
                         false);
@@ -408,7 +407,8 @@ public final class Stage implements Triggable {
     }
  
     @Override
-    public void mouseClicked(MouseEvent e) {          
+    public void mouseClicked(MouseEvent e) {
+        ui.requestFocus();
         int x = e.getX() - ui.getComponents()[0].getX();
         int y = e.getY() - ui.getComponents()[0].getY();
         switch (currentMode) {
@@ -583,10 +583,8 @@ public final class Stage implements Triggable {
  
     public void setProperties() {  
         propertiesList.clear();
-        System.out.println("Set : " + propertiesList);
         for (ElShape elShape : elShapes) {
             if (elShape.isSelected()) {
-                System.out.println("??");
                 propertiesList.add(new Property(
                         " X : ", elShape.getX(), 
                         Property.PropertyName.X));
@@ -602,7 +600,6 @@ public final class Stage implements Triggable {
                 propertiesList.add(new Property(
                         " Fill Color : ", elShape.getFillColor(), 
                         Property.PropertyName.COLOR));
-                System.out.println("Add :" + elShape.getFillColor());
                 propertiesList.add(new Property(
                       " Stroke Collor : ", elShape.getBorderColor(), 
                         Property.PropertyName.STROKE_COLOR));
@@ -616,8 +613,6 @@ public final class Stage implements Triggable {
         for (ElShape elShape : elShapes) {
             if (elShape.isSelected()) {   
                 for(Property p : propertiesList) {
-                    System.out.println("Check: "  + propertiesList);
-                    //System.out.println("C " + p.getValue());
                     switch (p.getPropertyName()) {
                         case X:
                             elShape.setX((int)p.getValue());
@@ -633,7 +628,6 @@ public final class Stage implements Triggable {
                             break;
                         case COLOR:
                             elShape.setFillColor((Color)p.getValue());
-                            System.out.println("Ch " + (Color)p.getValue());
                             break;
                         case STROKE_COLOR:
                             elShape.setBorderColor((Color)p.getValue());

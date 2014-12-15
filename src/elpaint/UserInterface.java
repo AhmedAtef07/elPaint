@@ -79,7 +79,8 @@ public class UserInterface extends JFrame {
         
         layer = new Layer(new Point(0, 0), 300, 300);
         add(layer, BorderLayout.CENTER);
-        layer.requestFocusInWindow();               
+        layer.setFocusable(false);
+        this.requestFocus();             
         
         setVisible(true);
     }
