@@ -6,17 +6,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -41,21 +36,14 @@ public class UserInterface extends JFrame {
     private Layer layer;
     private Properties properties;
     
-    Thread thread;
-    
-    Color color;
-    JPanel buttonsJPanel, propertiesJPanel, BackJPanel;
+    JPanel buttonsJPanel, propertiesJPanel;
     JToggleButton lineToggle, rectangleToggle, ellipseToggle, 
             rightTriangleToggle, isoTriangleToggle, polygonToggle, modeToggle;
-    JButton colorChooser;
-    JTextField positionX, positionY, shapeHeight, shapeWidth,
-               positionX2, positionY2;
-    JLabel modeJLabel, colorLabel;
     
     public UserInterface(final Stage stage) {
         this.stage = stage;
-        setSystemLook();
         
+        setSystemLook();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);                
         
@@ -63,12 +51,7 @@ public class UserInterface extends JFrame {
         setPropertyJPanel();
         
         setSize(800, 650);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
-        JPanel buttons = new JPanel();        
-        buttons.add(buttonsJPanel);
-        buttons.setBackground(Color.LIGHT_GRAY);
-        add(buttons, BorderLayout.SOUTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);                
         
         setButton(Button.RECTANGLE);
         
@@ -80,13 +63,17 @@ public class UserInterface extends JFrame {
         layer = new Layer(new Point(0, 0), 300, 300);
         add(layer, BorderLayout.CENTER);
         layer.setFocusable(false);
-        this.requestFocus();             
         
+        this.requestFocus();                     
         setVisible(true);
     }
 
     public Properties getProperties() {
         return properties;
+    }
+    
+    public Layer getLayer() {
+        return layer;
     }
     
     private void setSystemLook() {
@@ -147,12 +134,13 @@ public class UserInterface extends JFrame {
         isoTriangleToggle.setFocusable(false);
         polygonToggle.setFocusable(false);
         modeToggle.setFocusable(false);
-        //this.getContentPane().add(tools, BorderLayout.NORTH);                
-    }
-    
-    public Layer getLayer() {
-        return layer;
-    }
+        //this.getContentPane().add(tools, BorderLayout.NORTH);  
+        
+        JPanel buttons = new JPanel();        
+        buttons.add(buttonsJPanel);
+        buttons.setBackground(Color.LIGHT_GRAY);
+        add(buttons, BorderLayout.SOUTH);
+    }        
     
     private void setPropertyJPanel() {               
         propertiesJPanel = new JPanel();
@@ -263,11 +251,6 @@ public class UserInterface extends JFrame {
             else if (e.getSource() == polygonToggle) {               
                 stage.setCurrentShapeType(ElShape.Type.POLYGON);
                 setButton(Button.POLYGON);
-            }
-            else if (e.getSource() == colorChooser) {
-                color = JColorChooser.showDialog(null, "Choose Color", 
-                        colorChooser.getBackground());             
-                colorChooser.setBackground(color);
             }
             else if (e.getSource() == modeToggle) {
                 if (modeToggle.isSelected()) {

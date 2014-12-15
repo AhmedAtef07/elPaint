@@ -19,7 +19,7 @@ public class Property {
         WIDTH(PropertyType.INTEGER),
         HEIGHT(PropertyType.INTEGER),
         COLOR(PropertyType.COLOR),
-        STROKE_COLOR(PropertyType.COLOR),
+        BORDER_COLOR(PropertyType.COLOR),
         STROKE_THICKNESS(PropertyType.INTEGER);
         
         PropertyType propertyType;

@@ -19,8 +19,6 @@ public class Properties extends JPanel {
     
     private ArrayList<Property> propertyList;
     private Stage stage;
-    private Property pr;
-    int num = 0;
     JPanel panel;
 
     public void setStage(Stage stage) {
@@ -41,57 +39,76 @@ public class Properties extends JPanel {
     }
     
     public JPanel getJPanel() {
-        panel = new JPanel(new GridLayout(propertyList.size(), 2));        
+        panel = new JPanel(new GridLayout(propertyList.size(), 2, 15, 15));  
+        panel.setBackground(Color.LIGHT_GRAY);
         for(Property p : propertyList) {
-            pr = p;
             panel.add(new JLabel(p.getLabel()));
             switch (p.getPropertyType()) {
                 case INTEGER :
-                    num = (int)p.getValue();
-                    JTextField t = new JTextField(Integer.toString(
-                            (int)p.getValue()));
+                    JTextField t;
+                    if (p.getValue() != null) {
+                        t = new JTextField(Integer.toString((int)p.getValue()));  
+                    }
+                    else {
+                        t = new JTextField("");
+                    }
                     t.addKeyListener(new KeyAdapter() {            
                         public void keyReleased(KeyEvent e) {
+                            int number = 0;
                             JTextField textField = (JTextField) e.getSource();
                             String text = textField.getText();
-                            if(e.getKeyChar() == '\n') {
-                                try {
-                                    num = Integer.parseInt(text);
-                                } catch (NumberFormatException exep) {
-                                    t.setText("");
-                                }
-                                p.setValue(num);  
-                                stage.checkProperties();
-                            }
                             try {
-                                num = Integer.parseInt(text);
+                                number = Integer.parseInt(text);
                             } catch (NumberFormatException exep) {
                                 t.setText("");
+                            }
+                            if(e.getKeyChar() == '\n') {
+                                if(text.length() > 0) {
+                                    try {
+                                        number = Integer.parseInt(text);
+                                    } catch (NumberFormatException exep) {
+                                        t.setText("");
+                                        p.setValue(null);
+                                        stage.checkProperties();
+                                    }
+                                    p.setValue(number);  
+                                    stage.checkProperties();
+                                }
+                                else {
+                                    p.setValue(null);  
+                                    stage.checkProperties();
+                                }
                             }
                         }
                         public void keyTyped(KeyEvent e) {
                         }
                         public void keyPressed(KeyEvent e) {
                         }
-                    });
-                    p.setValue(num);
+                    });                    
                     panel.add(t);
                     break;
                 case COLOR :
-                    JLabel l = new JLabel();
-                    l.setBackground((Color)p.getValue());
-                    l.setOpaque(true);
-                    l.addMouseListener(new MouseAdapter()   {   
+                    JLabel label =  new JLabel();
+                    Color defaultColor;
+                    if (p.getValue() != null) {
+                        defaultColor = (Color)p.getValue();
+                    }
+                    else {
+                        defaultColor = Color.WHITE;
+                    }
+                    label.setBackground(defaultColor);
+                    label.setOpaque(true);
+                    label.addMouseListener(new MouseAdapter()   {   
                     public void mouseClicked(MouseEvent e)   
-                    {
+                    {                        
                         Color color = JColorChooser.showDialog(
-                                null, p.getLabel(), (Color)p.getValue());
+                                null, p.getLabel(), defaultColor);
+                        label.setBackground(color);
                         p.setValue(color);
-                        l.setBackground(color);
                         stage.checkProperties();
                     }   
                     });
-                    panel.add(l);             
+                    panel.add(label);             
             }
         }
         return panel;

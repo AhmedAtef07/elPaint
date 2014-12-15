@@ -573,12 +573,12 @@ public final class Stage implements Triggable {
  
     public void setCurrentShapeType(ElShape.Type currentShapeType) {
         this.currentShapeType = currentShapeType;
-    }
+    }   
  
     public void setProperties() {  
         propertiesList.clear();
         for (ElShape elShape : elShapes) {
-            if (elShape.isSelected()) {
+            if (elShape.isSelected() && propertiesList.size() == 0) {
                 propertiesList.add(new Property(
                         " X : ", elShape.getX(), 
                         Property.PropertyName.X));
@@ -596,7 +596,57 @@ public final class Stage implements Triggable {
                         Property.PropertyName.COLOR));
                 propertiesList.add(new Property(
                       " Stroke Collor : ", elShape.getBorderColor(), 
-                        Property.PropertyName.STROKE_COLOR));
+                        Property.PropertyName.BORDER_COLOR));
+            }
+            else {
+                for(Property p : propertiesList) {
+                    switch (p.getPropertyName()) {
+                        case X:
+                            if (p.getValue() != null) {
+                                if ((int)p.getValue() != elShape.getX()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                        case Y:
+                            if (p.getValue() != null) {
+                                if ((int)p.getValue() != elShape.getY()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                        case WIDTH:
+                            if (p.getValue() != null) {
+                                if ((int)p.getValue() != elShape.getWidth()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                        case HEIGHT:
+                            if (p.getValue() != null) {
+                                if ((int)p.getValue() != elShape.getHeight()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                        case COLOR:
+                            if (p.getValue() != null) {
+                                if ((Color)p.getValue() 
+                                        != elShape.getFillColor()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                        case BORDER_COLOR:
+                            if (p.getValue() != null) {
+                                if ((Color)p.getValue() 
+                                        != elShape.getBorderColor()) {
+                                    p.setValue(null);
+                                }
+                            }
+                            break;
+                    }
+                }
             }
         }
         //properties.update();
@@ -609,22 +659,34 @@ public final class Stage implements Triggable {
                 for(Property p : propertiesList) {
                     switch (p.getPropertyName()) {
                         case X:
-                            elShape.setX((int)p.getValue());
+                            if (p.getValue() != null) {
+                                elShape.setX((int)p.getValue());
+                            }
                             break;
                         case Y:
-                            elShape.setY((int)p.getValue());
+                            if (p.getValue() != null) {
+                                elShape.setY((int)p.getValue());
+                            }
                             break;
                         case WIDTH:
-                            elShape.setWidth((int)p.getValue());
+                            if (p.getValue() != null) {
+                                elShape.setWidth((int)p.getValue());
+                            }
                             break;
                         case HEIGHT:
-                            elShape.setHeight((int)p.getValue());
+                            if (p.getValue() != null) { 
+                                elShape.setHeight((int)p.getValue());
+                            }
                             break;
                         case COLOR:
-                            elShape.setFillColor((Color)p.getValue());
+                            if (p.getValue() != null) {
+                                elShape.setFillColor((Color)p.getValue());
+                            }
                             break;
-                        case STROKE_COLOR:
-                            elShape.setBorderColor((Color)p.getValue());
+                        case BORDER_COLOR:
+                            if (p.getValue() != null) {
+                                elShape.setBorderColor((Color)p.getValue());
+                            }
                             break;
                     }
                 }
