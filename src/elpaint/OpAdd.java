@@ -31,7 +31,7 @@ public class OpAdd extends Operation {
     }
     
     /**
-     *  Can be called from outside Operation Manager.
+     * Can be called from outside Operation Manager.
      * @param opAdd Operation to take targetedShapes from.
      * @param elShapes Reference of ElShapes to delete targetedShapes from.
      */

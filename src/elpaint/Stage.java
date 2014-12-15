@@ -219,12 +219,6 @@ public final class Stage implements Triggable {
     }
  
     private void deleteSelectedShapes() {
-//        for (int i = elShapes.size() - 1; i > -1; --i) {
-//             if (elShapes.get(i).isSelected()) {
-//                elShapes.remove(elShapes.get(i));
-//                --i;
-//            }
-//        }
         opManager.execute(new OpDelete(getSelectedShapes()), true);
         layer.repaint();
         cloneShapesList();
