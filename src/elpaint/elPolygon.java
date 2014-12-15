@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
  * @author Hassan Rezk
  */
 
-public class elPolygon extends elShape {
+public class elPolygon extends ElShape {
     
     private int[] ptx;
     private int[] pty;
@@ -53,8 +53,9 @@ public class elPolygon extends elShape {
         
         AffineTransform at = AffineTransform.getRotateInstance(angel, x, y);
         Shape rotated = at.createTransformedShape(new Polygon(ptx, pty, n));
-       // Shape rotated = new Polygon(ptx , pty , getN());
-        return new Polygon(ptx,pty,n);
+        //Shape rotated = new Polygon(ptx , pty , getN());
+        //return new Polygon(ptx,pty,n);
+        return rotated;
     }
 //    public void Move(int displacement ,){
 //        switch(){
@@ -64,7 +65,7 @@ public class elPolygon extends elShape {
         
 //    }
     @Override
-    public elShape getCopy() {
+    public ElShape getCopy() {
         return new elPolygon(x, y, getRadius(), getN(), getAngel());
     }
 
