@@ -458,7 +458,7 @@ public final class Stage implements Triggable {
                 opManager.execute(new OpResize(resizingRelativeShape, 
                         selectedResizeBoxType, 
                         new Point(magnetLineX[x], magnetLineY[y]),
-                        getSelectedShapes()), false);
+                        getSelectedShapes(), e.isShiftDown()), false);
                 layer.repaint();
             } else if (isMoving) {
                 opManager.execute(new OpMove(new Point(startX, startY), 
@@ -537,7 +537,7 @@ public final class Stage implements Triggable {
                         opManager.execute(new OpResize(resizingRelativeShape, 
                                 selectedResizeBoxType, 
                                 new Point(magnetLineX[x], magnetLineY[y]),
-                                getSelectedShapes()), true);
+                                getSelectedShapes(), e.isShiftDown()), true);
                     } else {
                         setSelectedShapes();
                         layer.setHoldedShape(null);

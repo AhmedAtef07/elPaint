@@ -1,5 +1,4 @@
 
-
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -12,14 +11,17 @@ public class OpResize extends Operation {
     private ElShape relativeShape;
     private SelectionBox.ResizeBoxType selectedResizeBoxType;
     private Point draggedPoint;
+    private boolean withAspectRatio;
 
     public OpResize(ElShape relativeShape,
             SelectionBox.ResizeBoxType selectedResizeBoxType,
-            Point draggedPoint, LinkedList<ElShape> targetedShapes) {
+            Point draggedPoint, LinkedList<ElShape> targetedShapes, 
+            boolean withAspectRatio) {
         super(targetedShapes);
         this.relativeShape = relativeShape;
         this.selectedResizeBoxType = selectedResizeBoxType;
         this.draggedPoint = draggedPoint;
+        this.withAspectRatio = withAspectRatio;
     }    
     
 
@@ -29,6 +31,40 @@ public class OpResize extends Operation {
         int padY = 0;
         SelectionBox.ResizeBoxType selectedResizeBoxTypeNew = 
                 selectedResizeBoxType;
+        
+        if (withAspectRatio) {
+            double m = (double)(relativeShape.getClonedHeight())
+                        / (double)(relativeShape.getClonedWidth());
+            int y1 = relativeShape.getClonedY();
+            int y2 = relativeShape.getClonedY();
+            int x1 = relativeShape.getClonedX();            
+            int x2 = relativeShape.getClonedX()+relativeShape.getClonedWidth();
+            int x, y;
+            switch (selectedResizeBoxType) {
+            case NW:  
+            case SE:
+                y = (int)(m * (draggedPoint.getX() - x1) + y1);
+                x = (int)(((draggedPoint.getY() - y1) / m) + x1); 
+                if(Math.abs(draggedPoint.getX() - x) < Math.abs(draggedPoint.getY() - y)) {
+                    draggedPoint.x = x;
+                }
+                else {
+                    draggedPoint.y = y;
+                }
+                break;
+            case NE:  
+            case SW:
+                y = (int)(-m * (draggedPoint.getX() - x2) + y2);
+                x = (int)(((draggedPoint.getY() - y2) / -m) + x2); 
+                if(Math.abs(draggedPoint.getX() - x) < Math.abs(draggedPoint.getY() - y)) {
+                    draggedPoint.x = x;
+                }
+                else {
+                    draggedPoint.y = y;
+                }
+                break;                        
+            }
+        }
         switch (selectedResizeBoxType) {
             case NW:      
                 if (draggedPoint.getY() > relativeShape.getClonedY() 
@@ -129,7 +165,7 @@ public class OpResize extends Operation {
             elShape.resize(relativeShape, selectedResizeBoxType, draggedPoint);
         }
         return new OpResize(relativeShape, selectedResizeBoxTypeNew, 
-                startResizePoint, targetedShapes);
+                startResizePoint, targetedShapes, withAspectRatio);
     }
 
 }
