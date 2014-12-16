@@ -27,6 +27,13 @@ public final class Stage implements Triggable {
         EDITING,        
     } 
 
+    private enum MoveDir {
+        UP, 
+        DOWN, 
+        LEFT, 
+        RIGHT,
+    }
+    
     private final UserInterface ui;
     private final Layer layer;
     private final OperationManager opManager;
@@ -47,6 +54,9 @@ public final class Stage implements Triggable {
  
     private Mode currentMode;
     private ElShape.Type currentShapeType;
+    
+    private int smallJump = 10;
+    private int bigJump = 35;
  
     public Stage() {
         ui = new UserInterface(this);
@@ -291,6 +301,33 @@ public final class Stage implements Triggable {
             cloneShapesList();
         }        
     }    
+    
+    private void moveSelectedInDir(MoveDir moveDir, boolean biggerJump) {
+        int displacment;
+        if (biggerJump) {
+            displacment = bigJump;
+        } else {
+            displacment = smallJump;
+        }
+        int x = 0;
+        int y = 0;
+        switch (moveDir) {
+            case LEFT:
+                x = -displacment;
+                break;
+            case UP:
+                y = -displacment;
+                break;
+            case RIGHT:
+                x = displacment;
+                break;
+            case DOWN:
+                y = displacment;
+                break;
+        }
+        opManager.execute(new OpMove(new Point(0, 0), new Point(x, y), 
+                false, getSelectedShapes()), true);
+    }
  
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -515,7 +552,6 @@ public final class Stage implements Triggable {
  
         if (e.isControlDown() && !e.isShiftDown() && 
                 e.getKeyCode() == KeyEvent.VK_Z) {
-//            layer.popLastShape();
             opManager.undo();
             setProperties();
             cloneShapesList();
@@ -523,7 +559,6 @@ public final class Stage implements Triggable {
         } else if (e.isControlDown() && 
                 (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
                 (e.getKeyCode() == KeyEvent.VK_Y)) {
-//            layer.unPopLastShape();
             opManager.redo();
             setProperties();
             cloneShapesList();
@@ -534,6 +569,19 @@ public final class Stage implements Triggable {
             case DRAWING:
                 break;
             case EDITING:
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    moveSelectedInDir(MoveDir.UP, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    moveSelectedInDir(MoveDir.DOWN, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    moveSelectedInDir(MoveDir.RIGHT, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    moveSelectedInDir(MoveDir.LEFT, e.isShiftDown());
+                }
+                
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     unselectAll();
                 }
@@ -559,6 +607,8 @@ public final class Stage implements Triggable {
                 if (e.isControlDown() || e.isShiftDown()) {
                     multiSelectionActivated = true;
                 }
+                cloneShapesList();
+                layer.repaint();
                 break;
             default:
                 break;
