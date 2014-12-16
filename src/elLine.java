@@ -75,6 +75,15 @@ public class  elLine extends ElShape {
     public int getThickness() {
         return thickness;
     }
+
+    public void setThickness(int thickness) {
+        this.thickness = thickness;
+    }
+    
+    @Override
+    public Color getBorderColor() {
+        return fillColor;
+    }
     
     @Override
     public void move(int xDisplacment, int yDisplacment) {

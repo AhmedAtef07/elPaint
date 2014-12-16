@@ -157,14 +157,18 @@ public final class Stage implements Triggable {
         
         int attractedX = pressedX;
         int attractedY = pressedY;
-        if (pressedX >= 0) {
-            attractedX = magnetLineX[pressedX];            
+        int attractedWidth = width;
+        int attractedHeight = height;
+        if (currentMode == Mode.DRAWING) {
+            if (pressedX >= 0) {
+                attractedX = magnetLineX[pressedX];            
+            }
+            if (pressedY >= 0) {
+                attractedY = magnetLineY[pressedY];
+            }
+            attractedWidth = magnetLineX[width + pressedX] - attractedX;
+            attractedHeight = magnetLineY[height + pressedY] - attractedY;            
         }
-        if (pressedY >= 0) {
-            attractedY = magnetLineY[pressedY];
-        }
-        int attractedWidth = magnetLineX[width + pressedX] - attractedX;
-        int attractedHeight = magnetLineY[height + pressedY] - attractedY;
 
         attractedWidth = Math.max(attractedWidth, 5);
         attractedHeight = Math.max(attractedHeight, 5);
@@ -192,8 +196,8 @@ public final class Stage implements Triggable {
                 if (attractedY == startY) {
                     attractedY += attractedHeight;
                 }
-                holdedShape = new ElLine(new Point(startX, startY),
-                        new Point(attractedX, attractedY));
+                holdedShape = new elLine(new Point(startX, startY),
+                        new Point(attractedX, attractedY), 1);
                 break;        
         }
         holdedShape.setFillColor(Color.yellow);
@@ -266,15 +270,27 @@ public final class Stage implements Triggable {
     }
  
     void cloneShapesList() {
+        resetField();
         for (ElShape elshape: layer.getElShapes()) {
             elshape.cloneSelf();
+            int x = elshape.getX();
+            int y = elshape.getY();
+            int width = elshape.getWidth();
+            int height = elshape.getHeight();
+            
             for (int i = - magnetPadding / 2; i != magnetPadding / 2 + 1; i++) {
-                magnetLineX[elshape.getX() + i] =  magnetLineX[elshape.getX()];
-                magnetLineX[elshape.getX() + elshape.getWidth() + i] =  
-                        magnetLineX[elshape.getX() + elshape.getWidth()];  
-                magnetLineY[elshape.getY() + i] =  magnetLineY[elshape.getY()];   
-                magnetLineY[elshape.getY() + elshape.getHeight() + i] =  
-                        magnetLineY[elshape.getY() + elshape.getHeight()];
+                if (Math.min(x + i, x) >= 0) {
+                    magnetLineX[x + i] = magnetLineX[x];                    
+                }
+                if (Math.min(x + width + i, x + width) >= 0) {
+                    magnetLineX[x + width + i] = magnetLineX[x + width];  
+                }
+                if (Math.min(y + i, y) >= 0) {
+                    magnetLineY[y + i] =  magnetLineY[y];   
+                }
+                if (Math.min(y + height + i, y + height) >= 0) {
+                    magnetLineY[y + height + i] = magnetLineY[y + height];
+                }
             }
         }
     }
