@@ -15,6 +15,26 @@ public class ElTriangle extends ElShape {
     private Type type;
     private Point p1, p2, p3;
     
+    public ElTriangle(Point p1, Point p2, Point p3) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+        
+        if ( p1.x == p2.x ) {
+            this.type = Type.RIGHT;
+            this.x = p1.x;
+            this.y = p1.y;
+            this.height = p2.y - p1.y;
+            this.width = p3.x - p1.x;
+        } else {
+            this.type = Type.ISOSCELES;
+            this.x = p2.x;
+            this.y = p1.y;
+            this.height = p2.y - p1.y;
+            this.width = p3.x - p2.x;
+        }
+    }
+    
     public ElTriangle(Point p, int width, int height, Type type) {
         this.x = p.x;
         this.y = p.y;
