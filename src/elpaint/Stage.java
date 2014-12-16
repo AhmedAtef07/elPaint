@@ -116,7 +116,7 @@ public final class Stage implements Triggable {
     }    
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
-            int height) {            
+            int height) {
          switch (currentShapeType) {
             case RECTANGLE:   
                 holdedShape = new ElRectangle(
@@ -134,8 +134,14 @@ public final class Stage implements Triggable {
                         width, height, ElTriangle.Type.RIGHT);
                 break;
             case LINE:
-//                holdedShape = new elLine(new Point(pressedX, pressedY), 
-//                        new Point(pressedX + width,pressedY + height));
+                if (pressedX == startX) {
+                    pressedX += width;
+                }
+                if (pressedY == startY) {
+                    pressedY += height;
+                }
+                holdedShape = new ElLine(new Point(startX, startY),
+                        new Point(pressedX, pressedY));
  
                 break;        
          }
