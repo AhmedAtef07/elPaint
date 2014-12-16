@@ -27,30 +27,100 @@ public class OpResize extends Operation {
     public Operation perform() {
         int padX = 0;
         int padY = 0;
+        SelectionBox.ResizeBoxType selectedResizeBoxTypeNew = 
+                selectedResizeBoxType;
         switch (selectedResizeBoxType) {
-            case N:
-                padX = relativeShape.getWidth() / 2;
+            case NW:      
+                if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() < relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SW;
+                } else if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() > relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SE;
+                } else if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() > relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NE;
+                }
                 break;
-            case NE:
-                padX = relativeShape.getWidth();
+            case N:
+                if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.S;
+                }
+                padX = relativeShape.getClonedWidth() / 2;
+                break;
+            case NE:      
+                if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() < relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SW;
+                } else if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() > relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SE;
+                } else if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        + relativeShape.getClonedHeight() 
+                        && draggedPoint.getX() < relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NW;
+                }
+                padX = relativeShape.getClonedWidth();
                 break;
             case E:
-                padX = relativeShape.getWidth();
-                padY = relativeShape.getHeight() / 2;
+                if (draggedPoint.getX() < relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.W;
+                }
+                padX = relativeShape.getClonedWidth();
+                padY = relativeShape.getClonedHeight() / 2;
                 break;
             case W:
-                padY = relativeShape.getHeight() / 2;
+                if (draggedPoint.getX() > relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.E;
+                }
+                padY = relativeShape.getClonedHeight() / 2;
                 break;
             case SW:
-                padX = relativeShape.getWidth();
-                padY = relativeShape.getHeight(); 
+                if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        && draggedPoint.getX() > relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NE;
+                } else if (draggedPoint.getY() > relativeShape.getClonedY()
+                        && draggedPoint.getX() > relativeShape.getClonedX()
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SE;
+                } else if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        && draggedPoint.getX() < relativeShape.getClonedX() 
+                        + relativeShape.getClonedWidth()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NW;
+                }
+                padY = relativeShape.getClonedHeight(); 
                 break;
             case S:
-                padX = relativeShape.getWidth() / 2;
-                padY = relativeShape.getHeight();
+                if (draggedPoint.getY() < relativeShape.getClonedY()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.N;
+                }
+                padX = relativeShape.getClonedWidth() / 2;
+                padY = relativeShape.getClonedHeight();
                 break;
             case SE:
-                padY = relativeShape.getHeight();
+                if (draggedPoint.getY() > relativeShape.getClonedY() 
+                        && draggedPoint.getX() < relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.SW;
+                } else if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        && draggedPoint.getX() > relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NE;
+                } else if (draggedPoint.getY() < relativeShape.getClonedY() 
+                        && draggedPoint.getX() < relativeShape.getClonedX()) {
+                    selectedResizeBoxTypeNew = SelectionBox.ResizeBoxType.NW;
+                }
+                padX = relativeShape.getClonedWidth();
+                padY = relativeShape.getClonedHeight();
                 break;
             }
         Point startResizePoint = new Point(relativeShape.getClonedX() + padX, 
@@ -58,7 +128,7 @@ public class OpResize extends Operation {
         for (ElShape elShape: targetedShapes) {
             elShape.resize(relativeShape, selectedResizeBoxType, draggedPoint);
         }
-        return new OpResize(relativeShape, selectedResizeBoxType, 
+        return new OpResize(relativeShape, selectedResizeBoxTypeNew, 
                 startResizePoint, targetedShapes);
     }
 
