@@ -168,7 +168,8 @@ public final class Stage implements Triggable {
  
     void setCursorOnAll(Point point) {         
         boolean foundAny = false;
-        for (ElShape shape: elShapes) {
+        for (int i = elShapes.size() - 1; i != -1; --i) {
+            ElShape shape = elShapes.get(i);  
             Rectangle bound = shape.getShape().getBounds();
             bound.grow(SelectionBox.boxHSize * 2, SelectionBox.boxHSize * 2);
             if (shape.isSelected() && bound.contains(point)) {                    
