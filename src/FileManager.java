@@ -67,8 +67,20 @@ public class FileManager {
                         p[i] = new Point(x[i],y[i]);
                     if ( x.length == 3 ) 
                         elShapes.add(new ElTriangle(p[0],p[1],p[2]));
-                    else if ( x.length == 2 )
-                        elShapes.add(new ElLine(p[0], p[1]));
+                    else if ( x.length == 4 ) {
+                        Point pt1 = new Point((p[0].x+p[1].x)/2,
+                                (p[0].y+p[1].y)/2);
+                        Point pt2 = new Point((p[2].x+p[3].x)/2,
+                                (p[2].y+p[3].y)/2);
+                        elShapes.add(new elLine(pt1, pt2,1));
+                    }
+                    else if ( x.length == 5 ) {
+                        Point psps = new Point(s.xpoints[0],s.ypoints[0]);
+                        elShapes.add(new elPolygon(
+                                new Point( (int)s.getBounds().getCenterX() 
+                                        , (int)s.getBounds().getCenterY()),
+                                psps,5, 0));
+                    }
                 }
                 result = d.readObject();
                 Color c = (Color)result;
@@ -79,6 +91,10 @@ public class FileManager {
                 result = d.readObject();
                 Stroke s = (Stroke) result;
                 elShapes.get(elShapes.size()-1).setLineType(s);
+//                if ( shape instanceof elLine ) {
+//                    elLine s = (elLine) shape;
+//                    e.writeObject(s.getThickness());
+//                }
             }
         } catch(Exception e) {
             d.close();
