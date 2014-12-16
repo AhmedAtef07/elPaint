@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
  
@@ -166,7 +168,8 @@ public final class Stage implements Triggable {
  
     void setCursorOnAll(Point point) {         
         boolean foundAny = false;
-        for (ElShape shape: elShapes) {
+        for (int i = elShapes.size() - 1; i != -1; --i) {
+            ElShape shape = elShapes.get(i);  
             Rectangle bound = shape.getShape().getBounds();
             bound.grow(SelectionBox.boxHSize * 2, SelectionBox.boxHSize * 2);
             if (shape.isSelected() && bound.contains(point)) {                    
@@ -681,7 +684,6 @@ public final class Stage implements Triggable {
  
     public void save() {
         JFileChooser chooser = new JFileChooser();
-        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showSaveDialog(ui);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             File saveFile = chooser.getSelectedFile();
@@ -689,11 +691,9 @@ public final class Stage implements Triggable {
             try {
                 FileManager.Export(path, layer.getElShapes());
             } catch (IOException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             } catch (AWTException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -708,13 +708,45 @@ public final class Stage implements Triggable {
             chooser.setFileFilter(xmlfilter);
             File openFile = chooser.getSelectedFile();
             String path = openFile.getPath();
+            //System.out.println("" + path);
             try {
                 FileManager.Import(path, layer.getElShapes());
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
             layer.repaint();
+        }
+    }
+    
+    public void image() {        
+        JFileChooser chooser = new JFileChooser();
+        // Remove 'All Files' option from chooser.
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);                
+        FileNameExtensionFilter pngFilter = new FileNameExtensionFilter(
+        "PNG files (*.png)", "png");
+        chooser.addChoosableFileFilter(pngFilter);
+        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
+        "JPG files (*.jpg)", "jpg");
+        chooser.addChoosableFileFilter(jpgFilter);
+        
+        int returnVal = chooser.showSaveDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File saveFile = chooser.getSelectedFile();  
+            Layer.ImageType imageType;
+            String path = saveFile.getPath();
+            if (chooser.getFileFilter() == pngFilter) {
+                imageType = Layer.ImageType.PNG;
+                path += ".png";
+            } else {
+                imageType = Layer.ImageType.JPG;                
+                path += ".jpg";
+            }
+            BufferedImage bi = layer.getImage(imageType);
+            try {
+                ImageIO.write(bi, "PNG", new File(path));
+            } catch (IOException ex) {
+                Logger.getLogger(Stage.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

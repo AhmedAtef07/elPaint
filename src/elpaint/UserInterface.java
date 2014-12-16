@@ -52,7 +52,7 @@ public class UserInterface extends JFrame {
     JPanel buttonsJPanel, propertiesJPanel;
     JToggleButton lineToggle, rectangleToggle, ellipseToggle, 
             rightTriangleToggle, isoTriangleToggle, polygonToggle, modeToggle;
-    JButton saveButton, openButton;
+    JButton saveButton, openButton, jpgButton;
     
     public UserInterface(final Stage stage) {
         this.stage = stage;
@@ -119,6 +119,7 @@ public class UserInterface extends JFrame {
         Icon modeIcon = new ImageIcon("src/resources/cursor.png");
         ImageIcon saveIcon = new ImageIcon("src/resources/save.png");
         ImageIcon openIcon = new ImageIcon("src/resources/open.png");
+        ImageIcon jpgIcon = new ImageIcon("src/resources/jpg.png");
         
         lineToggle = new JToggleButton(lineIcon);
         rectangleToggle = new JToggleButton(rectangleIcon);
@@ -129,9 +130,15 @@ public class UserInterface extends JFrame {
         modeToggle = new JToggleButton(modeIcon);
         saveButton = new JButton(saveIcon);
         openButton = new JButton(openIcon);
+        jpgButton = new JButton(jpgIcon);
+        saveButton.setToolTipText("Export as XML");
+        openButton.setToolTipText("Import XML");
+        jpgButton.setToolTipText("Export JPG");
+
                 
         buttonsJPanel.add(openButton);
         buttonsJPanel.add(saveButton);
+        buttonsJPanel.add(jpgButton);
         buttonsJPanel.add(new JLabel());
         buttonsJPanel.add(new JLabel());
         buttonsJPanel.add(lineToggle);
@@ -151,6 +158,7 @@ public class UserInterface extends JFrame {
         modeToggle.addActionListener(buttonPressed);
         saveButton.addActionListener(buttonPressed);
         openButton.addActionListener(buttonPressed);
+        jpgButton.addActionListener(buttonPressed);
         
         lineToggle.setFocusable(false);
         rectangleToggle.setFocusable(false);
@@ -161,6 +169,7 @@ public class UserInterface extends JFrame {
         modeToggle.setFocusable(false);
         saveButton.setFocusable(false);
         openButton.setFocusable(false);
+        jpgButton.setFocusable(false);
         //this.getContentPane().add(tools, BorderLayout.NORTH);  
         
         JPanel buttons = new JPanel();        
@@ -313,6 +322,9 @@ public class UserInterface extends JFrame {
             }
             else if (e.getSource() == openButton) {
                 stage.open();
+            }
+            else if (e.getSource() == jpgButton) {
+                stage.image();
             }
         }
     };
