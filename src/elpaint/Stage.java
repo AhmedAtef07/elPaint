@@ -93,6 +93,7 @@ public final class Stage implements Triggable {
                 break;
             } 
         }
+        setProperties();
     }
  
     /** 
@@ -113,11 +114,14 @@ public final class Stage implements Triggable {
                 }      
             } 
         }
+        setProperties();
     }    
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
             int height) {
-         switch (currentShapeType) {
+        width = Math.max(width, 5);
+        height = Math.max(height, 5);
+        switch (currentShapeType) {
             case RECTANGLE:   
                 holdedShape = new ElRectangle(
                         pressedX, pressedY, width, height);
@@ -142,9 +146,9 @@ public final class Stage implements Triggable {
                 }
                 holdedShape = new ElLine(new Point(startX, startY),
                         new Point(pressedX, pressedY));
- 
+
                 break;        
-         }
+        }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
         layer.setHoldedShape(holdedShape);
@@ -196,20 +200,20 @@ public final class Stage implements Triggable {
         }
     }
  
-    void unselectAll() {
- 
+    void unselectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(false);            
         }
         layer.repaint();
+        setProperties();
     }
  
-    void selectAll() {
- 
+    void selectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(true);            
         }
         layer.repaint();
+        setProperties();
     }
  
     void cloneShapesList() {
@@ -401,8 +405,6 @@ public final class Stage implements Triggable {
                 setCursorOnAll(new Point(x, y));                
                 break;
         }
- 
- 
     }
  
     @Override
@@ -418,7 +420,7 @@ public final class Stage implements Triggable {
                 setSelectedShapes(new Point(x, y));
                 layer.repaint();  
                 break;
-        }   
+        }
         setCursorOnAll(new Point(x, y));    
     }
  
@@ -512,6 +514,7 @@ public final class Stage implements Triggable {
                 e.getKeyCode() == KeyEvent.VK_Z) {
 //            layer.popLastShape();
             opManager.undo();
+            setProperties();
             cloneShapesList();
             layer.repaint();
         } else if (e.isControlDown() && 
@@ -519,6 +522,7 @@ public final class Stage implements Triggable {
                 (e.getKeyCode() == KeyEvent.VK_Y)) {
 //            layer.unPopLastShape();
             opManager.redo();
+            setProperties();
             cloneShapesList();
             layer.repaint();
         }
@@ -527,6 +531,9 @@ public final class Stage implements Triggable {
             case DRAWING:
                 break;
             case EDITING:
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    unselectAll();
+                }
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     deleteSelectedShapes();
                 }        
@@ -663,10 +670,10 @@ public final class Stage implements Triggable {
             LinkedList<Object> values = new LinkedList<>();
             for(int i = 0; i < selectedShapes.size(); ++i) {
                 values.add(p.getValue());
-            }
-            
+            }            
             opManager.execute(new OpSetProperty(p.getPropertyName(), values, 
                     selectedShapes), true); 
+            cloneShapesList();
         }
         
         layer.repaint();
@@ -674,38 +681,40 @@ public final class Stage implements Triggable {
  
     public void save() {
         JFileChooser chooser = new JFileChooser();
-                //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int returnVal = chooser.showSaveDialog(ui);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    File saveFile = chooser.getSelectedFile();
-                    String path = saveFile.getPath() + ".xml";
-                    try {
-                        FileManager.Export(path, layer.getElShapes());
-                    } catch (IOException ex) {
-                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (AWTException ex) {
-                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = chooser.showSaveDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File saveFile = chooser.getSelectedFile();
+            String path = saveFile.getPath() + ".xml";
+            try {
+                FileManager.Export(path, layer.getElShapes());
+            } catch (IOException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            } catch (AWTException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
+        }
     }
     
     public void open() {
         JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
-                "xml files (*.xml)", "xml");
-                chooser.setFileFilter(xmlfilter);
-                int returnVal = chooser.showOpenDialog(ui);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    chooser.setFileFilter(xmlfilter);
-                    File openFile = chooser.getSelectedFile();
-                    String path = openFile.getPath();
-                    //System.out.println("" + path);
-                    try {
-                        FileManager.Import(path, layer.getElShapes());
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    layer.repaint();
-                }
+        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+        "xml files (*.xml)", "xml");
+        chooser.setFileFilter(xmlfilter);
+        int returnVal = chooser.showOpenDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            chooser.setFileFilter(xmlfilter);
+            File openFile = chooser.getSelectedFile();
+            String path = openFile.getPath();
+            try {
+                FileManager.Import(path, layer.getElShapes());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
+            layer.repaint();
+        }
     }
 }
