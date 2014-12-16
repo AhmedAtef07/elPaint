@@ -1,13 +1,21 @@
 package elpaint;
  
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList; 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
  
 
 public final class Stage implements Triggable {
@@ -658,4 +666,40 @@ public final class Stage implements Triggable {
         layer.repaint();
     }
  
+    public void save() {
+        JFileChooser chooser = new JFileChooser();
+                //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int returnVal = chooser.showSaveDialog(ui);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    File saveFile = chooser.getSelectedFile();
+                    String path = saveFile.getPath() + ".xml";
+                    try {
+                        FileManager.Export(path, layer.getElShapes());
+                    } catch (IOException ex) {
+                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (AWTException ex) {
+                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+    }
+    
+    public void open() {
+        JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+                "xml files (*.xml)", "xml");
+                chooser.setFileFilter(xmlfilter);
+                int returnVal = chooser.showOpenDialog(ui);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    chooser.setFileFilter(xmlfilter);
+                    File openFile = chooser.getSelectedFile();
+                    String path = openFile.getPath();
+                    //System.out.println("" + path);
+                    try {
+                        FileManager.Import(path, layer.getElShapes());
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    layer.repaint();
+                }
+    }
 }
