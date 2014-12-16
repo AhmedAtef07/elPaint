@@ -353,12 +353,9 @@ public final class Stage implements Triggable {
             } 
 
             if (isResizing) {
-                for (ElShape elShape : elShapes) {           
-                    if (elShape.isSelected()) {
-                        elShape.resize(resizingRelativeShape, 
-                                selectedResizeBoxType, new Point(x, y));
-                    }        
-                }
+                opManager.execute(new OpResize(resizingRelativeShape, 
+                        selectedResizeBoxType, new Point(x, y),
+                        getSelectedShapes()), false);
                 layer.repaint();
             } else if (isMoving) {
                 opManager.execute(new OpMove(new Point(startX, startY), 
@@ -435,10 +432,14 @@ public final class Stage implements Triggable {
                         opManager.execute(new OpMove(new Point(startX, startY), 
                         new Point(x, y), e.isShiftDown(), getSelectedShapes()),
                         true);
-                    } else if (!isMoving && !isResizing) {
+                    } else if (isResizing) {
+                        opManager.execute(new OpResize(resizingRelativeShape, 
+                            selectedResizeBoxType, new Point(x, y),
+                            getSelectedShapes()), true);
+                    } else {
                         setSelectedShapes();
                         layer.setHoldedShape(null);
-                    }                    
+                    }                   
                     layer.repaint();
                     resetEditingFactors();                    
                 }

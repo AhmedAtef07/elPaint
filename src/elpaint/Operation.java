@@ -12,16 +12,6 @@ public abstract class Operation {
     public Operation(LinkedList<ElShape> targetedShapes) {
         this.targetedShapes = targetedShapes;
     }
-    
-    /**
-     *
-     * @param targetedShapes Shapes to be processed.
-     * @param elShapes Reference to list of shapes in drawing layer.
-     */
-    public Operation(LinkedList<ElShape> targetedShapes, 
-            LinkedList<ElShape> elShapes) {
-        this.targetedShapes = targetedShapes;
-    }
         
     /**
      *

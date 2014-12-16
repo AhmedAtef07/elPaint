@@ -9,13 +9,12 @@ import java.util.LinkedList;
  */
 public class OpSetProperty extends Operation {
 
-    Property.PropertyName propertyName;
-    LinkedList<Object> values;
+    private Property.PropertyName propertyName;
+    private LinkedList<Object> values;
     
     /**
      *
-     * @param property Single property it's value will be set to all targeted
-     * Shapes.
+     * @param propertyName property name to be changed.
      * @param values List of same number of elements as targetShapes, as each 
      * corresponding value will be added to the shape.
      * @param targetedShapes Shapes whose values will change depending on the 
