@@ -95,7 +95,9 @@ public class Properties extends JPanel {
                         defaultColor = (Color)p.getValue();
                     }
                     else {
-                        defaultColor = Color.WHITE;
+                        defaultColor = Color.WHITE;                        
+                        label.setAlignmentX(CENTER_ALIGNMENT);
+                        label.setText("multi");
                     }
                     label.setBackground(defaultColor);
                     label.setOpaque(true);
