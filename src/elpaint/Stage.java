@@ -34,6 +34,12 @@ public final class Stage implements Triggable {
         RIGHT,
     }
     
+    public enum SaveType {
+        XML,
+        PNG,
+        JPG,
+    }
+    
     private final UserInterface ui;
     private final Layer layer;
     private final OperationManager opManager;
@@ -533,6 +539,7 @@ public final class Stage implements Triggable {
         }
         ui.setTitle(currentMode + "");
  
+        
         if (e.getKeyCode() == KeyEvent.VK_R) {
             currentShapeType = ElShape.Type.RECTANGLE;
             ui.setButton(UserInterface.Button.RECTANGLE);
@@ -550,21 +557,30 @@ public final class Stage implements Triggable {
             ui.setButton(UserInterface.Button.LINE);
         }  
  
-        if (e.isControlDown() && !e.isShiftDown() && 
-                e.getKeyCode() == KeyEvent.VK_Z) {
-            opManager.undo();
-            setProperties();
-            cloneShapesList();
-            layer.repaint();
-        } else if (e.isControlDown() && 
-                (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
-                (e.getKeyCode() == KeyEvent.VK_Y)) {
-            opManager.redo();
-            setProperties();
-            cloneShapesList();
-            layer.repaint();
+        if (e.isControlDown()) {        
+            if (!e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+                opManager.undo();
+                setProperties();
+                cloneShapesList();
+                layer.repaint();
+            } else if ((e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
+                    (e.getKeyCode() == KeyEvent.VK_Y)) {
+                opManager.redo();
+                setProperties();
+                cloneShapesList();
+                layer.repaint();
+            }
+            
+            if (e.getKeyCode() == KeyEvent.VK_S) {
+                save(SaveType.JPG);
+            } else if (e.getKeyCode() == KeyEvent.VK_E) {
+                save(SaveType.XML);
+            } else if (e.getKeyCode() == KeyEvent.VK_O) {
+                open();
+            }
+    
         }
- 
+        
         switch (currentMode) {
             case DRAWING:
                 break;
@@ -731,30 +747,15 @@ public final class Stage implements Triggable {
         
         layer.repaint();
     }
- 
-    public void save() {
-        JFileChooser chooser = new JFileChooser();
-        int returnVal = chooser.showSaveDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File saveFile = chooser.getSelectedFile();
-            String path = saveFile.getPath() + ".xml";
-            try {
-                FileManager.Export(path, layer.getElShapes());
-            } catch (IOException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (AWTException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     public void open() {
         JFileChooser chooser = new JFileChooser();
+        // Remove 'All Files' option from chooser.
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);  
         FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
         "xml files (*.xml)", "xml");
         chooser.setFileFilter(xmlfilter);
-        int returnVal = chooser.showOpenDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        if(chooser.showOpenDialog(ui) == JFileChooser.APPROVE_OPTION) {
             chooser.setFileFilter(xmlfilter);
             File openFile = chooser.getSelectedFile();
             String path = openFile.getPath();
@@ -768,34 +769,60 @@ public final class Stage implements Triggable {
         }
     }
     
-    public void image() {        
+    public void save(SaveType desiredSaveType) {        
         JFileChooser chooser = new JFileChooser();
         // Remove 'All Files' option from chooser.
-        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);                
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);  
         FileNameExtensionFilter pngFilter = new FileNameExtensionFilter(
         "PNG files (*.png)", "png");
-        chooser.addChoosableFileFilter(pngFilter);
         FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
         "JPG files (*.jpg)", "jpg");
-        chooser.addChoosableFileFilter(jpgFilter);
+        FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter(
+        "XML files (*.xml)", "xml");
         
-        int returnVal = chooser.showSaveDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        if (desiredSaveType != SaveType.XML) {
+            chooser.addChoosableFileFilter(pngFilter);
+            chooser.addChoosableFileFilter(jpgFilter);
+            chooser.addChoosableFileFilter(xmlFilter);
+        } else {
+            chooser.addChoosableFileFilter(xmlFilter);
+            chooser.setDialogTitle("Export");
+        }
+              
+        if(chooser.showSaveDialog(ui) == JFileChooser.APPROVE_OPTION) {
             File saveFile = chooser.getSelectedFile();  
-            Layer.ImageType imageType;
+            SaveType saveType;
             String path = saveFile.getPath();
+            
             if (chooser.getFileFilter() == pngFilter) {
-                imageType = Layer.ImageType.PNG;
+                saveType = SaveType.PNG;
                 path += ".png";
-            } else {
-                imageType = Layer.ImageType.JPG;                
+            } else if (chooser.getFileFilter() == jpgFilter) {
+                saveType = SaveType.JPG;                
                 path += ".jpg";
+            } else {
+                saveType = SaveType.XML;                
+                path += ".xml";
             }
-            BufferedImage bi = layer.getImage(imageType);
-            try {
-                ImageIO.write(bi, "PNG", new File(path));
-            } catch (IOException ex) {
-                Logger.getLogger(Stage.class.getName()).log(Level.SEVERE, null, ex);
+            
+            if (saveType == SaveType.XML) {
+                try {
+                    FileManager.Export(path, layer.getElShapes());
+                } catch (IOException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                } catch (AWTException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                }
+            } else {            
+                BufferedImage bi = layer.getImage(saveType);
+                try {
+                    ImageIO.write(bi, "PNG", new File(path));
+                } catch (IOException ex) {
+                    Logger.getLogger(Stage.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                }
             }
         }
     }

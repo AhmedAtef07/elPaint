@@ -7,13 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 /**
@@ -23,11 +17,6 @@ import javax.swing.JPanel;
 
 public class Layer extends JPanel {
 
-    public enum ImageType {
-        PNG,
-        JPG,
-    }
-    
     // 'elShapes' must be final to always have only one reference.
     private final LinkedList<ElShape> elShapes;
     private LinkedList<ElShape> redo;
@@ -116,8 +105,8 @@ public class Layer extends JPanel {
         }                  
     }
     
-    public BufferedImage getImage(ImageType imageType) {
-        if (imageType == ImageType.JPG) {            
+    public BufferedImage getImage(Stage.SaveType saveType) {
+        if (saveType == Stage.SaveType.JPG) {            
             elShapes.addFirst(new ElRectangle(-7, -7, getWidth() + 17, 
                     getHeight() + 17, Color.WHITE, Color.WHITE, 
                     new BasicStroke()));
@@ -156,7 +145,7 @@ public class Layer extends JPanel {
                 }
             }
         }  
-        if (imageType == ImageType.JPG) {            
+        if (saveType == Stage.SaveType.JPG) {            
             elShapes.removeFirst();
         }
         return bi;

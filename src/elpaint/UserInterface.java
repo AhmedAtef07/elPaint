@@ -318,13 +318,13 @@ public class UserInterface extends JFrame {
                 }
             }
             else if (e.getSource() == saveButton) {                
-                stage.save();
+                stage.save(Stage.SaveType.XML);
             }
             else if (e.getSource() == openButton) {
                 stage.open();
             }
             else if (e.getSource() == jpgButton) {
-                stage.image();
+                stage.save(Stage.SaveType.JPG);
             }
         }
     };
