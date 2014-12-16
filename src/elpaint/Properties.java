@@ -54,6 +54,7 @@ public class Properties extends JPanel {
                     }
                     t.addKeyListener(new KeyAdapter() {            
                         public void keyReleased(KeyEvent e) {
+                            p.setChanged(true);
                             int number = 0;
                             JTextField textField = (JTextField) e.getSource();
                             String text = textField.getText();
@@ -100,7 +101,8 @@ public class Properties extends JPanel {
                     label.setOpaque(true);
                     label.addMouseListener(new MouseAdapter()   {   
                     public void mouseClicked(MouseEvent e)   
-                    {                        
+                    {        
+                        p.setChanged(true);
                         Color color = JColorChooser.showDialog(
                                 null, p.getLabel(), defaultColor);
                         label.setBackground(color);

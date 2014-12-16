@@ -569,10 +569,11 @@ public final class Stage implements Triggable {
         this.currentShapeType = currentShapeType;
     }   
  
-    public void setProperties() {  
+    public void setProperties() {
+        LinkedList<ElShape> selectedShapes = getSelectedShapes();
         propertiesList.clear();
-        for (ElShape elShape : elShapes) {
-            if (elShape.isSelected() && propertiesList.size() == 0) {
+        for (ElShape elShape : selectedShapes) {
+            if (propertiesList.size() == 0) {
                 propertiesList.add(new Property(
                         " X : ", elShape.getX(), 
                         Property.PropertyName.X));
@@ -594,98 +595,65 @@ public final class Stage implements Triggable {
             }
             else {
                 for(Property p : propertiesList) {
-                    switch (p.getPropertyName()) {
+                    if(p.getValue() == null) {
+                            continue;
+                    }
+                    switch (p.getPropertyName()) {                                            
                         case X:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getX()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getX()) {
+                                p.setValue(null);
                             }
                             break;
                         case Y:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getY()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getY()) {
+                                p.setValue(null);
                             }
                             break;
                         case WIDTH:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getWidth()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getWidth()) {
+                                p.setValue(null);
                             }
                             break;
                         case HEIGHT:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getHeight()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getHeight()) {
+                                p.setValue(null);
                             }
                             break;
                         case COLOR:
-                            if (p.getValue() != null) {
-                                if ((Color)p.getValue() 
-                                        != elShape.getFillColor()) {
-                                    p.setValue(null);
-                                }
+                            if ((Color)p.getValue() 
+                                    != elShape.getFillColor()) {
+                                p.setValue(null);
                             }
                             break;
                         case BORDER_COLOR:
-                            if (p.getValue() != null) {
-                                if ((Color)p.getValue() 
-                                        != elShape.getBorderColor()) {
-                                    p.setValue(null);
-                                }
+                            if ((Color)p.getValue() 
+                                    != elShape.getBorderColor()) {
+                                p.setValue(null);
                             }
                             break;
                     }
                 }
             }
         }
-        //properties.update();
+
         ui.setProperties(properties);
     }
     
     public void checkProperties() {
-        for (ElShape elShape : elShapes) {
-            if (elShape.isSelected()) {   
-                for(Property p : propertiesList) {
-                    switch (p.getPropertyName()) {
-                        case X:
-                            if (p.getValue() != null) {
-                                elShape.setX((int)p.getValue());
-                            }
-                            break;
-                        case Y:
-                            if (p.getValue() != null) {
-                                elShape.setY((int)p.getValue());
-                            }
-                            break;
-                        case WIDTH:
-                            if (p.getValue() != null) {
-                                elShape.setWidth((int)p.getValue());
-                            }
-                            break;
-                        case HEIGHT:
-                            if (p.getValue() != null) { 
-                                elShape.setHeight((int)p.getValue());
-                            }
-                            break;
-                        case COLOR:
-                            if (p.getValue() != null) {
-                                elShape.setFillColor((Color)p.getValue());
-                            }
-                            break;
-                        case BORDER_COLOR:
-                            if (p.getValue() != null) {
-                                elShape.setBorderColor((Color)p.getValue());
-                            }
-                            break;
-                    }
-                }
+        LinkedList<ElShape> selectedShapes = getSelectedShapes();
+        for(Property p : propertiesList) {
+            if(p.getValue() == null || !p.isChanged()) {
+                continue;
             }
+            LinkedList<Object> values = new LinkedList<>();
+            for(int i = 0; i < selectedShapes.size(); ++i) {
+                values.add(p.getValue());
+            }
+            
+            opManager.execute(new OpSetProperty(p.getPropertyName(), values, 
+                    selectedShapes), true); 
         }
+        
         layer.repaint();
     }
  

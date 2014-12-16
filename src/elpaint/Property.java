@@ -22,7 +22,7 @@ public class Property {
         BORDER_COLOR(PropertyType.COLOR),
         STROKE_THICKNESS(PropertyType.INTEGER);
         
-        PropertyType propertyType;
+        PropertyType propertyType;                
 
         private PropertyName(PropertyType propertyType) {
             this.propertyType = propertyType;
@@ -32,13 +32,14 @@ public class Property {
             return propertyType;
         }        
     }
-
+    
+    
     private PropertyType propertyType;
     private PropertyName propertyName;
     
     private String label;
     private Object value;
-
+    boolean changed;        
 
     public Property(String label, Object value, PropertyName propertyName) {
         this.label = label;
@@ -46,10 +47,19 @@ public class Property {
         this.propertyType = propertyName.getPropertyType();
         
         this.value = value;
+        this.changed = false;
     }
 
     public PropertyType getPropertyType() {
         return propertyType;
+    }
+    
+    public boolean isChanged() {
+        return changed;
+    }
+    
+    public void setChanged(boolean changed) {
+        this.changed = changed;
     }
 
     public PropertyName getPropertyName() {
