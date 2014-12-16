@@ -11,6 +11,7 @@ public class OpMove extends Operation {
 
     private Point startPoint, releasedPoint;
     private boolean withAspectRatio;
+    
     public OpMove(Point startPoint, Point releasedPoint,
             boolean withAspectRatio, LinkedList<ElShape> targetedShapes) {
         super(targetedShapes);
@@ -27,7 +28,7 @@ public class OpMove extends Operation {
         int startY = startPoint.y;
         int x = releasedPoint.x;
         int y = releasedPoint.y;
-        for (ElShape elshape : targetedShapes) {
+        for (ElShape elshape: targetedShapes) {
             if (withAspectRatio) {
                 if (Math.abs(x - startX) < Math.abs(startY - y)) {
                     elshape.move(0, startY - y);                 

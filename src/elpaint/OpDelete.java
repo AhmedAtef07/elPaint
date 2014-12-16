@@ -8,7 +8,7 @@ import java.util.LinkedList;
  */
 public class OpDelete extends Operation {
 
-    LinkedList<ElShape> elShapes;
+    private LinkedList<ElShape> elShapes;
     
     /**
      * Must be called from Operation Manager, to re-call with passing a 
@@ -42,7 +42,7 @@ public class OpDelete extends Operation {
         
     @Override
     public Operation perform() {
-        for (ElShape shape : targetedShapes) {
+        for (ElShape shape: targetedShapes) {
             elShapes.remove(shape);
         }
         return new OpAdd(this, elShapes);

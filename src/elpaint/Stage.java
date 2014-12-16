@@ -1,13 +1,21 @@
 package elpaint;
  
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList; 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
  
 
 public final class Stage implements Triggable {
@@ -85,6 +93,7 @@ public final class Stage implements Triggable {
                 break;
             } 
         }
+        setProperties();
     }
  
     /** 
@@ -105,11 +114,14 @@ public final class Stage implements Triggable {
                 }      
             } 
         }
+        setProperties();
     }    
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
-            int height) {            
-         switch (currentShapeType) {
+            int height) {
+        width = Math.max(width, 5);
+        height = Math.max(height, 5);
+        switch (currentShapeType) {
             case RECTANGLE:   
                 holdedShape = new ElRectangle(
                         pressedX, pressedY, width, height);
@@ -126,11 +138,17 @@ public final class Stage implements Triggable {
                         width, height, ElTriangle.Type.RIGHT);
                 break;
             case LINE:
-//                holdedShape = new elLine(new Point(pressedX, pressedY), 
-//                        new Point(pressedX + width,pressedY + height));
- 
+                if (pressedX == startX) {
+                    pressedX += width;
+                }
+                if (pressedY == startY) {
+                    pressedY += height;
+                }
+                holdedShape = new ElLine(new Point(startX, startY),
+                        new Point(pressedX, pressedY));
+
                 break;        
-         }
+        }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
         layer.setHoldedShape(holdedShape);
@@ -182,20 +200,20 @@ public final class Stage implements Triggable {
         }
     }
  
-    void unselectAll() {
- 
+    void unselectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(false);            
         }
         layer.repaint();
+        setProperties();
     }
  
-    void selectAll() {
- 
+    void selectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(true);            
         }
         layer.repaint();
+        setProperties();
     }
  
     void cloneShapesList() {
@@ -219,12 +237,6 @@ public final class Stage implements Triggable {
     }
  
     private void deleteSelectedShapes() {
-//        for (int i = elShapes.size() - 1; i > -1; --i) {
-//             if (elShapes.get(i).isSelected()) {
-//                elShapes.remove(elShapes.get(i));
-//                --i;
-//            }
-//        }
         opManager.execute(new OpDelete(getSelectedShapes()), true);
         layer.repaint();
         cloneShapesList();
@@ -359,12 +371,9 @@ public final class Stage implements Triggable {
             } 
 
             if (isResizing) {
-                for (ElShape elShape : elShapes) {           
-                    if (elShape.isSelected()) {
-                        elShape.resize(resizingRelativeShape, 
-                                selectedResizeBoxType, new Point(x, y));
-                    }        
-                }
+                opManager.execute(new OpResize(resizingRelativeShape, 
+                        selectedResizeBoxType, new Point(x, y),
+                        getSelectedShapes()), false);
                 layer.repaint();
             } else if (isMoving) {
                 opManager.execute(new OpMove(new Point(startX, startY), 
@@ -396,8 +405,6 @@ public final class Stage implements Triggable {
                 setCursorOnAll(new Point(x, y));                
                 break;
         }
- 
- 
     }
  
     @Override
@@ -413,7 +420,7 @@ public final class Stage implements Triggable {
                 setSelectedShapes(new Point(x, y));
                 layer.repaint();  
                 break;
-        }   
+        }
         setCursorOnAll(new Point(x, y));    
     }
  
@@ -441,10 +448,14 @@ public final class Stage implements Triggable {
                         opManager.execute(new OpMove(new Point(startX, startY), 
                         new Point(x, y), e.isShiftDown(), getSelectedShapes()),
                         true);
-                    } else if (!isMoving && !isResizing) {
+                    } else if (isResizing) {
+                        opManager.execute(new OpResize(resizingRelativeShape, 
+                            selectedResizeBoxType, new Point(x, y),
+                            getSelectedShapes()), true);
+                    } else {
                         setSelectedShapes();
                         layer.setHoldedShape(null);
-                    }                    
+                    }                   
                     layer.repaint();
                     resetEditingFactors();                    
                 }
@@ -503,6 +514,7 @@ public final class Stage implements Triggable {
                 e.getKeyCode() == KeyEvent.VK_Z) {
 //            layer.popLastShape();
             opManager.undo();
+            setProperties();
             cloneShapesList();
             layer.repaint();
         } else if (e.isControlDown() && 
@@ -510,6 +522,7 @@ public final class Stage implements Triggable {
                 (e.getKeyCode() == KeyEvent.VK_Y)) {
 //            layer.unPopLastShape();
             opManager.redo();
+            setProperties();
             cloneShapesList();
             layer.repaint();
         }
@@ -518,6 +531,9 @@ public final class Stage implements Triggable {
             case DRAWING:
                 break;
             case EDITING:
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    unselectAll();
+                }
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     deleteSelectedShapes();
                 }        
@@ -575,10 +591,11 @@ public final class Stage implements Triggable {
         this.currentShapeType = currentShapeType;
     }   
  
-    public void setProperties() {  
+    public void setProperties() {
+        LinkedList<ElShape> selectedShapes = getSelectedShapes();
         propertiesList.clear();
-        for (ElShape elShape : elShapes) {
-            if (elShape.isSelected() && propertiesList.size() == 0) {
+        for (ElShape elShape : selectedShapes) {
+            if (propertiesList.size() == 0) {
                 propertiesList.add(new Property(
                         " X : ", elShape.getX(), 
                         Property.PropertyName.X));
@@ -600,99 +617,104 @@ public final class Stage implements Triggable {
             }
             else {
                 for(Property p : propertiesList) {
-                    switch (p.getPropertyName()) {
+                    if(p.getValue() == null) {
+                            continue;
+                    }
+                    switch (p.getPropertyName()) {                                            
                         case X:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getX()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getX()) {
+                                p.setValue(null);
                             }
                             break;
                         case Y:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getY()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getY()) {
+                                p.setValue(null);
                             }
                             break;
                         case WIDTH:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getWidth()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getWidth()) {
+                                p.setValue(null);
                             }
                             break;
                         case HEIGHT:
-                            if (p.getValue() != null) {
-                                if ((int)p.getValue() != elShape.getHeight()) {
-                                    p.setValue(null);
-                                }
+                            if ((int)p.getValue() != elShape.getHeight()) {
+                                p.setValue(null);
                             }
                             break;
                         case COLOR:
-                            if (p.getValue() != null) {
-                                if ((Color)p.getValue() 
-                                        != elShape.getFillColor()) {
-                                    p.setValue(null);
-                                }
+                            if ((Color)p.getValue() 
+                                    != elShape.getFillColor()) {
+                                p.setValue(null);
                             }
                             break;
                         case BORDER_COLOR:
-                            if (p.getValue() != null) {
-                                if ((Color)p.getValue() 
-                                        != elShape.getBorderColor()) {
-                                    p.setValue(null);
-                                }
+                            if ((Color)p.getValue() 
+                                    != elShape.getBorderColor()) {
+                                p.setValue(null);
                             }
                             break;
                     }
                 }
             }
         }
-        //properties.update();
+
         ui.setProperties(properties);
     }
     
     public void checkProperties() {
-        for (ElShape elShape : elShapes) {
-            if (elShape.isSelected()) {   
-                for(Property p : propertiesList) {
-                    switch (p.getPropertyName()) {
-                        case X:
-                            if (p.getValue() != null) {
-                                elShape.setX((int)p.getValue());
-                            }
-                            break;
-                        case Y:
-                            if (p.getValue() != null) {
-                                elShape.setY((int)p.getValue());
-                            }
-                            break;
-                        case WIDTH:
-                            if (p.getValue() != null) {
-                                elShape.setWidth((int)p.getValue());
-                            }
-                            break;
-                        case HEIGHT:
-                            if (p.getValue() != null) { 
-                                elShape.setHeight((int)p.getValue());
-                            }
-                            break;
-                        case COLOR:
-                            if (p.getValue() != null) {
-                                elShape.setFillColor((Color)p.getValue());
-                            }
-                            break;
-                        case BORDER_COLOR:
-                            if (p.getValue() != null) {
-                                elShape.setBorderColor((Color)p.getValue());
-                            }
-                            break;
-                    }
-                }
+        LinkedList<ElShape> selectedShapes = getSelectedShapes();
+        for(Property p : propertiesList) {
+            if(p.getValue() == null || !p.isChanged()) {
+                continue;
             }
+            LinkedList<Object> values = new LinkedList<>();
+            for(int i = 0; i < selectedShapes.size(); ++i) {
+                values.add(p.getValue());
+            }            
+            opManager.execute(new OpSetProperty(p.getPropertyName(), values, 
+                    selectedShapes), true); 
+            cloneShapesList();
         }
+        
         layer.repaint();
     }
  
+    public void save() {
+        JFileChooser chooser = new JFileChooser();
+        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = chooser.showSaveDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File saveFile = chooser.getSelectedFile();
+            String path = saveFile.getPath() + ".xml";
+            try {
+                FileManager.Export(path, layer.getElShapes());
+            } catch (IOException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            } catch (AWTException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void open() {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+        "xml files (*.xml)", "xml");
+        chooser.setFileFilter(xmlfilter);
+        int returnVal = chooser.showOpenDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            chooser.setFileFilter(xmlfilter);
+            File openFile = chooser.getSelectedFile();
+            String path = openFile.getPath();
+            try {
+                FileManager.Import(path, layer.getElShapes());
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(UserInterface.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
+            layer.repaint();
+        }
+    }
 }

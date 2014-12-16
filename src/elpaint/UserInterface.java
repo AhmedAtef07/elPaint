@@ -1,20 +1,33 @@
 package elpaint;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -39,6 +52,7 @@ public class UserInterface extends JFrame {
     JPanel buttonsJPanel, propertiesJPanel;
     JToggleButton lineToggle, rectangleToggle, ellipseToggle, 
             rightTriangleToggle, isoTriangleToggle, polygonToggle, modeToggle;
+    JButton saveButton, openButton;
     
     public UserInterface(final Stage stage) {
         this.stage = stage;
@@ -49,6 +63,7 @@ public class UserInterface extends JFrame {
         
         setButtonsJPanel();
         setPropertyJPanel();
+        //setMenuBar();
         
         setSize(800, 650);
         setExtendedState(JFrame.MAXIMIZED_BOTH);                
@@ -92,7 +107,7 @@ public class UserInterface extends JFrame {
     }   
     
     private void setButtonsJPanel() {
-        buttonsJPanel = new JPanel(new GridLayout(1, 5, 0, 0));
+        buttonsJPanel = new JPanel(new GridLayout(1, 11, 0, 0));
         buttonsJPanel.setBackground(Color.LIGHT_GRAY);                                                       
                 
         Icon lineIcon = new ImageIcon("src/resources/line.png");
@@ -102,6 +117,8 @@ public class UserInterface extends JFrame {
         Icon isoTriangleIcon = new ImageIcon("src/resources/tri2.png");
         Icon polygonIcon = new ImageIcon("src/resources/polygon.png");
         Icon modeIcon = new ImageIcon("src/resources/cursor.png");
+        ImageIcon saveIcon = new ImageIcon("src/resources/save.png");
+        ImageIcon openIcon = new ImageIcon("src/resources/open.png");
         
         lineToggle = new JToggleButton(lineIcon);
         rectangleToggle = new JToggleButton(rectangleIcon);
@@ -110,14 +127,20 @@ public class UserInterface extends JFrame {
         isoTriangleToggle = new JToggleButton(isoTriangleIcon);
         polygonToggle = new JToggleButton(polygonIcon);
         modeToggle = new JToggleButton(modeIcon);
-        
+        saveButton = new JButton(saveIcon);
+        openButton = new JButton(openIcon);
+                
+        buttonsJPanel.add(openButton);
+        buttonsJPanel.add(saveButton);
+        buttonsJPanel.add(new JLabel());
+        buttonsJPanel.add(new JLabel());
         buttonsJPanel.add(lineToggle);
         buttonsJPanel.add(rectangleToggle);
         buttonsJPanel.add(ellipseToggle);
         buttonsJPanel.add(rightTriangleToggle);
         buttonsJPanel.add(isoTriangleToggle);
         buttonsJPanel.add(polygonToggle);
-        buttonsJPanel.add(modeToggle);
+        buttonsJPanel.add(modeToggle);        
         
         lineToggle.addActionListener(buttonPressed);
         rectangleToggle.addActionListener(buttonPressed);
@@ -126,6 +149,8 @@ public class UserInterface extends JFrame {
         isoTriangleToggle.addActionListener(buttonPressed);
         polygonToggle.addActionListener(buttonPressed);
         modeToggle.addActionListener(buttonPressed);
+        saveButton.addActionListener(buttonPressed);
+        openButton.addActionListener(buttonPressed);
         
         lineToggle.setFocusable(false);
         rectangleToggle.setFocusable(false);
@@ -134,6 +159,8 @@ public class UserInterface extends JFrame {
         isoTriangleToggle.setFocusable(false);
         polygonToggle.setFocusable(false);
         modeToggle.setFocusable(false);
+        saveButton.setFocusable(false);
+        openButton.setFocusable(false);
         //this.getContentPane().add(tools, BorderLayout.NORTH);  
         
         JPanel buttons = new JPanel();        
@@ -148,6 +175,23 @@ public class UserInterface extends JFrame {
         propertiesJPanel.setMinimumSize(new Dimension(100, this.getHeight()));
         propertiesJPanel.setMaximumSize(new Dimension(100, this.getHeight()));
         this.add(propertiesJPanel, BorderLayout.EAST);
+    }
+    
+    private void setMenuBar() {
+        JMenuBar menuBar;
+        JMenu file;        
+        JMenuItem open;
+        JMenuItem save;
+        
+        ImageIcon saveIcon = new ImageIcon("src/resources/save.png");
+        menuBar = new JMenuBar();
+        file = new JMenu(" File ");
+        save = new JMenuItem("Save", saveIcon);
+        save.addActionListener(buttonPressed);
+        file.add(save);
+        menuBar.add(file);
+        setJMenuBar(menuBar);
+        
     }
     
     public void setButton(Button button) {
@@ -263,6 +307,12 @@ public class UserInterface extends JFrame {
                     modeToggle.setSelected(false);
                     stage.setCurrentMode(Stage.Mode.DRAWING);
                 }
+            }
+            else if (e.getSource() == saveButton) {                
+                stage.save();
+            }
+            else if (e.getSource() == openButton) {
+                stage.open();
             }
         }
     };

@@ -8,7 +8,7 @@ import java.util.LinkedList;
  */
 public class OpAdd extends Operation {
 
-    LinkedList<ElShape> elShapes;
+    private LinkedList<ElShape> elShapes;
     
     /**
      * Must be called from Operation Manager, to re-call with passing a 
@@ -31,7 +31,7 @@ public class OpAdd extends Operation {
     }
     
     /**
-     *  Can be called from outside Operation Manager.
+     * Can be called from outside Operation Manager.
      * @param opAdd Operation to take targetedShapes from.
      * @param elShapes Reference of ElShapes to delete targetedShapes from.
      */
@@ -42,7 +42,7 @@ public class OpAdd extends Operation {
         
     @Override
     public Operation perform() {
-        for (ElShape shape : targetedShapes) {
+        for (ElShape shape: targetedShapes) {
             elShapes.add(shape);
         }
         return new OpDelete(this, elShapes);
