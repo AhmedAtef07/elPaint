@@ -7,13 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 /**
@@ -111,8 +105,13 @@ public class Layer extends JPanel {
         }                  
     }
     
-    public BufferedImage getPNG() {
-        JFileChooser chooser = new JFileChooser();
+    public BufferedImage getImage(Stage.SaveType saveType) {
+        if (saveType == Stage.SaveType.JPG) {            
+            elShapes.addFirst(new ElRectangle(-7, -7, getWidth() + 17, 
+                    getHeight() + 17, Color.WHITE, Color.WHITE, 
+                    new BasicStroke()));
+            repaint();
+        }
         BufferedImage bi = new BufferedImage(getWidth(), getHeight(), 
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bi.createGraphics();
@@ -146,6 +145,9 @@ public class Layer extends JPanel {
                 }
             }
         }  
+        if (saveType == Stage.SaveType.JPG) {            
+            elShapes.removeFirst();
+        }
         return bi;
     }
     

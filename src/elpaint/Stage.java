@@ -27,6 +27,19 @@ public final class Stage implements Triggable {
         EDITING,        
     } 
 
+    private enum MoveDir {
+        UP, 
+        DOWN, 
+        LEFT, 
+        RIGHT,
+    }
+    
+    public enum SaveType {
+        XML,
+        PNG,
+        JPG,
+    }
+    
     private final UserInterface ui;
     private final Layer layer;
     private final OperationManager opManager;
@@ -47,6 +60,9 @@ public final class Stage implements Triggable {
  
     private Mode currentMode;
     private ElShape.Type currentShapeType;
+    
+    private int smallJump = 10;
+    private int bigJump = 35;
  
     public Stage() {
         ui = new UserInterface(this);
@@ -291,6 +307,33 @@ public final class Stage implements Triggable {
             cloneShapesList();
         }        
     }    
+    
+    private void moveSelectedInDir(MoveDir moveDir, boolean biggerJump) {
+        int displacment;
+        if (biggerJump) {
+            displacment = bigJump;
+        } else {
+            displacment = smallJump;
+        }
+        int x = 0;
+        int y = 0;
+        switch (moveDir) {
+            case LEFT:
+                x = -displacment;
+                break;
+            case UP:
+                y = -displacment;
+                break;
+            case RIGHT:
+                x = displacment;
+                break;
+            case DOWN:
+                y = displacment;
+                break;
+        }
+        opManager.execute(new OpMove(new Point(0, 0), new Point(x, y), 
+                false, getSelectedShapes()), true);
+    }
  
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -496,6 +539,7 @@ public final class Stage implements Triggable {
         }
         ui.setTitle(currentMode + "");
  
+        
         if (e.getKeyCode() == KeyEvent.VK_R) {
             currentShapeType = ElShape.Type.RECTANGLE;
             ui.setButton(UserInterface.Button.RECTANGLE);
@@ -513,27 +557,47 @@ public final class Stage implements Triggable {
             ui.setButton(UserInterface.Button.LINE);
         }  
  
-        if (e.isControlDown() && !e.isShiftDown() && 
-                e.getKeyCode() == KeyEvent.VK_Z) {
-//            layer.popLastShape();
-            opManager.undo();
-            setProperties();
-            cloneShapesList();
-            layer.repaint();
-        } else if (e.isControlDown() && 
-                (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
-                (e.getKeyCode() == KeyEvent.VK_Y)) {
-//            layer.unPopLastShape();
-            opManager.redo();
-            setProperties();
-            cloneShapesList();
-            layer.repaint();
+        if (e.isControlDown()) {        
+            if (!e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+                opManager.undo();
+                setProperties();
+                cloneShapesList();
+                layer.repaint();
+            } else if ((e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) || 
+                    (e.getKeyCode() == KeyEvent.VK_Y)) {
+                opManager.redo();
+                setProperties();
+                cloneShapesList();
+                layer.repaint();
+            }
+            
+            if (e.getKeyCode() == KeyEvent.VK_S) {
+                save(SaveType.JPG);
+            } else if (e.getKeyCode() == KeyEvent.VK_E) {
+                save(SaveType.XML);
+            } else if (e.getKeyCode() == KeyEvent.VK_O) {
+                open();
+            }
+    
         }
- 
+        
         switch (currentMode) {
             case DRAWING:
                 break;
             case EDITING:
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    moveSelectedInDir(MoveDir.UP, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    moveSelectedInDir(MoveDir.DOWN, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    moveSelectedInDir(MoveDir.RIGHT, e.isShiftDown());
+                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    moveSelectedInDir(MoveDir.LEFT, e.isShiftDown());
+                }
+                
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     unselectAll();
                 }
@@ -559,6 +623,8 @@ public final class Stage implements Triggable {
                 if (e.isControlDown() || e.isShiftDown()) {
                     multiSelectionActivated = true;
                 }
+                cloneShapesList();
+                layer.repaint();
                 break;
             default:
                 break;
@@ -681,30 +747,15 @@ public final class Stage implements Triggable {
         
         layer.repaint();
     }
- 
-    public void save() {
-        JFileChooser chooser = new JFileChooser();
-        int returnVal = chooser.showSaveDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File saveFile = chooser.getSelectedFile();
-            String path = saveFile.getPath() + ".xml";
-            try {
-                FileManager.Export(path, layer.getElShapes());
-            } catch (IOException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (AWTException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     public void open() {
         JFileChooser chooser = new JFileChooser();
+        // Remove 'All Files' option from chooser.
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);  
         FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
         "xml files (*.xml)", "xml");
         chooser.setFileFilter(xmlfilter);
-        int returnVal = chooser.showOpenDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
+        if(chooser.showOpenDialog(ui) == JFileChooser.APPROVE_OPTION) {
             chooser.setFileFilter(xmlfilter);
             File openFile = chooser.getSelectedFile();
             String path = openFile.getPath();
@@ -718,26 +769,60 @@ public final class Stage implements Triggable {
         }
     }
     
-    public void image() {        
+    public void save(SaveType desiredSaveType) {        
         JFileChooser chooser = new JFileChooser();
-        boolean isTransparence = false;
-        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
-        "JPG files (*.jpg)", "jpg");
+        // Remove 'All Files' option from chooser.
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);  
         FileNameExtensionFilter pngFilter = new FileNameExtensionFilter(
         "PNG files (*.png)", "png");
-        chooser.addChoosableFileFilter(jpgFilter);
-        chooser.addChoosableFileFilter(pngFilter);
-        int returnVal = chooser.showSaveDialog(ui);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            chooser.addChoosableFileFilter(jpgFilter);
+        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
+        "JPG files (*.jpg)", "jpg");
+        FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter(
+        "XML files (*.xml)", "xml");
+        
+        if (desiredSaveType != SaveType.XML) {
             chooser.addChoosableFileFilter(pngFilter);
-            File saveFile = chooser.getSelectedFile();            
-            String path = saveFile.getPath() + ".png";
-            BufferedImage bi = layer.getPNG();
-            try {
-                ImageIO.write(bi, "PNG", new File(path));
-            } catch (IOException ex) {
-                Logger.getLogger(Stage.class.getName()).log(Level.SEVERE, null, ex);
+            chooser.addChoosableFileFilter(jpgFilter);
+            chooser.addChoosableFileFilter(xmlFilter);
+        } else {
+            chooser.addChoosableFileFilter(xmlFilter);
+            chooser.setDialogTitle("Export");
+        }
+              
+        if(chooser.showSaveDialog(ui) == JFileChooser.APPROVE_OPTION) {
+            File saveFile = chooser.getSelectedFile();  
+            SaveType saveType;
+            String path = saveFile.getPath();
+            
+            if (chooser.getFileFilter() == pngFilter) {
+                saveType = SaveType.PNG;
+                path += ".png";
+            } else if (chooser.getFileFilter() == jpgFilter) {
+                saveType = SaveType.JPG;                
+                path += ".jpg";
+            } else {
+                saveType = SaveType.XML;                
+                path += ".xml";
+            }
+            
+            if (saveType == SaveType.XML) {
+                try {
+                    FileManager.Export(path, layer.getElShapes());
+                } catch (IOException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                } catch (AWTException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                }
+            } else {            
+                BufferedImage bi = layer.getImage(saveType);
+                try {
+                    ImageIO.write(bi, "PNG", new File(path));
+                } catch (IOException ex) {
+                    Logger.getLogger(Stage.class.getName()).log(
+                            Level.SEVERE, null, ex);
+                }
             }
         }
     }
