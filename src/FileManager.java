@@ -76,10 +76,7 @@ public class FileManager {
                     }
                     else if ( x.length == 5 ) {
                         Point psps = new Point(s.xpoints[0],s.ypoints[0]);
-                        elShapes.add(new elPolygon(
-                                new Point( (int)s.getBounds().getCenterX() 
-                                        , (int)s.getBounds().getCenterY()),
-                                psps,5, 0));
+                        elShapes.add(new elPolygon(x,y));
                     }
                 }
                 result = d.readObject();

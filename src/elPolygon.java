@@ -29,6 +29,14 @@ public class elPolygon extends ElShape {
         makePoints();
         getUpperleft();
     }
+    
+    public elPolygon(int[] x, int[] y) {
+        this.ptx = x;
+        this.pty = y;
+        this.angel = 0.0;
+        this.n = 5;
+        this.radius = 0;
+    }
     public elPolygon(int x, int y, int radius, int n, double angel) {
         super();
         this.x = x;
