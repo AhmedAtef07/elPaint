@@ -1,22 +1,14 @@
 
-
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -26,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -63,7 +53,6 @@ public class UserInterface extends JFrame {
         
         setButtonsJPanel();
         setPropertyJPanel();
-        //setMenuBar();
         
         setSize(800, 650);
         setExtendedState(JFrame.MAXIMIZED_BOTH);                
@@ -133,7 +122,7 @@ public class UserInterface extends JFrame {
         jpgButton = new JButton(jpgIcon);
         saveButton.setToolTipText("Export as XML");
         openButton.setToolTipText("Import XML");
-        jpgButton.setToolTipText("Export JPG");
+        jpgButton.setToolTipText("Export photo");
 
                 
         buttonsJPanel.add(openButton);
@@ -186,22 +175,21 @@ public class UserInterface extends JFrame {
         this.add(propertiesJPanel, BorderLayout.EAST);
     }
     
-    private void setMenuBar() {
-        JMenuBar menuBar;
-        JMenu file;        
-        JMenuItem open;
-        JMenuItem save;
-        
-        ImageIcon saveIcon = new ImageIcon("src/resources/save.png");
-        menuBar = new JMenuBar();
-        file = new JMenu(" File ");
-        save = new JMenuItem("Save", saveIcon);
-        save.addActionListener(buttonPressed);
-        file.add(save);
-        menuBar.add(file);
-        setJMenuBar(menuBar);
-        
-    }
+//    private void setMenuBar() {
+//        JMenuBar menuBar;
+//        JMenu file;        
+//        JMenuItem open;
+//        JMenuItem save;
+//        
+//        ImageIcon saveIcon = new ImageIcon("src/resources/save.png");
+//        menuBar = new JMenuBar();
+//        file = new JMenu(" File ");
+//        save = new JMenuItem("Save", saveIcon);
+//        save.addActionListener(buttonPressed);
+//        file.add(save);
+//        menuBar.add(file);
+//        setJMenuBar(menuBar);        
+//    }
     
     public void setButton(Button button) {
         switch (button) {
