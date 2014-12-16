@@ -101,7 +101,7 @@ public abstract class ElShape {
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        this.width = Math.max(width, 3);
     }
 
     public int getHeight() {
@@ -109,7 +109,7 @@ public abstract class ElShape {
     }
 
     public void setHeight(int height) {
-        this.height = height;
+        this.height = Math.max(height, 3);
     }
     
     public SelectionBox getResizeBox() {
