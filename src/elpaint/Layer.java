@@ -6,7 +6,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 /**
@@ -101,6 +108,45 @@ public class Layer extends JPanel {
                     g2d.draw(shape.getShape().getBounds2D());                    
                 }
             }
-        }
+        }                  
     }
+    
+    public BufferedImage getPNG() {
+        JFileChooser chooser = new JFileChooser();
+        BufferedImage bi = new BufferedImage(getWidth(), getHeight(), 
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bi.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (ElShape shape: elShapes) {
+            g2d.setColor(shape.getFillColor());
+            g2d.fill(shape.getShape());
+            g2d.setColor(shape.getBorderColor());
+            g2d.setStroke(shape.getLineType());
+            g2d.draw(shape.getShape());
+        }
+        if (holdedShape != null) {
+            g2d.setColor(Color.gray);
+            g2d.draw(holdedShape.getShape());            
+        } else {
+            for (ElShape shape: elShapes) {
+                if (shape.isSelected()) {                    
+                    g2d.setColor(SelectionBox.boxColor);
+                    for(SelectionBox.ResizeBox box: 
+                            shape.getResizeBox().getBoxes()) {
+                        if (box == null) {
+                            continue;
+                        }
+                        g2d.fill(box.getRect().getShape());
+                    }
+                    g2d.setStroke(new BasicStroke(1));
+                    g2d.draw(shape.getShape().getBounds2D());                    
+                }
+            }
+        }  
+        return bi;
+    }
+    
 }

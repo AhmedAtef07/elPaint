@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
  
@@ -681,7 +683,6 @@ public final class Stage implements Triggable {
  
     public void save() {
         JFileChooser chooser = new JFileChooser();
-        //chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = chooser.showSaveDialog(ui);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             File saveFile = chooser.getSelectedFile();
@@ -689,11 +690,9 @@ public final class Stage implements Triggable {
             try {
                 FileManager.Export(path, layer.getElShapes());
             } catch (IOException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             } catch (AWTException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -708,13 +707,37 @@ public final class Stage implements Triggable {
             chooser.setFileFilter(xmlfilter);
             File openFile = chooser.getSelectedFile();
             String path = openFile.getPath();
+            //System.out.println("" + path);
             try {
                 FileManager.Import(path, layer.getElShapes());
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(UserInterface.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
             layer.repaint();
+        }
+    }
+    
+    public void image() {        
+        JFileChooser chooser = new JFileChooser();
+        boolean isTransparence = false;
+        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
+        "JPG files (*.jpg)", "jpg");
+        FileNameExtensionFilter pngFilter = new FileNameExtensionFilter(
+        "PNG files (*.png)", "png");
+        chooser.addChoosableFileFilter(jpgFilter);
+        chooser.addChoosableFileFilter(pngFilter);
+        int returnVal = chooser.showSaveDialog(ui);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            chooser.addChoosableFileFilter(jpgFilter);
+            chooser.addChoosableFileFilter(pngFilter);
+            File saveFile = chooser.getSelectedFile();            
+            String path = saveFile.getPath() + ".png";
+            BufferedImage bi = layer.getPNG();
+            try {
+                ImageIO.write(bi, "PNG", new File(path));
+            } catch (IOException ex) {
+                Logger.getLogger(Stage.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }
