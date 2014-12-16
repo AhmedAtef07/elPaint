@@ -1,4 +1,4 @@
-package elpaint;
+
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;

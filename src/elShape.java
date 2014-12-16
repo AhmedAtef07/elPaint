@@ -1,4 +1,4 @@
-package elpaint;
+
 
 import java.awt.BasicStroke;
 import java.awt.Color;

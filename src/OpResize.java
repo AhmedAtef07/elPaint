@@ -1,4 +1,4 @@
-package elpaint;
+
 
 import java.awt.Point;
 import java.util.LinkedList;

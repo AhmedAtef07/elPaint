@@ -1,4 +1,4 @@
-package elpaint;
+
  
 import java.awt.AWTException;
 import java.awt.Color;
@@ -61,6 +61,10 @@ public final class Stage implements Triggable {
     private Mode currentMode;
     private ElShape.Type currentShapeType;
     
+    private int[] magnetLineX;
+    private int[] magnetLineY;
+    
+    private int magnetPadding = 10;
     private int smallJump = 10;
     private int bigJump = 35;
  
@@ -80,11 +84,24 @@ public final class Stage implements Triggable {
         isDragging = false;
         currentMode = Mode.DRAWING;
         currentShapeType = ElShape.Type.RECTANGLE;
- 
+        
+        magnetLineX = new int[5000];
+        magnetLineY = new int[5000];
+        resetField();
+        
         resetDrawingFactors();
         resetEditingFactors();
     }       
  
+     void resetField() {
+        for (int x = 0; x < magnetLineX.length; x++) {
+            magnetLineX[x] = x;            
+        }
+        for (int y = 0; y < magnetLineY.length; y++) {
+            magnetLineY[y] = y;            
+        }          
+    }
+     
     void resetDrawingFactors() {        
         startX = -1;
         startY = -1;
@@ -136,41 +153,54 @@ public final class Stage implements Triggable {
     }    
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
-            int height) {
-        width = Math.max(width, 5);
-        height = Math.max(height, 5);
+            int height) { 
+        
+        int attractedX = pressedX;
+        int attractedY = pressedY;
+        if (pressedX >= 0) {
+            attractedX = magnetLineX[pressedX];            
+        }
+        if (pressedY >= 0) {
+            attractedY = magnetLineY[pressedY];
+        }
+        int attractedWidth = magnetLineX[width + pressedX] - attractedX;
+        int attractedHeight = magnetLineY[height + pressedY] - attractedY;
+
+        attractedWidth = Math.max(attractedWidth, 5);
+        attractedHeight = Math.max(attractedHeight, 5);
+        
         switch (currentShapeType) {
             case RECTANGLE:   
                 holdedShape = new ElRectangle(
-                        pressedX, pressedY, width, height);
+                        attractedX, attractedY, attractedWidth, attractedHeight);
                 break;
             case ELLIPSE:
-                holdedShape = new ElEllipse(pressedX, pressedY, width, height);
+                holdedShape = new ElEllipse(attractedX, attractedY, attractedWidth, attractedHeight);
                 break;
             case ISOSCELES_TRIANGLE:
-                holdedShape = new ElTriangle(new Point(pressedX, pressedY), 
-                        width, height, ElTriangle.Type.ISOSCELES);
+                holdedShape = new ElTriangle(new Point(attractedX, attractedY), 
+                        attractedWidth, attractedHeight, ElTriangle.Type.ISOSCELES);
                 break;
             case RIGHT_TRIANGLE:
-                holdedShape = new ElTriangle(new Point(pressedX, pressedY), 
-                        width, height, ElTriangle.Type.RIGHT);
+                holdedShape = new ElTriangle(new Point(attractedX, attractedY), 
+                        attractedWidth, attractedHeight, ElTriangle.Type.RIGHT);
                 break;
             case LINE:
-                if (pressedX == startX) {
-                    pressedX += width;
+                if (attractedX == startX) {
+                    attractedX += attractedWidth;
                 }
-                if (pressedY == startY) {
-                    pressedY += height;
+                if (attractedY == startY) {
+                    attractedY += attractedHeight;
                 }
                 holdedShape = new ElLine(new Point(startX, startY),
-                        new Point(pressedX, pressedY));
-
+                        new Point(attractedX, attractedY));
                 break;        
         }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
         layer.setHoldedShape(holdedShape);
         layer.repaint();
+        cloneShapesList();
     }
  
     void updateToDrawingMode() {
@@ -238,6 +268,14 @@ public final class Stage implements Triggable {
     void cloneShapesList() {
         for (ElShape elshape: layer.getElShapes()) {
             elshape.cloneSelf();
+            for (int i = - magnetPadding / 2; i != magnetPadding / 2 + 1; i++) {
+                magnetLineX[elshape.getX() + i] =  magnetLineX[elshape.getX()];
+                magnetLineX[elshape.getX() + elshape.getWidth() + i] =  
+                        magnetLineX[elshape.getX() + elshape.getWidth()];  
+                magnetLineY[elshape.getY() + i] =  magnetLineY[elshape.getY()];   
+                magnetLineY[elshape.getY() + elshape.getHeight() + i] =  
+                        magnetLineY[elshape.getY() + elshape.getHeight()];
+            }
         }
     }
  
