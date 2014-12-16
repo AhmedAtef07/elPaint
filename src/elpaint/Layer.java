@@ -23,6 +23,11 @@ import javax.swing.JPanel;
 
 public class Layer extends JPanel {
 
+    public enum ImageType {
+        PNG,
+        JPG,
+    }
+    
     // 'elShapes' must be final to always have only one reference.
     private final LinkedList<ElShape> elShapes;
     private LinkedList<ElShape> redo;
@@ -111,8 +116,13 @@ public class Layer extends JPanel {
         }                  
     }
     
-    public BufferedImage getPNG() {
-        JFileChooser chooser = new JFileChooser();
+    public BufferedImage getImage(ImageType imageType) {
+        if (imageType == ImageType.JPG) {            
+            elShapes.addFirst(new ElRectangle(-7, -7, getWidth() + 17, 
+                    getHeight() + 17, Color.WHITE, Color.WHITE, 
+                    new BasicStroke()));
+            repaint();
+        }
         BufferedImage bi = new BufferedImage(getWidth(), getHeight(), 
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = bi.createGraphics();
@@ -146,6 +156,9 @@ public class Layer extends JPanel {
                 }
             }
         }  
+        if (imageType == ImageType.JPG) {            
+            elShapes.removeFirst();
+        }
         return bi;
     }
     

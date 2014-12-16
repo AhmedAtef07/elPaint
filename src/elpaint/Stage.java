@@ -720,20 +720,28 @@ public final class Stage implements Triggable {
     
     public void image() {        
         JFileChooser chooser = new JFileChooser();
-        boolean isTransparence = false;
-        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
-        "JPG files (*.jpg)", "jpg");
+        // Remove 'All Files' option from chooser.
+        chooser.removeChoosableFileFilter(chooser.getChoosableFileFilters()[0]);                
         FileNameExtensionFilter pngFilter = new FileNameExtensionFilter(
         "PNG files (*.png)", "png");
-        chooser.addChoosableFileFilter(jpgFilter);
         chooser.addChoosableFileFilter(pngFilter);
+        FileNameExtensionFilter jpgFilter = new FileNameExtensionFilter(
+        "JPG files (*.jpg)", "jpg");
+        chooser.addChoosableFileFilter(jpgFilter);
+        
         int returnVal = chooser.showSaveDialog(ui);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
-            chooser.addChoosableFileFilter(jpgFilter);
-            chooser.addChoosableFileFilter(pngFilter);
-            File saveFile = chooser.getSelectedFile();            
-            String path = saveFile.getPath() + ".png";
-            BufferedImage bi = layer.getPNG();
+            File saveFile = chooser.getSelectedFile();  
+            Layer.ImageType imageType;
+            String path = saveFile.getPath();
+            if (chooser.getFileFilter() == pngFilter) {
+                imageType = Layer.ImageType.PNG;
+                path += ".png";
+            } else {
+                imageType = Layer.ImageType.JPG;                
+                path += ".jpg";
+            }
+            BufferedImage bi = layer.getImage(imageType);
             try {
                 ImageIO.write(bi, "PNG", new File(path));
             } catch (IOException ex) {
