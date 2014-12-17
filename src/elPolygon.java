@@ -115,7 +115,8 @@ public class elPolygon extends ElShape {
         
         AffineTransform at = AffineTransform.getRotateInstance(angel, 
                 getCenterX(), getCenterY());
-        Shape rotated = at.createTransformedShape(new Polygon(ptx, pty, n));
+        Shape rotated = at.createTransformedShape(new Polygon(ptx, pty,
+                ptx.length));
         return rotated;
     }
     

@@ -75,7 +75,6 @@ public class FileManager {
                         elShapes.add(new elLine(pt1, pt2,1));
                     }
                     else if ( x.length == 5 ) {
-                        Point psps = new Point(s.xpoints[0],s.ypoints[0]);
                         elShapes.add(new elPolygon(x,y));
                     }
                 }

@@ -199,6 +199,13 @@ public final class Stage implements Triggable {
                 holdedShape = new elLine(new Point(startX, startY),
                         new Point(attractedX, attractedY), 1);
                 break;        
+            case POLYGON:
+                if ( attractedY != startY ){
+                double angle = (attractedX - startX) / (attractedY - startY);
+                holdedShape = new elPolygon(new Point(startX, startY),
+                        new Point(attractedX, attractedY), 5, angle);
+                }
+                break;        
         }
         holdedShape.setFillColor(Color.yellow);
         holdedShape.setBorderColor(Color.red);
@@ -293,6 +300,7 @@ public final class Stage implements Triggable {
                 }
             }
         }
+        setProperties();
     }
  
     void updateToEditingMode() {    
@@ -313,6 +321,7 @@ public final class Stage implements Triggable {
         opManager.execute(new OpDelete(getSelectedShapes()), true);
         layer.repaint();
         cloneShapesList();
+        
     }  
 
     private void copySelecetedShapes() {
