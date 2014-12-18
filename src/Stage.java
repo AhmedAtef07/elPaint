@@ -185,7 +185,14 @@ public final class Stage implements Triggable {
             } 
         }
         setProperties();
-    }    
+    }
+    
+    private void setAlphaFactor(LinkedList<ElShape> targetedShapes, 
+            double newAlphaFactor) {
+        for (ElShape shape: targetedShapes) {
+            shape.setAlphaFactor(newAlphaFactor);
+        }
+    }
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
             int height) {
@@ -453,6 +460,8 @@ public final class Stage implements Triggable {
  
     @Override
     public void mouseDragged(MouseEvent e) {
+        setAlphaFactor(elShapes, .4);
+        setAlphaFactor(getSelectedShapes(), .7);
         isDragging = true;
         Point point = e.getPoint();
         int x = point.x - ui.getComponents()[0].getX();
@@ -629,6 +638,7 @@ public final class Stage implements Triggable {
         } 
         isDragging = false;
         layer.clearMagnetLines();
+        setAlphaFactor(elShapes, 1);
         setCursorOnAll(new Point(x, y));  
     }
  

@@ -19,8 +19,8 @@ public class Layer extends JPanel {
 
     // 'elShapes' must be final to always have only one reference.
     private final LinkedList<ElShape> elShapes;
-    private LinkedList<Integer> magnetLineX;
-    private LinkedList<Integer> magnetLineY;
+    private final LinkedList<Integer> magnetLineX;
+    private final LinkedList<Integer> magnetLineY;
     private ElShape holdedShape;
     Color color;
     
@@ -86,25 +86,7 @@ public class Layer extends JPanel {
             g2d.setStroke(shape.getLineType());
             g2d.draw(shape.getShape());
         }
-        if (holdedShape != null) {
-            g2d.setColor(Color.gray);
-            g2d.draw(holdedShape.getShape());            
-        } else {
-            for (ElShape shape: elShapes) {
-                if (shape.isSelected()) {                    
-                    g2d.setColor(SelectionBox.boxColor);
-                    for(SelectionBox.ResizeBox box: 
-                            shape.getResizeBox().getBoxes()) {
-                        if (box == null) {
-                            continue;
-                        }
-                        g2d.fill(box.getRect().getShape());
-                    }
-                    g2d.setStroke(new BasicStroke(1));
-                    g2d.draw(shape.getShape().getBounds2D());                    
-                }
-            }
-        }  
+        
         if (saveType == Stage.SaveType.JPG) {            
             elShapes.removeFirst();
         }
@@ -115,29 +97,22 @@ public class Layer extends JPanel {
     public void paint(Graphics g) {
         g.setColor(color);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        //g.clearRect(0, 0, this.getWidth(), this.getHeight());
         
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
-        
         for (ElShape shape: elShapes) {
             g2d.setColor(shape.getFillColor());
             g2d.fill(shape.getShape());
             g2d.setColor(shape.getBorderColor());
             g2d.setStroke(shape.getLineType());
-            g2d.draw(shape.getShape());
+            g2d.draw(shape.getShape());  
         }
         if (holdedShape != null) {
-            g2d.setColor(new Color(holdedShape.getFillColor().getRed(),
-                    holdedShape.getFillColor().getGreen(), 
-                    holdedShape.getFillColor().getBlue(),
-                    holdedShape.getFillColor().getAlpha() / 3));
+            holdedShape.setAlphaFactor(0.65);
+            g2d.setColor(holdedShape.getFillColor());
             g2d.fill(holdedShape.getShape());
-            g2d.setColor(new Color(holdedShape.getBorderColor().getRed(),
-                    holdedShape.getBorderColor().getGreen(), 
-                    holdedShape.getBorderColor().getBlue(),
-                    holdedShape.getBorderColor().getAlpha() / 3));
+            g2d.setColor(holdedShape.getBorderColor());
             g2d.setStroke(holdedShape.getLineType());
             g2d.draw(holdedShape.getShape());            
         } else {
@@ -160,13 +135,14 @@ public class Layer extends JPanel {
         g2d.setColor(new Color(255, 0, 0, 130));
         g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, 
                 BasicStroke.JOIN_MITER, 10.0f, new float[] {5.0f}, 0.0f));
-        for (int i = 0; i < magnetLineX.size(); i++) {
-            g2d.drawLine(magnetLineX.get(i), 0, 
-                    magnetLineX.get(i), getHeight());
+        for (Integer x : magnetLineX) {
+            g2d.drawLine(x, 0, x, getHeight());
         }
-        for (int i = 0; i < magnetLineY.size(); i++) {
-            g2d.drawLine(0, magnetLineY.get(i), getWidth(), magnetLineY.get(i));            
+        for (Integer y : magnetLineY) {
+            g2d.drawLine(0, y, getWidth(), y);            
         }
+        
+        // g2d.scale(2, 1.5);
     }
     
     

@@ -20,7 +20,7 @@ public abstract class ElShape {
         
     protected Stroke lineType;
     protected Color fillColor;
-    protected Color borderColor;   
+    protected Color borderColor;
     
     protected int x;
     protected int y;
@@ -33,12 +33,14 @@ public abstract class ElShape {
     private int clonedHeight;
     
     private boolean isSelected;
+    private double alphaFactor;
 
     public ElShape() {
-        this.isSelected = false;
-        this.lineType = new BasicStroke(2);
-        this.fillColor = Color.WHITE;
-        this.borderColor = Color.BLACK;
+        isSelected = false;
+        lineType = new BasicStroke(2);
+        fillColor = Color.WHITE;
+        borderColor = Color.BLACK;
+        alphaFactor = 1;
     }   
     
     public ElShape(Color fillColor, Color borderColor, Stroke lineType) {
@@ -46,6 +48,7 @@ public abstract class ElShape {
         this.borderColor = borderColor;
         this.lineType = lineType ;
         this.isSelected = false;
+        alphaFactor = 1;
     }    
     
     public Stroke getLineType() {
@@ -57,7 +60,8 @@ public abstract class ElShape {
     }
 
     public Color getFillColor() {
-        return fillColor;
+        return new Color(fillColor.getRed(), fillColor.getGreen(), 
+                fillColor.getBlue(), (int)(fillColor.getAlpha() * alphaFactor));
     }
 
     public void setFillColor(Color fillColor) {
@@ -65,7 +69,9 @@ public abstract class ElShape {
     }
 
     public Color getBorderColor() {
-        return borderColor;
+        return new Color(borderColor.getRed(), borderColor.getGreen(), 
+                borderColor.getBlue(), 
+                (int)(borderColor.getAlpha() * alphaFactor));
     }
 
     public void setBorderColor(Color borderColor) {
@@ -110,6 +116,14 @@ public abstract class ElShape {
 
     public void setHeight(int height) {
         this.height = Math.max(height, 3);
+    }
+
+    public double getAlphaFactor() {
+        return alphaFactor;
+    }
+
+    public void setAlphaFactor(double alphaFactor) {
+        this.alphaFactor = Math.min(1, Math.abs(alphaFactor));
     }
     
     public SelectionBox getResizeBox() {
