@@ -158,7 +158,8 @@ public class Layer extends JPanel {
         }
         
         g2d.setColor(new Color(255, 0, 0, 130));
-        g2d.setStroke(new BasicStroke(1));
+        g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, 
+                BasicStroke.JOIN_MITER, 10.0f, new float[] {5.0f}, 0.0f));
         for (int i = 0; i < magnetLineX.size(); i++) {
             g2d.drawLine(magnetLineX.get(i), 0, 
                     magnetLineX.get(i), getHeight());
