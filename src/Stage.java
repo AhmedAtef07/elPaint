@@ -1,6 +1,7 @@
 
  
 import java.awt.AWTException;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -242,8 +243,18 @@ public final class Stage implements Triggable {
                 }
                 break;        
         }
-        holdedShape.setFillColor(Color.yellow);
-        holdedShape.setBorderColor(Color.red);
+        switch (currentMode) {
+            case DRAWING:
+                holdedShape.setFillColor(Color.yellow);
+                holdedShape.setBorderColor(Color.red);
+                holdedShape.setLineType(new BasicStroke(2));
+                break;
+            case EDITING:
+                holdedShape.setFillColor(Color.lightGray);
+                holdedShape.setBorderColor(Color.gray);
+                holdedShape.setLineType(new BasicStroke(1));
+                break;
+        }
         layer.setHoldedShape(holdedShape);
         layer.repaint();
         cloneShapesList();

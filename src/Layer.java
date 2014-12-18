@@ -85,7 +85,16 @@ public class Layer extends JPanel {
             g2d.draw(shape.getShape());
         }
         if (holdedShape != null) {
-            g2d.setColor(Color.gray);
+            g2d.setColor(new Color(holdedShape.getFillColor().getRed(),
+                    holdedShape.getFillColor().getGreen(), 
+                    holdedShape.getFillColor().getBlue(),
+                    holdedShape.getFillColor().getAlpha() / 3));
+            g2d.fill(holdedShape.getShape());
+            g2d.setColor(new Color(holdedShape.getBorderColor().getRed(),
+                    holdedShape.getBorderColor().getGreen(), 
+                    holdedShape.getBorderColor().getBlue(),
+                    holdedShape.getBorderColor().getAlpha() / 3));
+            g2d.setStroke(holdedShape.getLineType());
             g2d.draw(holdedShape.getShape());            
         } else {
             for (ElShape shape: elShapes) {
