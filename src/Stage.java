@@ -212,6 +212,7 @@ public final class Stage implements Triggable {
         for (ElShape shape: targetedShapes) {
             shape.setAlphaFactor(newAlphaFactor);
         }
+        layer.repaint();
     }
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
@@ -630,12 +631,12 @@ public final class Stage implements Triggable {
                     layer.repaint();
                     resetEditingFactors();                    
                 }
-                setProperties();
                 break;
         } 
         isDragging = false;
         layer.clearMagnetLines();
         setAlphaFactor(elShapes, 1);
+        setProperties();
         setCursorOnAll(new Point(x, y));  
     }
  
@@ -682,7 +683,12 @@ public final class Stage implements Triggable {
         } else if (e.getKeyCode() == KeyEvent.VK_L) {
             currentShapeType = ElShape.Type.LINE;
             ui.setButton(UserInterface.Button.LINE);
-        }  
+        }          
+        
+        if (!isDragging && !isResizing && !isMoving &&
+                e.getKeyCode() == KeyEvent.VK_S) {
+            setAlphaFactor(elShapes, .5);
+        } 
  
         if (e.isControlDown()) {        
             if (!e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) {
@@ -714,14 +720,11 @@ public final class Stage implements Triggable {
             case EDITING:
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     moveSelectedInDir(MoveDir.UP, e.isShiftDown());
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     moveSelectedInDir(MoveDir.DOWN, e.isShiftDown());
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     moveSelectedInDir(MoveDir.RIGHT, e.isShiftDown());
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     moveSelectedInDir(MoveDir.LEFT, e.isShiftDown());
                 }
                 
@@ -730,7 +733,7 @@ public final class Stage implements Triggable {
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     deleteSelectedShapes();
-                }        
+                }  
                 if (e.isControlDown() 
                         && e.getKeyCode() == KeyEvent.VK_C) {
                     copySelecetedShapes();
@@ -760,8 +763,12 @@ public final class Stage implements Triggable {
  
     @Override
     public void keyReleased(KeyEvent e) {
-        if (!e.isControlDown() && !e.isShiftDown() ) {
+        if (!e.isControlDown() && !e.isShiftDown()) {
             multiSelectionActivated = false;
+        }
+        if (!isDragging && !isResizing && !isMoving && 
+                e.getKeyCode() == KeyEvent.VK_S) {
+            setAlphaFactor(elShapes, 1);
         }
     }
  
