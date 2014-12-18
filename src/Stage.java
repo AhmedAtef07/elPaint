@@ -137,6 +137,26 @@ public final class Stage implements Triggable {
         }
     }
     
+    private Point getAttractedPoint(int x, int y) {
+        int attractedX = x;
+        int attractedY = y;        
+        if (x >= 0) {
+            attractedX = magnetLineX[x]; 
+            if (attractedX == magnetLineX[attractedX + 1] ||
+                    attractedX == magnetLineX[attractedX - 1]) {
+                layer.addMagnetLineOnX(attractedX);            
+            }
+        }
+        if (y >= 0) {
+            attractedY = magnetLineY[y];
+            if (attractedY == magnetLineY[attractedY + 1] ||
+                    attractedY == magnetLineY[attractedY - 1]) {
+                layer.addMagnetLineOnY(attractedY);            
+            }
+        }         
+        return new Point(attractedX, attractedY);
+    }          
+    
     private void resetDrawingFactors() {        
         startX = -1;
         startY = -1;
@@ -197,49 +217,23 @@ public final class Stage implements Triggable {
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
             int height) {
         
+        width = Math.max(width, 5);
+        height = Math.max(height, 5);
+        
         int attractedX = pressedX;
         int attractedY = pressedY;
         int attractedWidth = width;
         int attractedHeight = height;
         
         if (currentMode == Mode.DRAWING) {
-            layer.clearMagnetLines();
-            if (pressedX >= 0) {
-                attractedX = magnetLineX[pressedX]; 
-                if (attractedX == magnetLineX[attractedX + 1] ||
-                        attractedX == magnetLineX[attractedX - 1]) {
-                    layer.addMagnetLineOnX(attractedX);            
-                }
-            }
-            
-            if (pressedY >= 0) {
-                attractedY = magnetLineY[pressedY];
-                if (attractedY == magnetLineY[attractedY + 1] ||
-                        attractedY == magnetLineY[attractedY - 1]) {
-                    layer.addMagnetLineOnY(attractedY);            
-                }
-            }
-            
-            attractedWidth = magnetLineX[width + pressedX] - attractedX;
-            attractedWidth = Math.max(attractedWidth, 5);
-            if (attractedWidth + attractedX == 
-                    magnetLineX[attractedWidth + attractedX + 1] ||
-                        attractedWidth + attractedX == 
-                    magnetLineX[attractedWidth + attractedX - 1]) {
-                    layer.addMagnetLineOnX(attractedWidth + attractedX);            
-            }
-            
-            attractedHeight = magnetLineY[height + pressedY] - attractedY;            
-            attractedHeight = Math.max(attractedHeight, 5);
-            if (attractedHeight + attractedY == 
-                    magnetLineY[attractedHeight + attractedY + 1] ||
-                        attractedHeight + attractedY == 
-                    magnetLineY[attractedHeight + attractedY - 1]) {
-                    layer.addMagnetLineOnY(attractedHeight + attractedY);            
-            }
+            Point attractedPoint = getAttractedPoint(pressedX, pressedY);
+            attractedX = attractedPoint.x;
+            attractedY = attractedPoint.y;                
+            attractedPoint = getAttractedPoint(pressedX + width,
+                    pressedY + height);            
+            attractedWidth = Math.max(attractedPoint.x - attractedX, 5);
+            attractedHeight = Math.max(attractedPoint.y - attractedY, 5);
         }
-
-        
         
         switch (currentShapeType) {
             case RECTANGLE:   
@@ -462,6 +456,7 @@ public final class Stage implements Triggable {
     public void mouseDragged(MouseEvent e) {
         setAlphaFactor(elShapes, .4);
         setAlphaFactor(getSelectedShapes(), .7);
+        layer.clearMagnetLines();
         isDragging = true;
         Point point = e.getPoint();
         int x = point.x - ui.getComponents()[0].getX();
@@ -543,9 +538,10 @@ public final class Stage implements Triggable {
             } 
 
             if (isResizing) {
+                Point attractedPoint = getAttractedPoint(x, y);
                 opManager.execute(new OpResize(resizingRelativeShape, 
                         selectedResizeBoxType, 
-                        new Point(magnetLineX[x], magnetLineY[y]),
+                        new Point(attractedPoint.x, attractedPoint.y),
                         getSelectedShapes(), e.isShiftDown()), false);
                 layer.repaint();
             } else if (isMoving) {
@@ -622,9 +618,10 @@ public final class Stage implements Triggable {
                         new Point(x, y), e.isShiftDown(), getSelectedShapes()),
                         true);
                     } else if (isResizing) {
+                        Point attractedPoint = getAttractedPoint(x, y);
                         opManager.execute(new OpResize(resizingRelativeShape, 
                                 selectedResizeBoxType, 
-                                new Point(magnetLineX[x], magnetLineY[y]),
+                                new Point(attractedPoint.x, attractedPoint.y),
                                 getSelectedShapes(), e.isShiftDown()), true);
                     } else {
                         setSelectedShapes();
