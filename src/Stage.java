@@ -46,7 +46,7 @@ public final class Stage implements Triggable {
     
     
     private Properties properties;
-    ArrayList<Property> propertiesList = new ArrayList<Property>();
+    private ArrayList<Property> propertiesList = new ArrayList<Property>();
  
     private int startX, startY;
     private ElShape holdedShape;
@@ -55,18 +55,18 @@ public final class Stage implements Triggable {
     private boolean isMoving, isDragging, isResizing;
     private SelectionBox.ResizeBoxType selectedResizeBoxType;
  
-    private LinkedList<ElShape> elShapes;
+    private final LinkedList<ElShape> elShapes;
     private LinkedList<ElShape> copiedShapes;
  
     private Mode currentMode;
     private ElShape.Type currentShapeType;
     
-    private int[] magnetLineX;
-    private int[] magnetLineY;
+    private final int[] magnetLineX;
+    private final int[] magnetLineY;
     
-    private int magnetPadding = 10;
-    private int smallJump = 10;
-    private int bigJump = 35;
+    private final int magnetPadding = 20;
+    private final int smallJump = 10;
+    private final int bigJump = 35;
  
     public Stage() {
         ui = new UserInterface(this);
@@ -93,27 +93,62 @@ public final class Stage implements Triggable {
         resetEditingFactors();
     }       
  
-     void resetField() {
+    private void resetField() {
         for (int x = 0; x < magnetLineX.length; x++) {
             magnetLineX[x] = x;            
         }
         for (int y = 0; y < magnetLineY.length; y++) {
             magnetLineY[y] = y;            
         }          
+    }     
+    
+    private void updateField() {
+        resetField();
+        for (int x = 0; x < magnetLineX.length; x++) {
+            magnetLineX[x] = x;            
+        }
+        for (int y = 0; y < magnetLineY.length; y++) {
+            magnetLineY[y] = y;            
+        }
+        for (ElShape elShape : elShapes) {          
+            if (elShape.isSelected()) {
+                continue;
+            }
+            
+            int x = elShape.getX();
+            int y = elShape.getY();
+            int width = elShape.getWidth();
+            int height = elShape.getHeight();
+            
+            for (int i = - magnetPadding / 2; i != magnetPadding / 2 + 1; i++) {
+                if (Math.min(x + i, x) >= 0) {
+                    magnetLineX[x + i] = magnetLineX[x];                    
+                }
+                if (Math.min(x + width + i, x + width) >= 0) {
+                    magnetLineX[x + width + i] = magnetLineX[x + width];  
+                }
+                if (Math.min(y + i, y) >= 0) {
+                    magnetLineY[y + i] =  magnetLineY[y];   
+                }
+                if (Math.min(y + height + i, y + height) >= 0) {
+                    magnetLineY[y + height + i] = magnetLineY[y + height];
+                }
+            }
+        }
     }
-     
-    void resetDrawingFactors() {        
+    
+    private void resetDrawingFactors() {        
         startX = -1;
         startY = -1;
     }
  
-    void resetEditingFactors() { 
+    private void resetEditingFactors() { 
         startX = -1;
         startY = -1;
         cloneShapesList();
     }
  
-    public void setSelectedShapes(Point p) { 
+    private void setSelectedShapes(Point p) { 
         if (!multiSelectionActivated) {
             unselectAll();
         } 
@@ -214,7 +249,7 @@ public final class Stage implements Triggable {
         cloneShapesList();
     }
  
-    void updateToDrawingMode() {
+    private void updateToDrawingMode() {
         // Remove everything related to editing.
         unselectAll();
         layer.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -223,7 +258,7 @@ public final class Stage implements Triggable {
         //
     }
  
-    void setCursorOnAll(Point point) {         
+    private void setCursorOnAll(Point point) {         
         boolean foundAny = false;
         for (int i = elShapes.size() - 1; i != -1; --i) {
             ElShape shape = elShapes.get(i);  
@@ -260,7 +295,7 @@ public final class Stage implements Triggable {
         }
     }
  
-    void unselectAll() { 
+    private void unselectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(false);            
         }
@@ -268,7 +303,7 @@ public final class Stage implements Triggable {
         setProperties();
     }
  
-    void selectAll() { 
+    private void selectAll() { 
         for (ElShape elshape: elShapes) {
             elshape.setSelected(true);            
         }
@@ -276,34 +311,16 @@ public final class Stage implements Triggable {
         setProperties();
     }
  
-    void cloneShapesList() {
+    private void cloneShapesList() {
         resetField();
         for (ElShape elshape: layer.getElShapes()) {
             elshape.cloneSelf();
-            int x = elshape.getX();
-            int y = elshape.getY();
-            int width = elshape.getWidth();
-            int height = elshape.getHeight();
-            
-            for (int i = - magnetPadding / 2; i != magnetPadding / 2 + 1; i++) {
-                if (Math.min(x + i, x) >= 0) {
-                    magnetLineX[x + i] = magnetLineX[x];                    
-                }
-                if (Math.min(x + width + i, x + width) >= 0) {
-                    magnetLineX[x + width + i] = magnetLineX[x + width];  
-                }
-                if (Math.min(y + i, y) >= 0) {
-                    magnetLineY[y + i] =  magnetLineY[y];   
-                }
-                if (Math.min(y + height + i, y + height) >= 0) {
-                    magnetLineY[y + height + i] = magnetLineY[y + height];
-                }
-            }
         }
+        updateField();
         setProperties();
     }
  
-    void updateToEditingMode() {    
+    private void updateToEditingMode() {    
        cloneShapesList();        
     }
  
@@ -458,6 +475,7 @@ public final class Stage implements Triggable {
                                 resizingRelativeShape = shape;
                                 selectedResizeBoxType = box.getBoxType();
                                 isResizing = true;
+                                updateField();
                                 break;
                             }   
                         }
