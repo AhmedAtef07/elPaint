@@ -19,39 +19,21 @@ public class Layer extends JPanel {
 
     // 'elShapes' must be final to always have only one reference.
     private final LinkedList<ElShape> elShapes;
-    private LinkedList<ElShape> redo;
+    private LinkedList<Integer> magnetLineX;
+    private LinkedList<Integer> magnetLineY;
     private ElShape holdedShape;
     Color color;
-
-    public void setColor(Color color) {
-        this.color = color;
-        repaint();
-    }
     
     public Layer(Point point, int width, int height) {
         setBounds(point.x, point.y, width, height);
         setBackground(Color.white);
 
         elShapes = new LinkedList<>();
-        redo = new LinkedList<>();
+        magnetLineX = new LinkedList<>();
+        magnetLineY = new LinkedList<>();
+        
         holdedShape = null;
         color = Color.WHITE;
-    }
-
-    void popLastShape() {
-        if (elShapes.size() == 0) {
-            return;
-        }
-        redo.add(elShapes.peekLast());
-        elShapes.removeLast();
-    }
-    
-    void unPopLastShape() {
-        if (redo.size() == 0) {
-            return;
-        }        
-        elShapes.add(redo.peekLast());
-        redo.removeLast();
     }
     
     public void setHoldedShape(ElShape holdedShape) {
@@ -64,7 +46,69 @@ public class Layer extends JPanel {
     
     public void addShape(ElShape shape) {
         elShapes.add(shape);
-        redo.clear();
+    }    
+    
+    public void setColor(Color color) {
+        this.color = color;
+        repaint();
+    }
+
+    public void addMagnetLineOnX(int xPosition) {
+        magnetLineX.add(xPosition);
+    }
+
+    public void addMagnetLineOnY(int yPosition) {
+        magnetLineY.add(yPosition);
+    }
+    
+    public void clearMagnetLines() {
+        magnetLineX.clear();
+        magnetLineY.clear();
+    }
+    public BufferedImage getImage(Stage.SaveType saveType) {
+        if (saveType == Stage.SaveType.JPG) {            
+            elShapes.addFirst(new ElRectangle(-7, -7, getWidth() + 17, 
+                    getHeight() + 17, Color.WHITE, Color.WHITE, 
+                    new BasicStroke()));
+            repaint();
+        }
+        BufferedImage bi = new BufferedImage(getWidth(), getHeight(), 
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bi.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (ElShape shape: elShapes) {
+            g2d.setColor(shape.getFillColor());
+            g2d.fill(shape.getShape());
+            g2d.setColor(shape.getBorderColor());
+            g2d.setStroke(shape.getLineType());
+            g2d.draw(shape.getShape());
+        }
+        if (holdedShape != null) {
+            g2d.setColor(Color.gray);
+            g2d.draw(holdedShape.getShape());            
+        } else {
+            for (ElShape shape: elShapes) {
+                if (shape.isSelected()) {                    
+                    g2d.setColor(SelectionBox.boxColor);
+                    for(SelectionBox.ResizeBox box: 
+                            shape.getResizeBox().getBoxes()) {
+                        if (box == null) {
+                            continue;
+                        }
+                        g2d.fill(box.getRect().getShape());
+                    }
+                    g2d.setStroke(new BasicStroke(1));
+                    g2d.draw(shape.getShape().getBounds2D());                    
+                }
+            }
+        }  
+        if (saveType == Stage.SaveType.JPG) {            
+            elShapes.removeFirst();
+        }
+        return bi;
     }
     
     @Override
@@ -111,53 +155,18 @@ public class Layer extends JPanel {
                     g2d.draw(shape.getShape().getBounds2D());                    
                 }
             }
-        }                  
+        }
+        
+        g2d.setColor(new Color(255, 0, 0, 130));
+        g2d.setStroke(new BasicStroke(1));
+        for (int i = 0; i < magnetLineX.size(); i++) {
+            g2d.drawLine(magnetLineX.get(i), 0, 
+                    magnetLineX.get(i), getHeight());
+        }
+        for (int i = 0; i < magnetLineY.size(); i++) {
+            g2d.drawLine(0, magnetLineY.get(i), getWidth(), magnetLineY.get(i));            
+        }
     }
     
-    public BufferedImage getImage(Stage.SaveType saveType) {
-        if (saveType == Stage.SaveType.JPG) {            
-            elShapes.addFirst(new ElRectangle(-7, -7, getWidth() + 17, 
-                    getHeight() + 17, Color.WHITE, Color.WHITE, 
-                    new BasicStroke()));
-            repaint();
-        }
-        BufferedImage bi = new BufferedImage(getWidth(), getHeight(), 
-                BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = bi.createGraphics();
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-
-        for (ElShape shape: elShapes) {
-            g2d.setColor(shape.getFillColor());
-            g2d.fill(shape.getShape());
-            g2d.setColor(shape.getBorderColor());
-            g2d.setStroke(shape.getLineType());
-            g2d.draw(shape.getShape());
-        }
-        if (holdedShape != null) {
-            g2d.setColor(Color.gray);
-            g2d.draw(holdedShape.getShape());            
-        } else {
-            for (ElShape shape: elShapes) {
-                if (shape.isSelected()) {                    
-                    g2d.setColor(SelectionBox.boxColor);
-                    for(SelectionBox.ResizeBox box: 
-                            shape.getResizeBox().getBoxes()) {
-                        if (box == null) {
-                            continue;
-                        }
-                        g2d.fill(box.getRect().getShape());
-                    }
-                    g2d.setStroke(new BasicStroke(1));
-                    g2d.draw(shape.getShape().getBounds2D());                    
-                }
-            }
-        }  
-        if (saveType == Stage.SaveType.JPG) {            
-            elShapes.removeFirst();
-        }
-        return bi;
-    }
     
 }

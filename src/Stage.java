@@ -72,13 +72,12 @@ public final class Stage implements Triggable {
     public Stage() {
         ui = new UserInterface(this);
         layer = ui.getLayer();
+        // Only need to be initialized once, as it will always keep the 
+        // reference.
         elShapes = layer.getElShapes();
         opManager = new OperationManager(elShapes);
         
-        properties = ui.getProperties();
-        // Only need to be initialized once, as it will always keep the 
-        // reference.
-        
+        properties = ui.getProperties();        
         properties = new Properties(propertiesList, this);
  
         multiSelectionActivated = false;
@@ -189,25 +188,51 @@ public final class Stage implements Triggable {
     }    
  
     private void drawHoldedShape(int pressedX, int pressedY, int width, 
-            int height) { 
+            int height) {
         
         int attractedX = pressedX;
         int attractedY = pressedY;
         int attractedWidth = width;
         int attractedHeight = height;
+        
         if (currentMode == Mode.DRAWING) {
+            layer.clearMagnetLines();
             if (pressedX >= 0) {
-                attractedX = magnetLineX[pressedX];            
+                attractedX = magnetLineX[pressedX]; 
+                if (attractedX == magnetLineX[attractedX + 1] ||
+                        attractedX == magnetLineX[attractedX - 1]) {
+                    layer.addMagnetLineOnX(attractedX);            
+                }
             }
+            
             if (pressedY >= 0) {
                 attractedY = magnetLineY[pressedY];
+                if (attractedY == magnetLineY[attractedY + 1] ||
+                        attractedY == magnetLineY[attractedY - 1]) {
+                    layer.addMagnetLineOnY(attractedY);            
+                }
             }
+            
             attractedWidth = magnetLineX[width + pressedX] - attractedX;
+            attractedWidth = Math.max(attractedWidth, 5);
+            if (attractedWidth + attractedX == 
+                    magnetLineX[attractedWidth + attractedX + 1] ||
+                        attractedWidth + attractedX == 
+                    magnetLineX[attractedWidth + attractedX - 1]) {
+                    layer.addMagnetLineOnX(attractedWidth + attractedX);            
+            }
+            
             attractedHeight = magnetLineY[height + pressedY] - attractedY;            
+            attractedHeight = Math.max(attractedHeight, 5);
+            if (attractedHeight + attractedY == 
+                    magnetLineY[attractedHeight + attractedY + 1] ||
+                        attractedHeight + attractedY == 
+                    magnetLineY[attractedHeight + attractedY - 1]) {
+                    layer.addMagnetLineOnY(attractedHeight + attractedY);            
+            }
         }
 
-        attractedWidth = Math.max(attractedWidth, 5);
-        attractedHeight = Math.max(attractedHeight, 5);
+        
         
         switch (currentShapeType) {
             case RECTANGLE:   
@@ -603,6 +628,7 @@ public final class Stage implements Triggable {
                 break;
         } 
         isDragging = false;
+        layer.clearMagnetLines();
         setCursorOnAll(new Point(x, y));  
     }
  
